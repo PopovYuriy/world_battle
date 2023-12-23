@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f76a92f25c4548dabdfe0bf9b239f640, type: 3}
+  m_Name: GameFieldColorsConfig
+  m_EditorClassIdentifier: 
+  <OwnerColor>k__BackingField: {r: 0.9137255, g: 0.8117647, b: 0.28627452, a: 1}
+  <OpponentColor>k__BackingField: {r: 0.29803923, g: 0.6431373, b: 0.8392157, a: 1}
+  <DefaultColor>k__BackingField: {r: 0.6509804, g: 0.6509804, b: 0.6509804, a: 1}

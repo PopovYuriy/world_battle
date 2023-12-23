@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34815d67821c4fceaaa8e74d679ed4bb, type: 3}
+  m_Name: ScreensProvider
+  m_EditorClassIdentifier: 
+  _mainMenuScreenPrefab: {fileID: 6394391390653919928, guid: b0a17b3406ee7429fb5e98d32eafd131, type: 3}
+  _gameScreenPrefab: {fileID: 6454839626744566006, guid: 2782415c8b6fd48f1a3dadd3801c19dc, type: 3}
+  _gamesManagingScreenPrefab: {fileID: 6032670451952334019, guid: 9faf38974507f42b5b7e8a5502615da7, type: 3}
+  _newOnlineGamePopupPrefab: {fileID: 5493098399582409889, guid: e68d0be42dd8343c788bec60a419baf1, type: 3}
