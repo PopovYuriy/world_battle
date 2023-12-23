@@ -1,10 +1,8 @@
-using App.Data.Player;
 using App.Services;
 using App.Signals;
 using Core.Commands;
 using Core.UI;
 using Core.UI.Enums;
-using Game.Field;
 using Game.Field.Mediators;
 using UI.GameScreen.Data;
 using Zenject;
@@ -13,19 +11,25 @@ namespace App.Commands
 {
     public sealed class StartExistGameCommand : ICommand
     {
-        [Inject] private StartExistGameSignal _signal;
-        [Inject] private GameField _gameFieldPrefab;
-        [Inject] private GameSessionsManager _gameSessionsManager;
-        [Inject] private IPlayer _player;
-        [Inject] private UISystem _uiSystem;
-        
+        private StartExistGameSignal _signal;
+        private GameSessionsManager _gameSessionsManager;
+        private UISystem _uiSystem;
+
+        [Inject]
+        private void Construct(StartExistGameSignal signal, GameSessionsManager gameSessionsManager, UISystem uiSystem)
+        {
+            _signal = signal;
+            _gameSessionsManager = gameSessionsManager;
+            _uiSystem = uiSystem;
+        }
+
         public void Execute()
         {
             var gameSessionStorage = _gameSessionsManager.GetGame(_signal.GameUid);
             IGameMediator gameSessionMediator = _gameSessionsManager.IsLocalGame(_signal.GameUid) 
                 ? new LocalGameMediator()
-                : new OnlineGameMediator(_player);
-            var screenData = new GameScreenData(_gameFieldPrefab, gameSessionMediator, gameSessionStorage, _player.Uid);
+                : new OnlineGameMediator();
+            var screenData = new GameScreenData(gameSessionMediator, gameSessionStorage);
             _uiSystem.ShowScreen(ScreenId.Game, screenData);
         }
     }

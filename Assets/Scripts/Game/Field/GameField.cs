@@ -7,10 +7,7 @@ using Game.Grid.Cell.Controller;
 using Game.Grid.Cell.Enum;
 using Game.Grid.Cell.Model;
 using ModestTree;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-using Utils.Extensions;
 
 namespace Game.Field
 {
@@ -19,55 +16,44 @@ namespace Game.Field
         private const int OwnRow = 4;
 
         [SerializeField] private List<CellsRow> _rows;
-        [SerializeField] private TextMeshProUGUI _result;
-        [SerializeField] private Button _clear;
-        [SerializeField] private Button _apply;
-        [SerializeField] private Image[] _playerIndicators;
-        [SerializeField] private TextMeshProUGUI[] _playerNickNames;
-        [SerializeField] private GameFieldColorsConfig _colorsConfig;
         
         private PlayerGameData[] _players;
         private Color _capturedStateCellColor;
         private Color _opposedStateCellColor;
-        private string _ownerUid;
         
         private List<Cell> _pickedCells;
         
-        public event Action<string> OnApplyClicked;
+        public event Action<char> OnLetterPick;
 
-        public void Initialize(PlayerGameData[] players, string ownerUid)
+        public void Initialize(PlayerGameData[] players)
         {
             _players = players;
-            _ownerUid = ownerUid;
-            var owner = _players.First(p => p.Uid == ownerUid);
-            var opponent = _players.First(p => p.Uid != ownerUid);
 
             InitializeGrid();
             
             _pickedCells = new List<Cell>();
-            _clear.onClick.AddListener(ClearClickHandler);
-            _apply.onClick.AddListener(ApplyClickHandler);
-            _result.SetText(string.Empty);
-
-            _playerNickNames[0].SetText(owner.Name);
-            _playerNickNames[1].SetText(opponent.Name);
-            _playerIndicators[0].color = _colorsConfig.OwnerColor;
-            _playerIndicators[1].color = _colorsConfig.OpponentColor;
         }
         
         private void OnDestroy()
         {
             foreach (var cell in _rows.SelectMany(t => t.Cells))
                 cell.OnClick -= CellClickHandler;
-
-            _clear.onClick.RemoveListener(ClearClickHandler);
-            _apply.onClick.RemoveListener(ApplyClickHandler);
         }
 
         public void SetColors(Color capturedCellColor, Color opposedCellColor)
         {
             _capturedStateCellColor = capturedCellColor;
             _opposedStateCellColor = opposedCellColor;
+        }
+        
+        public void ResetPickedCells()
+        {
+            foreach (var cellController in _pickedCells)
+            {
+                cellController.SetPicked(false);
+                cellController.SetInteractable(true);
+            }
+            _pickedCells.Clear();
         }
 
         public void SetGridForPlayer(GridModel grid, string uid)
@@ -101,27 +87,18 @@ namespace Game.Field
                 }
             }
         }
-        
-        public void SetActivePlayerIndicators(string uid)
-        {
-            var ownerAlpha = uid == _ownerUid ? 1f : .3f;
-            var opponentAlpha = uid == _ownerUid ? 0.3f : 1;
-            _playerIndicators[0].color = _playerIndicators[0].color.SetAlpha(ownerAlpha);
-            _playerNickNames[0].color = _playerNickNames[0].color.SetAlpha(ownerAlpha);
-            
-            _playerIndicators[1].color = _playerIndicators[1].color.SetAlpha(opponentAlpha);
-            _playerNickNames[1].color = _playerNickNames[1].color.SetAlpha(opponentAlpha);
-        }
 
-        public void SetPendingState()
+        public void TurnOffCellsInteractable()
         {
-            TurnOffCellsInteractable();
-        }
-
-        public void ClearTurn()
-        {
-            ResetPickedCells();
-            _result.SetText(string.Empty);
+            for (var rowIndex = OwnRow; rowIndex >= 0; rowIndex--)
+            {
+                var row = _rows[rowIndex];
+                for (var columnIndex = 0; columnIndex < row.Cells.Length; columnIndex++)
+                {
+                    var cell = _rows[rowIndex].Cells[columnIndex];
+                    cell.SetInteractable(false);
+                }
+            }
         }
         
         public void UpdateInteractableForPlayer(string uid)
@@ -137,8 +114,12 @@ namespace Game.Field
                     var lowerCell = new Vector2Int(Mathf.Min(OwnRow, rowIndex + 1), columnIndex);
                     
                     var cell = _rows[rowIndex].Cells[columnIndex];
-                    cell.SetInteractable(IsCaptured(leftCell) || IsCaptured(rightCell) 
-                                                              || IsCaptured(upperCell) || IsCaptured(lowerCell));
+                    var isReachable = IsCaptured(leftCell) 
+                                      || IsCaptured(rightCell) 
+                                      || IsCaptured(upperCell) 
+                                      || IsCaptured(lowerCell);
+                    cell.SetInteractable(isReachable);
+                    cell.SetReachable(isReachable);
                 }
             }
 
@@ -146,7 +127,7 @@ namespace Game.Field
                 _rows[cellPosition.x].Cells[cellPosition.y].Model.PlayerId == uid;
         }
 
-        public void ApplyWord(string uid)
+        public void ApplyWordForPlayer(string uid)
         {
             foreach (var cell in _pickedCells)
             {
@@ -170,26 +151,13 @@ namespace Game.Field
 
         private void InitializeGrid()
         {
-            for (var x = 0; x < _rows.Count; x++)
+            foreach (var cellsRow in _rows)
             {
                 for (var y = 0; y < _rows[0].Cells.Length; y++)
                 {
-                    var cell = _rows[x].Cells[y];
+                    var cell = cellsRow.Cells[y];
                     cell.OnClick += CellClickHandler;
                     cell.SetPicked(false);
-                }
-            }
-        }
-
-        private void TurnOffCellsInteractable()
-        {
-            for (var rowIndex = OwnRow; rowIndex >= 0; rowIndex--)
-            {
-                var row = _rows[rowIndex];
-                for (var columnIndex = 0; columnIndex < row.Cells.Length; columnIndex++)
-                {
-                    var cell = _rows[rowIndex].Cells[columnIndex];
-                    cell.SetInteractable(false);
                 }
             }
         }
@@ -198,27 +166,9 @@ namespace Game.Field
         {
             cell.SetPicked(true);
             cell.SetInteractable(false);
-            _result.SetText(_result.text + cell.Model.Letter);
             _pickedCells.Add(cell);
+            OnLetterPick?.Invoke(cell.Model.Letter);
         }
-
-        private void ResetPickedCells()
-        {
-            foreach (var cellController in _pickedCells)
-            {
-                cellController.SetPicked(false);
-                cellController.SetInteractable(true);
-            }
-            _pickedCells.Clear();
-        }
-
-        private void ClearClickHandler()
-        {
-            ResetPickedCells();
-            _result.SetText(string.Empty);
-        }
-        
-        private void ApplyClickHandler() => OnApplyClicked?.Invoke(_result.text);
 
         private void UpdateCell(Cell cell, CellModel model, string playerId)
         {

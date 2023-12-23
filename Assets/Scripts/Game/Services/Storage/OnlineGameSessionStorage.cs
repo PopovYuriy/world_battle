@@ -27,6 +27,7 @@ namespace Game.Services.Storage
             
             var dataSnapShot = await databaseReference.GetValueAsync();
             Data = JsonConvert.DeserializeObject<GameSessionData>(dataSnapShot.GetRawJsonValue());
+            Data.Turns ??= new List<string>();
             
             _playerTurnObserver = new ValueChangeObserver<string>(_databaseReference
                 .Child(GameSessionData.LastTurnPlayerIdKey).Reference);

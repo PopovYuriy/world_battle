@@ -1,16 +1,19 @@
+using System.Collections.Generic;
+using Game.Data;
 using UnityEngine;
 
 namespace Game.Field.Mediators
 {
     public sealed class LocalGameMediator : GameMediatorAbstract
     {
+        public override IReadOnlyList<PlayerGameData> GetOrderedPlayersList() => SessionStorage.Data.Players;
+
         protected override void ProcessPostInitializing()
         {
             DetermineUserColors();
             
             GameField.SetGridForPlayer(SessionStorage.Data.Grid, CurrentPlayer.Uid);
             GameField.UpdateInteractableForPlayer(CurrentPlayer.Uid);
-            GameField.SetActivePlayerIndicators(CurrentPlayer.Uid);
         }
 
         protected override void ProcessWin()
@@ -24,7 +27,6 @@ namespace Game.Field.Mediators
         {
             DetermineUserColors();
             
-            GameField.SetActivePlayerIndicators(CurrentPlayer.Uid);
             GameField.SetGridForPlayer(SessionStorage.Data.Grid, CurrentPlayer.Uid);
             GameField.UpdateInteractableForPlayer(CurrentPlayer.Uid);
         }

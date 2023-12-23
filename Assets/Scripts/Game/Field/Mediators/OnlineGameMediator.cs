@@ -1,28 +1,29 @@
+using System.Collections.Generic;
 using System.Linq;
-using App.Data.Player;
+using Game.Data;
 using UnityEngine;
 
 namespace Game.Field.Mediators
 {
     public sealed class OnlineGameMediator : GameMediatorAbstract
     {
-        private readonly IPlayer _player;
-
-        public OnlineGameMediator(IPlayer player)
+        public override IReadOnlyList<PlayerGameData> GetOrderedPlayersList()
         {
-            _player = player;
+            var result = new List<PlayerGameData>(2);
+            result.Add(SessionStorage.Data.Players.First(p => p.Uid == OwnerPlayerId));
+            result.Add(SessionStorage.Data.Players.First(p => p.Uid != OwnerPlayerId));
+            return result;
         }
 
         protected override void ProcessPostInitializing()
         {
-            var currentPlayerId = CurrentPlayer.Uid;
             GameField.SetColors(ColorConfig.OwnerColor, ColorConfig.OpponentColor);
-            GameField.SetGridForPlayer(SessionStorage.Data.Grid, _player.Uid);
-            GameField.SetActivePlayerIndicators(currentPlayerId);
-            if (currentPlayerId != _player.Uid)
-                GameField.SetPendingState();
+            GameField.SetGridForPlayer(SessionStorage.Data.Grid, OwnerPlayerId);
+            
+            if (CurrentPlayer.Uid != OwnerPlayerId)
+                GameField.TurnOffCellsInteractable();
             else
-                GameField.UpdateInteractableForPlayer(currentPlayerId);
+                GameField.UpdateInteractableForPlayer(CurrentPlayer.Uid);
         }
 
         protected override void ProcessWin()
@@ -34,17 +35,13 @@ namespace Game.Field.Mediators
 
         protected override void ProcessFinishTurn()
         {
-            GameField.SetPendingState();
-            var opposedPlayer = GetOpposedPlayer(SessionStorage.Data.Players.First(p => p.Uid == _player.Uid));
-            GameField.SetActivePlayerIndicators(opposedPlayer.Uid);
+            GameField.TurnOffCellsInteractable();
         }
 
         protected override void StorageUpdatedImpl()
         {
-            var currentPlayerId = CurrentPlayer.Uid;
-            GameField.SetActivePlayerIndicators(currentPlayerId);
-            GameField.SetGridForPlayer(SessionStorage.Data.Grid, currentPlayerId);
-            GameField.UpdateInteractableForPlayer(currentPlayerId);
+            GameField.SetGridForPlayer(SessionStorage.Data.Grid, CurrentPlayer.Uid);
+            GameField.UpdateInteractableForPlayer(CurrentPlayer.Uid);
         }
     }
 }

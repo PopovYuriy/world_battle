@@ -1,10 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Data;
 using Game.Services;
 using Game.Services.Storage;
 using ModestTree;
-using UnityEngine;
 
 namespace Game.Field.Mediators
 {
@@ -14,28 +14,29 @@ namespace Game.Field.Mediators
         
         private WordsProvider _wordsProvider;
 
-        protected PlayerGameData CurrentPlayer => SessionStorage.Data.LastTurnPlayerId == null 
+        public PlayerGameData CurrentPlayer => SessionStorage.Data.LastTurnPlayerId == null 
             ? SessionStorage.Data.Players[0]
             : SessionStorage.Data.Players.First(p => p.Uid != SessionStorage.Data.LastTurnPlayerId);
+
+        public string CurrentWord { get; private set; }
 
         protected GameField GameField { get; private set; }
         protected IGameSessionStorage SessionStorage { get; private set; }
         protected GameFieldColorsConfig ColorConfig { get; private set; }
+        protected string OwnerPlayerId { get; private set; }
 
-        public void Initialize(GameField gameField, IGameSessionStorage sessionStorage, GameFieldColorsConfig colorConfig, string ownerPlayerId)
+        public event Action<char> OnLetterPicked;
+
+        public void Initialize(GameField gameField, WordsProvider wordsProvider, IGameSessionStorage sessionStorage, 
+            GameFieldColorsConfig colorConfig, string ownerPlayerId)
         {
             GameField = gameField;
+            _wordsProvider = wordsProvider;
             SessionStorage = sessionStorage;
             ColorConfig = colorConfig;
+            OwnerPlayerId = ownerPlayerId;
 
-            var letters = sessionStorage.Data.Grid.Cells
-                .SelectMany(list => list.Select(c => c.Letter)).ToArray();
-            _wordsProvider = new WordsProvider();
-            _wordsProvider.Initialize(letters);
-
-            GameField.Initialize(SessionStorage.Data.Players, ownerPlayerId);
-            GameField.OnApplyClicked += WordApplyClickHandler;
-
+            GameField.OnLetterPick += LetterPickHandler;
             SessionStorage.Updated += StorageUpdatedHandler;
 
             ProcessPostInitializing();
@@ -43,49 +44,50 @@ namespace Game.Field.Mediators
 
         public void Dispose()
         {
-            GameField.OnApplyClicked -= WordApplyClickHandler;
             SessionStorage.Updated -= StorageUpdatedHandler;
         }
         
+        public void ClearCurrentWord()
+        {
+            CurrentWord = string.Empty;
+            GameField.ResetPickedCells();
+        }
+
+        public void ApplyCurrentWord()
+        {
+            GameField.ApplyWordForPlayer(CurrentPlayer.Uid);
+
+            var player = CurrentPlayer;
+            SessionStorage.Data.LastTurnPlayerId = player.Uid;
+            
+            SessionStorage.Data.Turns ??= new List<string>();
+            SessionStorage.Data.Turns.Add(CurrentWord);
+            SessionStorage.Save();
+            
+            ClearCurrentWord();
+            
+            if (CheckWin(player))
+                ProcessWin();
+            else
+                ProcessFinishTurn();
+        }
+
+        public abstract IReadOnlyList<PlayerGameData> GetOrderedPlayersList();
+
         protected virtual void ProcessPostInitializing() {}
         
         protected abstract void ProcessWin();
         protected abstract void ProcessFinishTurn();
         protected abstract void StorageUpdatedImpl();
         
-        protected PlayerGameData GetOpposedPlayer(PlayerGameData player) => SessionStorage.Data.Players
+        private PlayerGameData GetOpposedPlayer(PlayerGameData player) => SessionStorage.Data.Players
             .First(p => p != player);
 
-        private void WordApplyClickHandler(string word)
+        
+        private void LetterPickHandler(char letter)
         {
-            if (SessionStorage.Data.Turns != null && SessionStorage.Data.Turns.Contains(word))
-            {
-                Debug.Log($"Word '{word}' is already used");
-                GameField.ClearTurn();
-                return;
-            }
-
-            if (!_wordsProvider.IsValidWord(word))
-            {
-                Debug.Log($"Word '{word}' is invalid");
-                GameField.ClearTurn();
-                return;
-            }
-            
-            GameField.ApplyWord(CurrentPlayer.Uid);
-            GameField.ClearTurn();
-
-            var player = CurrentPlayer;
-            SessionStorage.Data.LastTurnPlayerId = player.Uid;
-            
-            SessionStorage.Data.Turns ??= new List<string>();
-            SessionStorage.Data.Turns.Add(word);
-            SessionStorage.Save();
-            
-            if (CheckWin(player))
-                ProcessWin();
-            else
-                ProcessFinishTurn();
+            CurrentWord += letter;
+            OnLetterPicked?.Invoke(letter);
         }
         
         private bool CheckWin(PlayerGameData player)

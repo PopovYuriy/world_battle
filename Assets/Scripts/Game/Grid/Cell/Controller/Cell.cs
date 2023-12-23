@@ -59,8 +59,12 @@ namespace Game.Grid.Cell.Controller
 
         public void SetInteractable(bool isInteractable)
         {
-            _disabledCoverView.SetActive(!isInteractable);
             _button.interactable = isInteractable;
+        }
+
+        public void SetReachable(bool isReachable)
+        {
+            _disabledCoverView.SetActive(!isReachable);
         }
 
         private void ModelChangedHandler() => UpdateView(Model);

@@ -23,8 +23,8 @@ namespace App.Services
         private const string LocalSessionStorageKey = "local_session";
         private const int BasePointsNumber = 5;
         
-        [Inject] private RealtimeDatabase _database;
-        [Inject] private IPlayer _player;
+        private RealtimeDatabase _database;
+        private IPlayer _player;
 
         private List<IGameSessionStorage> _storages;
         private PendingGameController _pendingGameController;
@@ -32,6 +32,13 @@ namespace App.Services
         public IGameSessionStorage LocalStorage { get; private set; }
 
         public event Action<IGameSessionStorage> OnPendingGameConnected;
+
+        [Inject]
+        private void Construct(RealtimeDatabase database, IPlayer player)
+        {
+            _database = database;
+            _player = player;
+        }
 
         public async Task InitializeAsync()
         {
@@ -167,6 +174,7 @@ namespace App.Services
             var jsonData = PlayerPrefs.GetString(LocalSessionStorageKey);
 
             var data = JsonConvert.DeserializeObject<GameSessionData>(jsonData);
+            data.Turns ??= new List<string>();
 
             LocalStorage = new LocalGameSessionStorage { Data = data };
         }

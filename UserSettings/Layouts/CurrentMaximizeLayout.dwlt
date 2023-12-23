@@ -24,7 +24,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 27679
+  controlID: 23444
 --- !u!114 &2
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -147,7 +147,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 27680
+  controlID: 23445
 --- !u!114 &4
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -172,7 +172,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 50}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 27681
+  controlID: 23446
 --- !u!114 &5
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -582,9 +582,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 480.5864, y: 1373.2926, z: -0.05180632}
+    m_Target: {x: 666.36646, y: 2030.4026, z: -1.1380172}
     speed: 2
-    m_Value: {x: 480.5864, y: 1373.2926, z: -0.05180632}
+    m_Value: {x: 666.36646, y: 2030.4026, z: -1.1380172}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -634,9 +634,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 521.47974
+    m_Target: 561.889
     speed: 2
-    m_Value: 521.47974
+    m_Value: 561.889
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -727,7 +727,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: fcd8fbff02d9fbff20d9fbff56d9fbff5ad9fbff7ed9fbff08e9fbff7807fcff8c07fcff9e07fcffa807fcffb207fcffb607fcffce07fcfff807fcff2c08fcff783dfcffc2e2fcfff8e2fcffa6e9fcffcae9fcff74eafcfff6f1fcff2cf2fcff30f2fcff54f2fcffb4f6fcff8ef7fcff94f8fcff1e3efdff543efdffd644fdfffa44fdff5a49fdff9884fdffce84fdffd284fdfff684fdff5689fdff12a3fdff16a3fdff3aa3fdff9aa7fdff16fbffff56990000189c000048a5000062aa00009caa0000f6c100004ac30000
+      m_ExpandedIDs: 8e7bfbffa47bfbffda7bfbff027cfbff6280fbffe24afcff084bfcff0c4bfcff344bfcff944ffcff76a3fcff16fbfffff4ffffff5e6e010010da0100
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -813,7 +813,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: bc5d0000
     m_LastClickedID: 23996
-    m_ExpandedIDs: 00000000a0530000a2530000a4530000a6530000a8530000aa530000ac53000000ca9a3bffffff7f
+    m_ExpandedIDs: 00000000ae530000b0530000b2530000b4530000b6530000b8530000ba53000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -841,7 +841,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 50530000
     m_LastClickedID: 21328
-    m_ExpandedIDs: 00000000a0530000a2530000a4530000a6530000a8530000aa530000ac53000000ca9a3bffffff7f
+    m_ExpandedIDs: 00000000ae530000b0530000b2530000b4530000b6530000b8530000ba53000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -970,7 +970,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Prefabs
+    - Assets/Prefabs/UI/Screens
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -978,16 +978,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Prefabs
+  - Assets/Prefabs/UI/Screens
   m_LastFoldersGridSize: -1
   m_LastProjectPath: /Users/yuriypopov/Desktop/projects/word_battle
   m_LockTracker:
-    m_IsLocked: 1
+    m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 16.5}
-    m_SelectedIDs: a4530000
-    m_LastClickedID: 21412
-    m_ExpandedIDs: 00000000a0530000a2530000a4530000a6530000a8530000aa530000ac53000000ca9a3bffffff7f
+    scrollPos: {x: 0, y: 255}
+    m_SelectedIDs: b8530000
+    m_LastClickedID: 21432
+    m_ExpandedIDs: 00000000ae530000b0530000b2530000b4530000b6530000b8530000ba53000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1015,7 +1015,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000a0530000a2530000a4530000a6530000a8530000aa530000ac53000000ca9a3bffffff7f
+    m_ExpandedIDs: 00000000ae530000b0530000b2530000b4530000b6530000b8530000ba53000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1042,7 +1042,7 @@ MonoBehaviour:
   m_ListAreaState:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 0
+    m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c6230000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
