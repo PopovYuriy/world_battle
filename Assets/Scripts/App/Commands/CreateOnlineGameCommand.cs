@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
+using App.Enums;
 using App.Services;
 using App.Signals;
 using Core.Commands;
 using Core.UI;
-using Core.UI.Enums;
 using Game.Field.Mediators;
 using Game.Services.Storage;
 using UI.GameScreen.Data;

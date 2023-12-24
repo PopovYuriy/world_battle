@@ -12,7 +12,7 @@ namespace App.Launch.Commands
         
         public async Task Execute()
         {
-            await _scenesLoader.LoadScene(SceneId.Main.ToString());
+            await _scenesLoader.LoadScene(SceneId.Main);
         }
     }
 }

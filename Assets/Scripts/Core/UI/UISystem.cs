@@ -1,5 +1,4 @@
 using App.Enums;
-using Core.UI.Enums;
 using Core.UI.Screens;
 using UnityEngine;
 using Zenject;
@@ -16,9 +15,8 @@ namespace Core.UI
 
         public void ShowScreen(ScreenId screenId, object data = null)
         {
-            var controller = ShowWithId(screenId, data);
             _currentScreen?.Close();
-            _currentScreen = controller;
+            _currentScreen = ShowWithId(screenId, data);
         }
 
         public void ShowPopup(PopupId popupId, object data = null)
@@ -30,7 +28,6 @@ namespace Core.UI
         {
             var elementViewPrefab = _diContainer.ResolveId<ScreenView>(id);
             var elementView = Instantiate(elementViewPrefab, _screenContainer);
-
             var controller = _diContainer.TryResolveId<IScreenController>(id);
             controller.SetView(elementView);
             controller.SetData(data);

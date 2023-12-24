@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
+using App.Enums;
 using Core.Services.Scene;
 using Core.UI;
-using Core.UI.Enums;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Zenject;

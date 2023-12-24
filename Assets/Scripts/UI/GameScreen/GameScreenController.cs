@@ -1,7 +1,7 @@
 using System.Linq;
 using App.Data.Player;
+using App.Enums;
 using Core.UI;
-using Core.UI.Enums;
 using Core.UI.Screens;
 using Game.Data;
 using Game.Field.Mediators;

@@ -4,22 +4,32 @@ using App.Enums;
 using App.Services;
 using App.Signals;
 using Core.UI;
-using Core.UI.Enums;
 using Core.UI.Screens;
 using Game.Data;
-using UnityEngine;
 using Zenject;
+using Object = UnityEngine.Object;
 
 namespace UI.GamesManagingScreen
 {
     public sealed class GamesManagingScreenController : ScreenControllerAbstract<GamesManagingScreenView>
     {
-        [Inject] private GameSessionsManager _gameSessionsManager;
-        [Inject] private GameFieldColorsConfig _colorsConfig;
-        [Inject] private IPlayer _player;
-        [Inject] private SignalBus _signalBus;
-        [Inject] private UISystem _uiSystem;
-        
+        private GameSessionsManager _gameSessionsManager;
+        private GameFieldColorsConfig _colorsConfig;
+        private IPlayer _player;
+        private SignalBus _signalBus;
+        private UISystem _uiSystem;
+
+        [Inject]
+        private void Construct(GameSessionsManager gameSessionsManager, GameFieldColorsConfig colorsConfig, 
+            IPlayer player, SignalBus signalBus, UISystem uiSystem)
+        {
+            _gameSessionsManager = gameSessionsManager;
+            _colorsConfig = colorsConfig;
+            _player = player;
+            _signalBus = signalBus;
+            _uiSystem = uiSystem;
+        }
+
         public override void Initialize()
         {
             View.OnGameSelected += GameSelectedHandler;

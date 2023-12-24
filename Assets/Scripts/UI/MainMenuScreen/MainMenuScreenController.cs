@@ -1,5 +1,5 @@
+using App.Enums;
 using Core.UI;
-using Core.UI.Enums;
 using Core.UI.Screens;
 using UnityEngine;
 using Zenject;
