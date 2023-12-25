@@ -22174,6 +22174,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _styleConfig: {fileID: 11400000, guid: d6e5641bdd1d74c6282e2b7e07d9f173, type: 2}
+  _closeButtonTexture: {fileID: 2800000, guid: 54e5178e0dbbc469d8956cf3cb359dbe, type: 3}
 --- !u!1 &7931125492901575380
 GameObject:
   m_ObjectHideFlags: 0
