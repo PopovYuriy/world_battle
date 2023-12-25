@@ -43,17 +43,15 @@ namespace Core.Data.Trie
             return currentNode.IsEnd;
         }
 
-        public List<string> SearchWords(List<char> letters)
+        public List<string> SearchWords(IReadOnlyList<char> letters)
         {
             List<string> result = new List<string>();
-            var node = _root;
-
             Search(letters, _root, result, "");
 
             return result;
         }
 
-        private void Search(List<char> letters, Node node, List<string> result, string currentWord)
+        private void Search(IReadOnlyCollection<char> letters, Node node, List<string> result, string currentWord)
         {
             if (node.IsEnd)
                 result.Add(currentWord);

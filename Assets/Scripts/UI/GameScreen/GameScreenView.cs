@@ -5,6 +5,7 @@ using DG.Tweening;
 using Game.Data;
 using Game.Field;
 using TMPro;
+using UI.GameScreen.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,6 +27,7 @@ namespace UI.GameScreen
         [SerializeField] private GameFieldColorsConfig _colorsConfig;
         
         [field: SerializeField] public GameField GameField { get; private set; }
+        [field: SerializeField] public GameScreenDevUtils DevUtils { get; private set; }
         
         private readonly Dictionary<string, PlayerAreaView> _playersMap = new(2);
         private Tween _showInfoFieldTween;

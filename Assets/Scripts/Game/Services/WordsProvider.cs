@@ -54,7 +54,7 @@ namespace Game.Services
         }
 
         
-        public IEnumerable<string> GetAvailableWords(List<char> chars, List<string> except)
+        public IEnumerable<string> GetAvailableWords(IReadOnlyList<char> chars, IEnumerable<string> except)
         {
             var result = _charToTrieMap.Values.SelectMany(t => t.SearchWords(chars)).ToList();
             return result.Except(except);

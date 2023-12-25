@@ -183,6 +183,9 @@ namespace App.Services
         {
             var games = await _database.GetExistGames();
 
+            if (games == null)
+                return;
+
             foreach (var gameSessionData in games)
             {
                 var storage = new OnlineGameSessionStorage();

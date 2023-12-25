@@ -103,28 +103,18 @@ namespace Game.Field
         
         public void UpdateInteractableForPlayer(string uid)
         {
+            var availableCells = GetAvailableCellsForPlayer(uid);
             for (var rowIndex = OwnRow; rowIndex >= 0; rowIndex--)
             {
                 var row = _rows[rowIndex];
                 for (var columnIndex = 0; columnIndex < row.Cells.Length; columnIndex++)
                 {
-                    var leftCell = new Vector2Int(rowIndex, Mathf.Max(0, columnIndex - 1));
-                    var rightCell = new Vector2Int(rowIndex, Mathf.Min(row.Cells.Length - 1, columnIndex + 1));
-                    var upperCell = new Vector2Int(Mathf.Max(0, rowIndex - 1), columnIndex);
-                    var lowerCell = new Vector2Int(Mathf.Min(OwnRow, rowIndex + 1), columnIndex);
-                    
-                    var cell = _rows[rowIndex].Cells[columnIndex];
-                    var isReachable = IsCaptured(leftCell) 
-                                      || IsCaptured(rightCell) 
-                                      || IsCaptured(upperCell) 
-                                      || IsCaptured(lowerCell);
+                    var cell = row.Cells[columnIndex];
+                    var isReachable = availableCells.Contains(cell);
                     cell.SetInteractable(isReachable);
                     cell.SetReachable(isReachable);
                 }
             }
-
-            bool IsCaptured(Vector2Int cellPosition) =>
-                _rows[cellPosition.x].Cells[cellPosition.y].Model.PlayerId == uid;
         }
 
         public void ApplyWordForPlayer(string uid)
@@ -147,6 +137,11 @@ namespace Game.Field
                         break;
                 }
             }
+        }
+
+        public IReadOnlyList<char> GetAvailableLettersForPlayer(string uid)
+        {
+            return GetAvailableCellsForPlayer(uid).Select(c => c.Model.Letter).ToList();
         }
 
         private void InitializeGrid()
@@ -182,6 +177,37 @@ namespace Game.Field
             
             if (state != CellState.Default)
                 cell.SetColor(state == CellState.Captured ? _capturedStateCellColor : _opposedStateCellColor);
+        }
+        
+        private IReadOnlyList<Cell> GetAvailableCellsForPlayer(string uid)
+        {
+            var result = new List<Cell>(_rows.Count * _rows[0].Cells.Length);
+            for (var rowIndex = OwnRow; rowIndex >= 0; rowIndex--)
+            {
+                var row = _rows[rowIndex];
+                for (var columnIndex = 0; columnIndex < row.Cells.Length; columnIndex++)
+                {
+                    var ownCell = new Vector2Int(rowIndex, columnIndex);
+                    var leftCell = new Vector2Int(rowIndex, Mathf.Max(0, columnIndex - 1));
+                    var rightCell = new Vector2Int(rowIndex, Mathf.Min(row.Cells.Length - 1, columnIndex + 1));
+                    var upperCell = new Vector2Int(Mathf.Max(0, rowIndex - 1), columnIndex);
+                    var lowerCell = new Vector2Int(Mathf.Min(OwnRow, rowIndex + 1), columnIndex);
+
+                    var isReachable = IsCaptured(ownCell) 
+                                      || IsCaptured(leftCell)
+                                      || IsCaptured(rightCell)
+                                      || IsCaptured(upperCell)
+                                      || IsCaptured(lowerCell);
+                    
+                    if (isReachable)
+                        result.Add(row.Cells[columnIndex]);
+                }
+            }
+
+            return result;
+
+            bool IsCaptured(Vector2Int cellPosition) =>
+                _rows[cellPosition.x].Cells[cellPosition.y].Model.PlayerId == uid;
         }
 
         [Serializable]

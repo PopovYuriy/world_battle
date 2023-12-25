@@ -6,6 +6,7 @@ using Core.UI.Screens;
 using Game.Data;
 using Game.Field.Mediators;
 using Game.Services;
+using Game.Services.Utils;
 using UI.GameScreen.Data;
 using UI.GameScreen.Validator;
 using UnityEngine;
@@ -24,6 +25,7 @@ namespace UI.GameScreen
         
         private IGameMediator _gameMediator;
         private WordValidator _wordValidator;
+        private AvailableLettersProvider _availableLettersProvider;
 
         [Inject]
         private void Construct(UISystem uiSystem, GameFieldColorsConfig colorsConfig, IPlayer player)
@@ -45,7 +47,8 @@ namespace UI.GameScreen
             _gameMediator.OnLetterPicked += LetterPickHandler;
             _gameMediator.Initialize(View.GameField, wordsProvider, Data.GameSessionStorage, _colorsConfig, _player.Uid);
 
-            _wordValidator = new WordValidator(Data.GameSessionStorage.Data.Turns, wordsProvider);
+            _wordValidator = new WordValidator(Data.GameSessionStorage.Data, wordsProvider);
+            _availableLettersProvider = new AvailableLettersProvider(View.GameField);
 
             View.OnBack += BackClickHandler;
             View.OnApply += ApplyClickHandler;
@@ -55,6 +58,7 @@ namespace UI.GameScreen
             View.SetButtonsVisible(false);
             View.SetPlayers(_gameMediator.GetOrderedPlayersList());
             View.SetCurrentPlayer(_gameMediator.CurrentPlayer.Uid);
+            View.DevUtils.Initialize(_availableLettersProvider, wordsProvider, _gameMediator, Data.GameSessionStorage.Data);
         }
 
         public override void Dispose()

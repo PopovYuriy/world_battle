@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace Game.Data
 {
     [Serializable]
-    public sealed class GameSessionData
+    public sealed class GameSessionData : IGameTurnsProvider
     {
         public const string UidKey = "Uid";
         public const string LastTurnPlayerIdKey = "LastTurnPlayerId";
@@ -19,6 +19,8 @@ namespace Game.Data
         [JsonProperty(PropertyName = PlayersKey)] public PlayerGameData[] Players { get; private set; }
         [JsonProperty(PropertyName = GridKey)] public GridModel Grid { get; set; }
         [JsonProperty(PropertyName = TurnsKey)] public List<string> Turns { get; set; }
+
+        public IReadOnlyList<string> TurnsList => Turns;
 
         public GameSessionData(string uid, PlayerGameData[] players, GridModel grid, List<string> turns)
         {
