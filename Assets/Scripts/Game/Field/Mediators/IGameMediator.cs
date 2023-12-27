@@ -9,6 +9,7 @@ namespace Game.Field.Mediators
     public interface IGameMediator : IDisposable
     {
         event Action<char> OnLetterPicked;
+        event Action OnStorageUpdated;
         
         PlayerGameData CurrentPlayer { get; }
         string CurrentWord { get; }

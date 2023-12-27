@@ -45,6 +45,7 @@ namespace UI.GameScreen
             View.GameField.Initialize(Data.GameSessionStorage.Data.Players);
             _gameMediator = Data.GameMediator;
             _gameMediator.OnLetterPicked += LetterPickHandler;
+            _gameMediator.OnStorageUpdated += StorageUpdatedHandler;
             _gameMediator.Initialize(View.GameField, wordsProvider, Data.GameSessionStorage, _colorsConfig, _player.Uid);
 
             _wordValidator = new WordValidator(Data.GameSessionStorage.Data, wordsProvider);
@@ -64,6 +65,7 @@ namespace UI.GameScreen
         public override void Dispose()
         {
             _gameMediator.OnLetterPicked -= LetterPickHandler;
+            _gameMediator.OnStorageUpdated -= StorageUpdatedHandler;
             
             View.OnBack -= BackClickHandler;
             View.OnApply -= ApplyClickHandler;
@@ -86,6 +88,11 @@ namespace UI.GameScreen
         {
             View.ApplyToResult(letter);
             View.SetButtonsVisible(true);
+        }
+        
+        private void StorageUpdatedHandler()
+        {
+            View.SetCurrentPlayer(_gameMediator.CurrentPlayer.Uid);
         }
 
         private void BackClickHandler()

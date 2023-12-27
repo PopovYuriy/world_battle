@@ -4,12 +4,12 @@ using System.Linq;
 using Game.Data;
 using Game.Services;
 using Game.Services.Storage;
-using ModestTree;
 
 namespace Game.Field.Mediators
 {
     public abstract class GameMediatorAbstract : IGameMediator
     {
+        private const int OpposedBaseRowIndex = 0;
         private readonly int[] _baseRowIndexes = {4, 0};
         
         private WordsProvider _wordsProvider;
@@ -26,6 +26,7 @@ namespace Game.Field.Mediators
         protected string OwnerPlayerId { get; private set; }
 
         public event Action<char> OnLetterPicked;
+        public event Action OnStorageUpdated;
 
         public void Initialize(GameField gameField, WordsProvider wordsProvider, IGameSessionStorage sessionStorage, 
             GameFieldColorsConfig colorConfig, string ownerPlayerId)
@@ -66,7 +67,7 @@ namespace Game.Field.Mediators
             
             ClearCurrentWord();
             
-            if (CheckWin(player))
+            if (CheckPlayerWin(player))
                 ProcessWin();
             else
                 ProcessFinishTurn();
@@ -90,30 +91,29 @@ namespace Game.Field.Mediators
             OnLetterPicked?.Invoke(letter);
         }
         
-        private bool CheckWin(PlayerGameData player)
+        private bool CheckPlayerWin(PlayerGameData player)
         {
             var opposedPlayer = GetOpposedPlayer(player);
-            return CheckBaseCaptured(player, opposedPlayer) ||
-                   !CheckVariants(opposedPlayer.Uid);
+            return CheckOpposedBaseCaptured(player.Uid) || !CheckAvailableWords(opposedPlayer.Uid);
         }
         
         private void StorageUpdatedHandler(IGameSessionStorage sender)
         {
             StorageUpdatedImpl();
+            OnStorageUpdated?.Invoke();
         }
 
-        private bool CheckVariants(string userId)
+        private bool CheckAvailableWords(string userId)
         {
             var letters = SessionStorage.Data.Grid.GetAvailableCellsForUser(userId).Select(cell => cell.Letter);
             var words = _wordsProvider.GetAvailableWords(letters.ToList(), SessionStorage.Data.Turns);
             return words.Any();
         }
         
-        private bool CheckBaseCaptured(PlayerGameData player, PlayerGameData opposedPlayer)
+        private bool CheckOpposedBaseCaptured(string uid)
         {
-            var playerIndex = SessionStorage.Data.Players.IndexOf(player);
-            return SessionStorage.Data.Grid.Cells[_baseRowIndexes[playerIndex]]
-                .Any(cell => cell.PlayerId == opposedPlayer.Uid);
+            return SessionStorage.Data.Grid.Cells[OpposedBaseRowIndex]
+                .Any(cell => cell.PlayerId == uid);
         }
     }
 }
