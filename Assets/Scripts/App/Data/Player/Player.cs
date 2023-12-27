@@ -28,6 +28,6 @@ namespace App.Data.Player
 
         public void SetName(string name) => Name = name;
 
-        public static IPlayer CreateGuestUser() => new Player("guest", "Guest");
+        public static IPlayer CreateGuestUser() => new Player("guest", "Гість");
     }
 }

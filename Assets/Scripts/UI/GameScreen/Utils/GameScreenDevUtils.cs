@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using App.Data.DevMode;
 using Game.Data;
@@ -27,6 +26,11 @@ namespace UI.GameScreen.Utils
         
         private bool _isInitialized;
 
+        private float ScreenLeftBorder => Screen.safeArea.xMin;
+        private float ScreenRightBorder => Screen.safeArea.xMax;
+        private float ScreenTopBorder => Screen.safeArea.yMin;
+        private float ScreenBottomBorder => Screen.safeArea.yMax;
+
         public void Initialize(ILettersProvider lettersProvider, WordsProvider wordsProvider, IGameMediator gameMediator,
             IGameTurnsProvider turnsProvider)
         {
@@ -44,8 +48,8 @@ namespace UI.GameScreen.Utils
                 return;
 
             var mainButtonRect = new Rect(new Vector2(
-                Screen.width - _styleConfig.ButtonDefaultSize.x,
-                Screen.height - _styleConfig.ButtonDefaultSize.y),
+                ScreenRightBorder - _styleConfig.ButtonDefaultSize.x,
+                ScreenBottomBorder - _styleConfig.ButtonDefaultSize.y),
                 _styleConfig.ButtonDefaultSize);
             
             if (GUI.Button(mainButtonRect, "DevUtil", _styleConfig.DefaultStyle))
@@ -73,7 +77,7 @@ namespace UI.GameScreen.Utils
                              _styleConfig.DefaultGroupMargin.right;
             var groupHeight = _styleConfig.ButtonDefaultSize.y * buttonsCount + _styleConfig.DefaultGroupMargin.bottom + 
                               _styleConfig.DefaultGroupMargin.top + _styleConfig.DefaultGroupButtonsSpacing * (buttonsCount - 1);
-            var groupRect = new Rect(Screen.width - groupWidth, Screen.height - _styleConfig.ButtonDefaultSize.y - groupHeight -
+            var groupRect = new Rect(ScreenRightBorder - groupWidth, ScreenBottomBorder - _styleConfig.ButtonDefaultSize.y - groupHeight -
                 _styleConfig.DefaultGroupButtonsSpacing, groupWidth, groupHeight);
             
             GUI.BeginGroup(groupRect, _styleConfig.DefaultStyle);
@@ -112,16 +116,16 @@ namespace UI.GameScreen.Utils
 
         private void DrawResultLabel()
         {
-            var labelRect = new Rect(0, Screen.height - _styleConfig.ButtonDefaultSize.y,
-                Screen.width - _styleConfig.ButtonDefaultSize.x, _styleConfig.ButtonDefaultSize.y);
+            var labelRect = new Rect(0, ScreenBottomBorder - _styleConfig.ButtonDefaultSize.y,
+                ScreenRightBorder - _styleConfig.ButtonDefaultSize.x, _styleConfig.ButtonDefaultSize.y);
             GUI.Label(labelRect, _resultWord, _styleConfig.DefaultStyle);
         }
 
         private void DrawTurnsPanel()
         {
-            var groupWidth = Screen.width >> 1;
-            var groupHeight = Screen.height - _styleConfig.ButtonDefaultSize.y;
-            var groupRect = new Rect(Screen.width - groupWidth, 0, groupWidth, groupHeight);
+            var groupWidth = Screen.safeArea.width / 2;
+            var groupHeight = Screen.safeArea.height - _styleConfig.ButtonDefaultSize.y;
+            var groupRect = new Rect(ScreenRightBorder - groupWidth, ScreenTopBorder, groupWidth, groupHeight);
             
             GUI.BeginGroup(groupRect, _styleConfig.DefaultStyle);
             var closeButtonRect = new Rect(groupWidth - _closeButtonTexture.width, 0, 70, 70);
@@ -132,33 +136,32 @@ namespace UI.GameScreen.Utils
             }
             else
             {
-                var scrollRect = new Rect(0, closeButtonRect.yMax, groupWidth, groupHeight - closeButtonRect.height);
-                var viewRect = new Rect(0, closeButtonRect.yMax, groupWidth,
+                var scrollRect = new Rect(0, closeButtonRect.yMax, groupWidth - 20, groupHeight - closeButtonRect.height);
+                var viewRect = new Rect(0, closeButtonRect.yMax, groupWidth - 20,
                     _turnsProvider.TurnsList.Count * _styleConfig.GroupButtonsDefaultSize.y +
                     (_turnsProvider.TurnsList.Count - 1) * _styleConfig.DefaultGroupButtonsSpacing);
                 
                 _scrollPosition = GUI.BeginScrollView(scrollRect, _scrollPosition, viewRect, 
-                    false, false);
+                    false, true);
 
                 var index = 0;
                 var labelStyle = GUIStyle.none;
                 labelStyle.alignment = TextAnchor.MiddleRight;
                 labelStyle.fontSize = 45;
                 labelStyle.normal = _styleConfig.GroupButtonsDefaultStyle.normal;
+                labelStyle.padding = _styleConfig.DefaultContentPadding;
                 
                 foreach (var turn in _turnsProvider.TurnsList)
                 {
                     var labelRect = new Rect(0, 
                         _styleConfig.ButtonDefaultSize.y * index + _styleConfig.DefaultGroupButtonsSpacing * index,
-                        scrollRect.width - 40, _styleConfig.ButtonDefaultSize.y);
+                        scrollRect.width, _styleConfig.ButtonDefaultSize.y);
                     GUI.Label(labelRect, turn, labelStyle);
                     index++;
                 }
                 
                 GUI.EndScrollView();
             }
-            
-            
             
             GUI.EndGroup();
         }

@@ -55,9 +55,10 @@ namespace UI.GameScreen
 
         public void SetPlayers(IReadOnlyList<PlayerGameData> players)
         {
+            const string ownerPlayerNick = "Ви";
             var firstPlayerArea = _playerAreaViews[0];
             _playersMap[players[0].Uid] = firstPlayerArea;
-            firstPlayerArea.Initialize(players[0].Name, _colorsConfig.OwnerColor);
+            firstPlayerArea.Initialize(ownerPlayerNick, _colorsConfig.OwnerColor);
             
             var secondPlayerArea = _playerAreaViews[1];
             _playersMap[players[1].Uid] = secondPlayerArea;

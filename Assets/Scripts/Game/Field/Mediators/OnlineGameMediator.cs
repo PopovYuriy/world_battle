@@ -9,9 +9,11 @@ namespace Game.Field.Mediators
     {
         public override IReadOnlyList<PlayerGameData> GetOrderedPlayersList()
         {
-            var result = new List<PlayerGameData>(2);
-            result.Add(SessionStorage.Data.Players.First(p => p.Uid == OwnerPlayerId));
-            result.Add(SessionStorage.Data.Players.First(p => p.Uid != OwnerPlayerId));
+            var result = new List<PlayerGameData>(2)
+            {
+                SessionStorage.Data.Players.First(p => p.Uid == OwnerPlayerId),
+                SessionStorage.Data.Players.First(p => p.Uid != OwnerPlayerId)
+            };
             return result;
         }
 

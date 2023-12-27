@@ -11,5 +11,6 @@ namespace App.Data.DevMode
         [field: SerializeField] public Vector2 GroupButtonsDefaultSize { get; private set; }
         [field: SerializeField] public GUIStyle GroupButtonsDefaultStyle { get; private set; }
         [field: SerializeField] public int DefaultGroupButtonsSpacing { get; private set; }
+        [field: SerializeField] public RectOffset DefaultContentPadding { get; private set; }
     }
 }
