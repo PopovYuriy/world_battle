@@ -67,12 +67,17 @@ namespace Game.Grid.Cell.Controller
             _disabledCoverView.SetActive(!isReachable);
         }
 
+        public void UpdatePoints()
+        {
+            _points.SetText(Model.Points.ToString());
+        }
+
         private void ModelChangedHandler() => UpdateView(Model);
 
         private void UpdateView(CellModel model)
         {
             _letter.SetText(new[] {model.Letter});
-            _points.SetText(model.Points.ToString());
+            UpdatePoints();
         }
         
         private void ClickHandler() => OnClick?.Invoke(this);

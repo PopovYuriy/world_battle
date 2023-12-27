@@ -125,11 +125,14 @@ namespace Game.Field
                 {
                     case CellState.Captured:
                         cell.Model.SetPoints(cell.Model.Points + 1);
+                        cell.UpdatePoints();
                         break;
                     case CellState.Default:
                         cell.Model.SetPoints(cell.Model.Points + 1);
-                        cell.SetState(CellState.Captured);
                         cell.Model.SetPlayerId(uid);
+                        cell.SetState(CellState.Captured);
+                        cell.SetColor(_capturedStateCellColor);
+                        cell.UpdatePoints();
                         break;
                     case CellState.Opposed:
                         cell.SetState(CellState.Default);
