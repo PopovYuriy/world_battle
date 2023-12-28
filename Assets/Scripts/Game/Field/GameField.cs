@@ -13,7 +13,8 @@ namespace Game.Field
 {
     public sealed class GameField : MonoBehaviour
     {
-        private const int OwnRow = 4;
+        private const int OpposedBaseRowIndex = 0;
+        private const int OwnBaseRowIndex = 4;
 
         [SerializeField] private List<CellsRow> _rows;
         
@@ -90,7 +91,7 @@ namespace Game.Field
 
         public void TurnOffCellsInteractable()
         {
-            for (var rowIndex = OwnRow; rowIndex >= 0; rowIndex--)
+            for (var rowIndex = 0; rowIndex < _rows.Count; rowIndex++)
             {
                 var row = _rows[rowIndex];
                 for (var columnIndex = 0; columnIndex < row.Cells.Length; columnIndex++)
@@ -104,7 +105,7 @@ namespace Game.Field
         public void UpdateInteractableForPlayer(string uid)
         {
             var availableCells = GetAvailableCellsForPlayer(uid);
-            for (var rowIndex = OwnRow; rowIndex >= 0; rowIndex--)
+            for (var rowIndex = OwnBaseRowIndex; rowIndex >= 0; rowIndex--)
             {
                 var row = _rows[rowIndex];
                 for (var columnIndex = 0; columnIndex < row.Cells.Length; columnIndex++)
@@ -147,6 +148,11 @@ namespace Game.Field
             return GetAvailableCellsForPlayer(uid).Select(c => c.Model.Letter).ToList();
         }
 
+        public IEnumerable<CellModel> GetOpposedBaseCellModels()
+        {
+            return _rows[OpposedBaseRowIndex].Cells.Select(c => c.Model);
+        }
+
         private void InitializeGrid()
         {
             foreach (var cellsRow in _rows)
@@ -185,7 +191,7 @@ namespace Game.Field
         private IReadOnlyList<Cell> GetAvailableCellsForPlayer(string uid)
         {
             var result = new List<Cell>(_rows.Count * _rows[0].Cells.Length);
-            for (var rowIndex = OwnRow; rowIndex >= 0; rowIndex--)
+            for (var rowIndex = OwnBaseRowIndex; rowIndex >= 0; rowIndex--)
             {
                 var row = _rows[rowIndex];
                 for (var columnIndex = 0; columnIndex < row.Cells.Length; columnIndex++)
@@ -194,7 +200,7 @@ namespace Game.Field
                     var leftCell = new Vector2Int(rowIndex, Mathf.Max(0, columnIndex - 1));
                     var rightCell = new Vector2Int(rowIndex, Mathf.Min(row.Cells.Length - 1, columnIndex + 1));
                     var upperCell = new Vector2Int(Mathf.Max(0, rowIndex - 1), columnIndex);
-                    var lowerCell = new Vector2Int(Mathf.Min(OwnRow, rowIndex + 1), columnIndex);
+                    var lowerCell = new Vector2Int(Mathf.Min(OwnBaseRowIndex, rowIndex + 1), columnIndex);
 
                     var isReachable = IsCaptured(ownCell) 
                                       || IsCaptured(leftCell)

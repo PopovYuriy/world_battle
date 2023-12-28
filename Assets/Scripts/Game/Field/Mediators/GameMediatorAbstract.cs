@@ -4,12 +4,12 @@ using System.Linq;
 using Game.Data;
 using Game.Services;
 using Game.Services.Storage;
+using UnityEngine;
 
 namespace Game.Field.Mediators
 {
     public abstract class GameMediatorAbstract : IGameMediator
     {
-        private const int OpposedBaseRowIndex = 0;
         private readonly int[] _baseRowIndexes = {4, 0};
         
         private WordsProvider _wordsProvider;
@@ -94,7 +94,15 @@ namespace Game.Field.Mediators
         private bool CheckPlayerWin(PlayerGameData player)
         {
             var opposedPlayer = GetOpposedPlayer(player);
-            return CheckOpposedBaseCaptured(player.Uid) || !CheckAvailableWords(opposedPlayer.Uid);
+            var baseCaptured = CheckOpposedBaseCaptured(player.Uid);
+            if (baseCaptured)
+                Debug.Log($"База грвця {opposedPlayer.Name} захвачена");
+
+            var noAvailableWords = !CheckAvailableWords(opposedPlayer.Uid);
+            if (noAvailableWords)
+                Debug.Log($"У грвця {opposedPlayer.Name} немає доступних слів для гри");
+            
+            return baseCaptured || noAvailableWords;
         }
         
         private void StorageUpdatedHandler(IGameSessionStorage sender)
@@ -112,7 +120,7 @@ namespace Game.Field.Mediators
         
         private bool CheckOpposedBaseCaptured(string uid)
         {
-            return SessionStorage.Data.Grid.Cells[OpposedBaseRowIndex]
+            return GameField.GetOpposedBaseCellModels()
                 .Any(cell => cell.PlayerId == uid);
         }
     }
