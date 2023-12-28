@@ -10,12 +10,14 @@ namespace Game.Data
     {
         public const string UidKey = "Uid";
         public const string LastTurnPlayerIdKey = "LastTurnPlayerId";
+        public const string WinnerPlayerIdKey = "WinnerPlayerId";
         public const string PlayersKey = "Players";
         public const string GridKey = "Grid";
         public const string TurnsKey = "Turns";
         
         [JsonProperty(PropertyName = UidKey)] public string Uid { get; private set; }
         [JsonProperty(PropertyName = LastTurnPlayerIdKey)] public string LastTurnPlayerId { get; set; }
+        [JsonProperty(PropertyName = WinnerPlayerIdKey)] public string WinnerPlayerId { get; set; }
         [JsonProperty(PropertyName = PlayersKey)] public PlayerGameData[] Players { get; private set; }
         [JsonProperty(PropertyName = GridKey)] public GridModel Grid { get; set; }
         [JsonProperty(PropertyName = TurnsKey)] public List<string> Turns { get; set; }

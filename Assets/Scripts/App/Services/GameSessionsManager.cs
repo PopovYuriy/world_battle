@@ -70,6 +70,8 @@ namespace App.Services
 
             LocalStorage.Save();
 
+            LocalStorage.Deleted += StorageDeletedHandler;
+
             return LocalStorage;
         }
 
@@ -129,10 +131,11 @@ namespace App.Services
             var gameSessionStorage = new OnlineGameSessionStorage();
             await gameSessionStorage.InitializeDataAsync(gameDatabaseReference, _player.Uid);
             
+            gameSessionStorage.Deleted += StorageDeletedHandler;
             _storages.Add(gameSessionStorage);
             return gameSessionStorage;
         }
-        
+
         private GameSessionData CreateSessionData(string uid, Vector2Int gameFieldSize, PlayerGameData[] playersData)
         {
             var letters = LettersGenerator.Generate(gameFieldSize.x * gameFieldSize.y);
@@ -177,6 +180,8 @@ namespace App.Services
             data.Turns ??= new List<string>();
 
             LocalStorage = new LocalGameSessionStorage { Data = data };
+
+            LocalStorage.Deleted += StorageDeletedHandler;
         }
 
         private async Task LoadExistGames()
@@ -193,6 +198,15 @@ namespace App.Services
                 
                 _storages.Add(storage);
             }
+        }
+        
+        private void StorageDeletedHandler(IGameSessionStorage sender)
+        {
+            sender.Deleted -= StorageDeletedHandler;
+            if (sender == LocalStorage)
+                LocalStorage = null;
+            else 
+                _storages.Remove(sender);
         }
     }
 }

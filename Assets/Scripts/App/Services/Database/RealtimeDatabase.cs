@@ -72,6 +72,12 @@ namespace App.Services.Database
                     .LimitToFirst(1)
                     .GetValueAsync();
 
+                if (!gameSessionSnapshot.Exists)
+                {
+                    await gamesSnapshot.Children.First().Child(gameSnapshot.Key).Reference.RemoveValueAsync();
+                    continue;
+                }
+
                 result.Add(gameSessionSnapshot.Children.First().Reference);
             }
 

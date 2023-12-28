@@ -2,18 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Data;
-using Game.Services;
 using Game.Services.Storage;
 using UnityEngine;
+using Utils.Extensions;
 
 namespace Game.Field.Mediators
 {
     public abstract class GameMediatorAbstract : IGameMediator
     {
-        private readonly int[] _baseRowIndexes = {4, 0};
-        
-        private WordsProvider _wordsProvider;
-
         public PlayerGameData CurrentPlayer => SessionStorage.Data.LastTurnPlayerId == null 
             ? SessionStorage.Data.Players[0]
             : SessionStorage.Data.Players.First(p => p.Uid != SessionStorage.Data.LastTurnPlayerId);
@@ -27,12 +23,12 @@ namespace Game.Field.Mediators
 
         public event Action<char> OnLetterPicked;
         public event Action OnStorageUpdated;
+        public event Action<string> OnWin;
 
-        public void Initialize(GameField gameField, WordsProvider wordsProvider, IGameSessionStorage sessionStorage, 
-            GameFieldColorsConfig colorConfig, string ownerPlayerId)
+        public void Initialize(GameField gameField, IGameSessionStorage sessionStorage, GameFieldColorsConfig colorConfig, 
+            string ownerPlayerId)
         {
             GameField = gameField;
-            _wordsProvider = wordsProvider;
             SessionStorage = sessionStorage;
             ColorConfig = colorConfig;
             OwnerPlayerId = ownerPlayerId;
@@ -41,10 +37,14 @@ namespace Game.Field.Mediators
             SessionStorage.Updated += StorageUpdatedHandler;
 
             ProcessPostInitializing();
+            
+            if (!SessionStorage.Data.WinnerPlayerId.IsNullOrEmpty())
+                ProcessWin(SessionStorage.Data.WinnerPlayerId);
         }
 
         public void Dispose()
         {
+            GameField.OnLetterPick -= LetterPickHandler;
             SessionStorage.Updated -= StorageUpdatedHandler;
         }
         
@@ -58,31 +58,44 @@ namespace Game.Field.Mediators
         {
             GameField.ApplyWordForPlayer(CurrentPlayer.Uid);
 
-            var player = CurrentPlayer;
-            SessionStorage.Data.LastTurnPlayerId = player.Uid;
+            var playerUid = CurrentPlayer.Uid;
+            SessionStorage.Data.LastTurnPlayerId = playerUid;
             
             SessionStorage.Data.Turns ??= new List<string>();
             SessionStorage.Data.Turns.Add(CurrentWord);
+
+            var isWin = CheckPlayerWin(playerUid);
+            if (isWin)
+                SessionStorage.Data.WinnerPlayerId = playerUid;
+            
             SessionStorage.Save();
             
             ClearCurrentWord();
             
-            if (CheckPlayerWin(player))
-                ProcessWin();
+            if (isWin)
+                ProcessWin(playerUid);
             else
                 ProcessFinishTurn();
         }
 
         public abstract IReadOnlyList<PlayerGameData> GetOrderedPlayersList();
-
-        protected virtual void ProcessPostInitializing() {}
         
-        protected abstract void ProcessWin();
+        protected virtual void ProcessPostInitializing() {}
+
+        protected virtual void ProcessWinImpl(string winnerPlayerUid) { }
+
         protected abstract void ProcessFinishTurn();
         protected abstract void StorageUpdatedImpl();
+
+        private void ProcessWin(string winnerPlayerUid)
+        {
+            GameField.TurnOffCellsInteractable();
+            ProcessWinImpl(winnerPlayerUid);
+            OnWin?.Invoke(winnerPlayerUid);
+        }
         
-        private PlayerGameData GetOpposedPlayer(PlayerGameData player) => SessionStorage.Data.Players
-            .First(p => p != player);
+        private PlayerGameData GetOpposedPlayer(string playerUid) => SessionStorage.Data.Players
+            .First(p => p.Uid != playerUid);
 
         
         private void LetterPickHandler(char letter)
@@ -91,31 +104,24 @@ namespace Game.Field.Mediators
             OnLetterPicked?.Invoke(letter);
         }
         
-        private bool CheckPlayerWin(PlayerGameData player)
+        private bool CheckPlayerWin(string playerUid)
         {
-            var opposedPlayer = GetOpposedPlayer(player);
-            var baseCaptured = CheckOpposedBaseCaptured(player.Uid);
+            var opposedPlayer = GetOpposedPlayer(playerUid);
+            var baseCaptured = CheckOpposedBaseCaptured(playerUid);
             if (baseCaptured)
                 Debug.Log($"База грвця {opposedPlayer.Name} захвачена");
-
-            var noAvailableWords = !CheckAvailableWords(opposedPlayer.Uid);
-            if (noAvailableWords)
-                Debug.Log($"У грвця {opposedPlayer.Name} немає доступних слів для гри");
             
-            return baseCaptured || noAvailableWords;
+            return baseCaptured;
         }
         
         private void StorageUpdatedHandler(IGameSessionStorage sender)
         {
             StorageUpdatedImpl();
+            
             OnStorageUpdated?.Invoke();
-        }
 
-        private bool CheckAvailableWords(string userId)
-        {
-            var letters = SessionStorage.Data.Grid.GetAvailableCellsForUser(userId).Select(cell => cell.Letter);
-            var words = _wordsProvider.GetAvailableWords(letters.ToList(), SessionStorage.Data.Turns);
-            return words.Any();
+            if (!SessionStorage.Data.WinnerPlayerId.IsNullOrEmpty())
+                ProcessWin(SessionStorage.Data.WinnerPlayerId);
         }
         
         private bool CheckOpposedBaseCaptured(string uid)

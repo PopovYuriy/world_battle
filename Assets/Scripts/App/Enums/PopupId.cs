@@ -4,6 +4,7 @@ namespace App.Enums
     {
         None = 0,
         NewGame = 1,
-        GamesList = 2
+        GamesList = 2,
+        Win = 3
     }
 }

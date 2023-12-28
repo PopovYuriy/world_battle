@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using App.Services.Database.Observers;
 using Firebase.Database;
 using Game.Data;
-using Game.Grid;
 using Newtonsoft.Json;
 using Tools.CSharp;
 
@@ -50,14 +49,18 @@ namespace Game.Services.Storage
         public void Delete()
         {
             Dispose();
-            Deleted?.Invoke(this);
+            DeleteAsync().Run();
         }
 
         private async Task SaveAsync()
         {
-            await _databaseReference.Child(GameSessionData.TurnsKey).SetRawJsonValueAsync(JsonConvert.SerializeObject(Data.Turns));
-            await _databaseReference.Child(GameSessionData.GridKey).SetRawJsonValueAsync(JsonConvert.SerializeObject(Data.Grid));
-            await _databaseReference.Child(GameSessionData.LastTurnPlayerIdKey).SetValueAsync(Data.LastTurnPlayerId);
+            await _databaseReference.SetRawJsonValueAsync(JsonConvert.SerializeObject(Data));
+        }
+
+        private async Task DeleteAsync()
+        {
+            await _databaseReference.RemoveValueAsync();
+            Deleted?.Invoke(this);
         }
 
         private void PlayerMadeTurnHandler(DatabaseReference dataReference, string playerId)
@@ -69,19 +72,16 @@ namespace Game.Services.Storage
         }
 
         private async Task UpdateDataAsync()
-        {
-            Data.Turns = await LoadData<List<string>>(GameSessionData.TurnsKey);
-            Data.Grid = await LoadData<GridModel>(GameSessionData.GridKey);
-            Data.LastTurnPlayerId = await LoadData<string>(GameSessionData.LastTurnPlayerIdKey);
-            Updated?.Invoke(this);
-        }
-
-        private async Task<T> LoadData<T>(string key)
-        {
-            var dataReference = _databaseReference.Child(key);
-            var dataSnapshot = await dataReference.GetValueAsync();
+        { 
+            var dataSnapshot = await _databaseReference.GetValueAsync();
             var json = dataSnapshot.GetRawJsonValue();
-            return JsonConvert.DeserializeObject<T>(json);
+            var data =  JsonConvert.DeserializeObject<GameSessionData>(json);
+            
+            Data.Turns = data.Turns;
+            Data.Grid = data.Grid;
+            Data.LastTurnPlayerId = data.LastTurnPlayerId;
+            Data.WinnerPlayerId = data.WinnerPlayerId;
+            Updated?.Invoke(this);
         }
     }
 }

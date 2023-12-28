@@ -16,11 +16,9 @@ namespace Game.Field.Mediators
             GameField.UpdateInteractableForPlayer(CurrentPlayer.Uid);
         }
 
-        protected override void ProcessWin()
+        protected override void ProcessWinImpl(string winnerPlayerUid)
         {
-            Debug.Log("!!!___WIN___!!!");
             SessionStorage.Delete();
-            //show popup
         }
 
         protected override void ProcessFinishTurn()

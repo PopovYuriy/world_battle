@@ -9,6 +9,7 @@ using Game.Services;
 using Game.Services.Utils;
 using UI.GameScreen.Data;
 using UI.GameScreen.Validator;
+using UI.Popups.WinPopup;
 using UnityEngine;
 using Zenject;
 
@@ -46,7 +47,8 @@ namespace UI.GameScreen
             _gameMediator = Data.GameMediator;
             _gameMediator.OnLetterPicked += LetterPickHandler;
             _gameMediator.OnStorageUpdated += StorageUpdatedHandler;
-            _gameMediator.Initialize(View.GameField, wordsProvider, Data.GameSessionStorage, _colorsConfig, _player.Uid);
+            _gameMediator.OnWin += WinHandler;
+            _gameMediator.Initialize(View.GameField, Data.GameSessionStorage, _colorsConfig, _player.Uid);
 
             _wordValidator = new WordValidator(Data.GameSessionStorage.Data, wordsProvider);
             _availableLettersProvider = new AvailableLettersProvider(View.GameField);
@@ -70,6 +72,9 @@ namespace UI.GameScreen
         {
             _gameMediator.OnLetterPicked -= LetterPickHandler;
             _gameMediator.OnStorageUpdated -= StorageUpdatedHandler;
+            _gameMediator.OnWin -= WinHandler;
+            
+            _gameMediator.Dispose();
             
             View.OnBack -= BackClickHandler;
             View.OnApply -= ApplyClickHandler;
@@ -99,6 +104,19 @@ namespace UI.GameScreen
             View.SetCurrentPlayer(_gameMediator.CurrentPlayer.Uid);
             View.ShowLastTurn(Data.GameSessionStorage.Data.LastTurnPlayerId, Data.GameSessionStorage.Data.Turns.Last());
         }
+        
+        private void WinHandler(string playerUid)
+        {
+            var winPopupData = new WinPopupData(Data.GameSessionStorage.Data.Players
+                .First(p => p.Uid == playerUid).Name, WinPopupClosedHandler);
+            
+            _uiSystem.ShowPopup(PopupId.Win, winPopupData);
+        }
+
+        private void WinPopupClosedHandler()
+        {
+            _uiSystem.ShowScreen(ScreenId.MainMenu);
+        }
 
         private void BackClickHandler()
         {
@@ -116,6 +134,7 @@ namespace UI.GameScreen
                 case ValidationResultType.Valid:
                     _gameMediator.ApplyCurrentWord();
                     View.SetCurrentPlayer(_gameMediator.CurrentPlayer.Uid);
+                    View.ShowLastTurn(Data.GameSessionStorage.Data.LastTurnPlayerId, Data.GameSessionStorage.Data.Turns.Last());
                     break;
                 
                 case ValidationResultType.AlreadyUsed:

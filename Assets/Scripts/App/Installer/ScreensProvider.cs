@@ -5,6 +5,7 @@ using UI.GamesManagingScreen;
 using UI.LoadingScreen;
 using UI.MainMenuScreen;
 using UI.Popups.NewOnlineGamePopup;
+using UI.Popups.WinPopup;
 using UnityEngine;
 using Zenject;
 
@@ -21,6 +22,7 @@ namespace App.Installer
         
         [Header("Popups:")]
         [SerializeField] private ScreenView _newOnlineGamePopupPrefab;
+        [SerializeField] private ScreenView _winPopupPrefab;
 
         public override void InstallBindings()
         {
@@ -51,6 +53,10 @@ namespace App.Installer
         {
             Container.BindInstance(_newOnlineGamePopupPrefab).WithId(PopupId.NewGame);
             Container.Bind<IScreenController>().WithId(PopupId.NewGame).To<NewGamePopupController>()
+                .AsTransient();
+            
+            Container.BindInstance(_winPopupPrefab).WithId(PopupId.Win);
+            Container.Bind<IScreenController>().WithId(PopupId.Win).To<WinPopupController>()
                 .AsTransient();
         }
     }
