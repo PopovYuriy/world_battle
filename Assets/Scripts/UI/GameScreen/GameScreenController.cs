@@ -59,6 +59,10 @@ namespace UI.GameScreen
             View.SetButtonsVisible(false);
             View.SetPlayers(_gameMediator.GetOrderedPlayersList());
             View.SetCurrentPlayer(_gameMediator.CurrentPlayer.Uid);
+            
+            if (Data.GameSessionStorage.Data.Turns.Count > 0)
+                View.ShowLastTurn(Data.GameSessionStorage.Data.LastTurnPlayerId, Data.GameSessionStorage.Data.Turns.Last());
+            
             View.DevUtils.Initialize(_availableLettersProvider, wordsProvider, _gameMediator, Data.GameSessionStorage.Data);
         }
 
@@ -93,6 +97,7 @@ namespace UI.GameScreen
         private void StorageUpdatedHandler()
         {
             View.SetCurrentPlayer(_gameMediator.CurrentPlayer.Uid);
+            View.ShowLastTurn(Data.GameSessionStorage.Data.LastTurnPlayerId, Data.GameSessionStorage.Data.Turns.Last());
         }
 
         private void BackClickHandler()

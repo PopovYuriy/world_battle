@@ -17,6 +17,7 @@ namespace Game.Services.Storage
         {
             var jsonData = JsonConvert.SerializeObject(Data);
             PlayerPrefs.SetString(Data.Uid, jsonData);
+            Updated?.Invoke(this);
         }
 
         public void Delete()

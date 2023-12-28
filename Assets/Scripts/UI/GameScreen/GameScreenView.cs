@@ -42,6 +42,9 @@ namespace UI.GameScreen
             _applyButton.onClick.AddListener(ApplyButtonClickHandler);
             _clearButton.onClick.AddListener(ClearButtonClickHandler);
             _infoField.gameObject.SetActive(false);
+            
+            _playerAreaViews[0].HideLasWord();
+            _playerAreaViews[1].HideLasWord();
         }
 
         public override void Dispose()
@@ -99,6 +102,17 @@ namespace UI.GameScreen
         {
             _applyButton.gameObject.SetActive(isVisible);
             _clearButton.gameObject.SetActive(isVisible);
+        }
+
+        public void ShowLastTurn(string playerUid, string word)
+        {
+            foreach (var uid in _playersMap.Keys)
+            {
+                if (uid == playerUid)
+                    _playersMap[uid].ShowLastWord(word);
+                else
+                    _playersMap[uid].HideLasWord();
+            }
         }
 
         private void BackButtonClickHandler() => OnBack?.Invoke();

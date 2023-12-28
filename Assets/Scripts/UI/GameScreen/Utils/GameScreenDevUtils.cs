@@ -111,7 +111,7 @@ namespace UI.GameScreen.Utils
         {
             var letters = _lettersProvider.GetLettersForPlayer(_gameMediator.CurrentPlayer.Uid);
             var words = _wordsProvider.GetAvailableWords(letters, _turnsProvider.TurnsList);
-            return words.First();
+            return words.OrderByDescending(w => w.Length).First();
         }
 
         private void DrawResultLabel()
