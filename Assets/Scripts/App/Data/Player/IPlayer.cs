@@ -8,6 +8,7 @@ namespace App.Data.Player
 
     public interface IPlayerMutable : IPlayer
     {
-        void SetUidAndName(string uid, string name);
+        void SetName(string name);
+        void SetUid(string uid);
     }
 }

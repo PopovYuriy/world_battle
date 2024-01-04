@@ -18,3 +18,4 @@ MonoBehaviour:
   _loadingScreenPrefab: {fileID: 323923708355200214, guid: faa06d6f38d734624bc0564fde80eccd, type: 3}
   _newOnlineGamePopupPrefab: {fileID: 5493098399582409889, guid: e68d0be42dd8343c788bec60a419baf1, type: 3}
   _winPopupPrefab: {fileID: 8323459863268060109, guid: 95fdd391178e24fc9be2f3b07e556ef4, type: 3}
+  _updateNamePopupPrefab: {fileID: 7308015716563546002, guid: 9e3bef50cf9734c9eb0af821e5559a4e, type: 3}
