@@ -22,7 +22,7 @@ namespace Game.Data
         [JsonProperty(PropertyName = GridKey)] public GridModel Grid { get; set; }
         [JsonProperty(PropertyName = TurnsKey)] public List<string> Turns { get; set; }
 
-        public IReadOnlyList<string> TurnsList => Turns;
+        [JsonIgnore] public IReadOnlyList<string> TurnsList => Turns;
 
         public GameSessionData(string uid, PlayerGameData[] players, GridModel grid, List<string> turns)
         {
