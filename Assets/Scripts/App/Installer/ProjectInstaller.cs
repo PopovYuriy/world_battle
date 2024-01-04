@@ -1,7 +1,10 @@
+using App.Commands;
 using App.Data.Device;
 using App.Data.Player;
 using App.Services;
 using App.Services.Database;
+using App.Signals;
+using Core.Commands;
 using Core.Services.Scene;
 using Zenject;
 
@@ -18,6 +21,8 @@ namespace App.Installer
             Container.Bind<ScenesLoader>().AsSingle();
             Container.Bind<RealtimeDatabase>().AsSingle();
             Container.Bind<GameSessionsManager>().AsSingle();
+            
+            Container.DeclareSignalAndBindToAsyncCommand<UpdateUserNameSignal, UpdateUserNameCommand>();
         }
     }
 }

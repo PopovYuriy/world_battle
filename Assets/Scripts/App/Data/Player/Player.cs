@@ -20,13 +20,15 @@ namespace App.Data.Player
             Name = name;
         }
 
-        public void SetUidAndName(string uid, string name)
+        public void SetUid(string uid)
         {
             Uid = uid;
-            Name = name;
         }
 
-        public void SetName(string name) => Name = name;
+        public void SetName(string name)
+        {
+            Name = name;
+        }
 
         public static IPlayer CreateGuestUser() => new Player("guest", "Гість");
     }

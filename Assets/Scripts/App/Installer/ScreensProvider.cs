@@ -4,6 +4,7 @@ using UI.GameScreen;
 using UI.GamesManagingScreen;
 using UI.LoadingScreen;
 using UI.MainMenuScreen;
+using UI.Popups.EnterNamePopup;
 using UI.Popups.NewOnlineGamePopup;
 using UI.Popups.WinPopup;
 using UnityEngine;
@@ -23,6 +24,7 @@ namespace App.Installer
         [Header("Popups:")]
         [SerializeField] private ScreenView _newOnlineGamePopupPrefab;
         [SerializeField] private ScreenView _winPopupPrefab;
+        [SerializeField] private ScreenView _updateNamePopupPrefab;
 
         public override void InstallBindings()
         {
@@ -57,6 +59,10 @@ namespace App.Installer
             
             Container.BindInstance(_winPopupPrefab).WithId(PopupId.Win);
             Container.Bind<IScreenController>().WithId(PopupId.Win).To<WinPopupController>()
+                .AsTransient();
+            
+            Container.BindInstance(_updateNamePopupPrefab).WithId(PopupId.UpdateName);
+            Container.Bind<IScreenController>().WithId(PopupId.UpdateName).To<UpdateNamePopupController>()
                 .AsTransient();
         }
     }

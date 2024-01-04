@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 using App.Data.Player;
 using App.Services.Database;
+using App.Signals;
 using Core.Commands;
-using Cysharp.Threading.Tasks;
 using Firebase.Auth;
 using UnityEngine;
 using Utils.Extensions;
@@ -12,9 +12,18 @@ namespace App.Launch.Commands
 {
     public sealed class AuthenticationAsyncCommand : ICommandAsync
     {
-        [Inject] private IPlayerMutable _player;
-        [Inject] private RealtimeDatabase _database;
+        private const string DefaultPlayerNamePrefix = "Гравець - "; 
         
+        private IPlayerMutable _player;
+        private SignalBus _signalBus;
+
+        [Inject]
+        private void Construct(IPlayerMutable player, SignalBus signalBus)
+        {
+            _player = player;
+            _signalBus = signalBus;
+        }
+
         public async Task Execute()
         {
             var auth = FirebaseAuth.DefaultInstance;
@@ -25,15 +34,21 @@ namespace App.Launch.Commands
                 user = authResult.User;
                 Debug.Log($"Created new user with id: {user.UserId}");
             }
+
+            _player.SetUid(user.UserId);
             
-            SetUserData(user);
-            await _database.TrySaveUser(_player);
+            if (user.DisplayName.IsNullOrEmpty())
+            {
+                var name = CreateNewPlayerName(user.UserId);
+                _signalBus.Fire(new UpdateUserNameSignal(name));
+            }
+            else
+            {
+                _player.SetName(user.DisplayName);
+            }
         }
-        
-        private void SetUserData(FirebaseUser firebaseUser)
-        {
-            var name = firebaseUser.DisplayName.IsNullOrEmpty() ? Application.isEditor ? "Editor" : "Device" : firebaseUser.DisplayName;
-            _player.SetUidAndName(firebaseUser.UserId, name);
-        }
+
+        private string CreateNewPlayerName(string uid) => Application.isEditor 
+            ? "Editor" : DefaultPlayerNamePrefix + uid[..5];
     }
 }
