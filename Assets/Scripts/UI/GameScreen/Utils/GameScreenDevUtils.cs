@@ -1,5 +1,7 @@
 using System.Linq;
 using App.Data.DevMode;
+using App.Enums;
+using Core.UI;
 using Game.Data;
 using Game.Field.Mediators;
 using Game.Services;
@@ -18,6 +20,7 @@ namespace UI.GameScreen.Utils
         private WordsProvider _wordsProvider;
         private IGameMediator _gameMediator;
         private IGameTurnsProvider _turnsProvider;
+        private UISystem _uiSystem;
         private bool _openDevPanel;
         private bool _openTurnsPanel;
         private string _resultWord;
@@ -32,12 +35,13 @@ namespace UI.GameScreen.Utils
         private float ScreenBottomBorder => Screen.safeArea.yMax;
 
         public void Initialize(ILettersProvider lettersProvider, WordsProvider wordsProvider, IGameMediator gameMediator,
-            IGameTurnsProvider turnsProvider)
+            IGameTurnsProvider turnsProvider, UISystem uiSystem)
         {
             _lettersProvider = lettersProvider;
             _wordsProvider = wordsProvider;
             _gameMediator = gameMediator;
             _turnsProvider = turnsProvider;
+            _uiSystem = uiSystem;
             
             _isInitialized = true;
         }
@@ -71,7 +75,7 @@ namespace UI.GameScreen.Utils
 
         private void DrawDevPanel()
         {
-            const int buttonsCount = 2;
+            const int buttonsCount = 3;
             
             var groupWidth = _styleConfig.GroupButtonsDefaultSize.x + _styleConfig.DefaultGroupMargin.left + 
                              _styleConfig.DefaultGroupMargin.right;
@@ -92,6 +96,13 @@ namespace UI.GameScreen.Utils
             {
                 _openDevPanel = false;
                 _openTurnsPanel = true;
+            }
+            
+            if (DrawGroupButton(2, "Delete game"))
+            {
+                _openDevPanel = false;
+                _gameMediator.DeleteGame();
+                _uiSystem.ShowScreen(ScreenId.GamesManaging);
             }
             
             GUI.EndGroup();

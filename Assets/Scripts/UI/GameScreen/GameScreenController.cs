@@ -65,7 +65,8 @@ namespace UI.GameScreen
             if (Data.GameSessionStorage.Data.Turns.Count > 0)
                 View.ShowLastTurn(Data.GameSessionStorage.Data.LastTurnPlayerId, Data.GameSessionStorage.Data.Turns.Last());
             
-            View.DevUtils.Initialize(_availableLettersProvider, wordsProvider, _gameMediator, Data.GameSessionStorage.Data);
+            View.DevUtils.Initialize(_availableLettersProvider, wordsProvider, _gameMediator, Data.GameSessionStorage.Data,
+                _uiSystem);
         }
 
         public override void Dispose()

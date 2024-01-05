@@ -79,7 +79,12 @@ namespace Game.Field.Mediators
         }
 
         public abstract IReadOnlyList<PlayerGameData> GetOrderedPlayersList();
-        
+
+        public void DeleteGame()
+        {
+            SessionStorage.Delete();
+        }
+
         protected virtual void ProcessPostInitializing() {}
 
         protected virtual void ProcessWinImpl(string winnerPlayerUid) { }

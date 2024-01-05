@@ -17,6 +17,7 @@ namespace Game.Field.Mediators
         void Initialize(GameField gameField, IGameSessionStorage sessionStorage, GameFieldColorsConfig colorConfig, string ownerPlayerId);
         void ClearCurrentWord();
         void ApplyCurrentWord();
+        void DeleteGame();
         IReadOnlyList<PlayerGameData> GetOrderedPlayersList();
     }
 }
