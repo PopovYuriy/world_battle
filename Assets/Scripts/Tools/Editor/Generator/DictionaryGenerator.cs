@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Core.Data.Trie;
+using Game.Data;
+using ModestTree;
 using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
@@ -12,16 +14,16 @@ namespace Tools.Editor.Generator
     public sealed class DictionaryGenerator
     {
         const string FilePath = "Assets/Data/Editor/Words/";
-        const string OutFilePath = "Assets/Data/Words/";
+        const string OutFilePath = "Assets/Resources/Words/";
         const string FileNameTables = "dict_corp_vis.txt";
         const string FilePathWithNouns = "Nouns/";
         const string FilePathWithNounsTables = "NounsTables/";
 
         const string NounTag = "noun";
 
-        static readonly string[] _tagsToSkip = {"fname", "lname", "pname", "prop", "abbr", "geo", "alt"};
+        static readonly string[] _tagsToSkip = {"fname", "lname", "pname", "prop", "abbr", "geo", "alt", "pers"};
 
-        [MenuItem("22/Tools/WordsGenerator")]
+        [MenuItem("22/Tools/WordsGenerator", priority = 1)]
         public static void Generate()
         {
             try
@@ -56,7 +58,7 @@ namespace Tools.Editor.Generator
                             continue;
 
                         var word = parts[0];
-                        if (word.Contains('-') || word.Contains('\'') || char.IsUpper(word[0]))
+                        if (word.Contains('-') || word.Contains('.') || word.Contains('\'') || word.Any(char.IsUpper))
                         {
                             Debug.Log($"Skipped word :: {word}");
                             continue;
@@ -98,7 +100,7 @@ namespace Tools.Editor.Generator
             }
         }
 
-        [MenuItem("22/Tools/GenerateJsonWordsData")]
+        [MenuItem("22/Tools/GenerateJsonWordsData", priority = 2)]
         private static void GenerateJsonWordsData()
         {
             try
@@ -141,6 +143,84 @@ namespace Tools.Editor.Generator
                 Console.WriteLine(e);
                 throw;
             }
+        }
+
+        [MenuItem("22/Tools/DetermineLettersRate", priority = 3)]
+        private static void DetermineLettersRate()
+        {
+            EditorUtility.ClearProgressBar();
+            
+            var lettersConfig = (LettersRateConfig)Resources.Load("LettersRateConfig");
+
+            var lettersGlobalRate = new Dictionary<char, uint>(lettersConfig.Letters.Length);
+            var lettersWordsRate = new Dictionary<char, List<int>>(lettersConfig.Letters.Length);
+            
+            uint totalLetters = 0;
+            foreach (var letter in lettersConfig.Letters)
+            {
+                lettersGlobalRate.Add(letter, 0);
+                lettersWordsRate.Add(letter, new List<int>());
+            }
+            
+            foreach (var currentLetter in lettersConfig.Letters)
+            {
+                if (EditorUtility.DisplayCancelableProgressBar("Generate JSON data", string.Empty, 
+                    (float)lettersConfig.Letters.IndexOf(currentLetter) / lettersConfig.Letters.Length))
+                    break;
+                
+                var filePath = $"{FilePath}{FilePathWithNouns}{currentLetter}.txt";
+                if (!File.Exists(filePath))
+                {
+                    Debug.LogWarning($"There is no file : {filePath}");
+                    continue;
+                }
+
+                var lettersInWords = new Dictionary<char, int>();
+                
+                using (var fileStream = new StreamReader(filePath))
+                {
+                    string word;
+                    while ((word = fileStream.ReadLine()) != null)
+                    {
+                        foreach (var letter in word)
+                        {
+                            if (letter == '.')
+                            {
+                                Debug.Log("");
+                                EditorUtility.ClearProgressBar();
+                                return;
+                            }
+                            
+                            if (!lettersInWords.ContainsKey(letter))
+                                lettersInWords.Add(letter, 0);
+
+                            lettersInWords[letter]++;
+                            lettersGlobalRate[letter]++;
+                            totalLetters++;
+                        }
+
+                        foreach (var letter in lettersInWords.Keys)
+                            lettersWordsRate[letter].Add(lettersInWords[letter]);
+                        
+                        lettersInWords.Clear();
+                    }
+                }
+            }
+            
+            EditorUtility.ClearProgressBar();
+
+            Debug.Log($"Total letters = {totalLetters}");
+            
+            foreach (var letter in lettersGlobalRate.Keys)
+            {
+                var rateGlobal = (float) Math.Round((double) lettersGlobalRate[letter] / totalLetters, 4);
+                var rateInWord = lettersWordsRate[letter].Max() / 2;
+                Debug.Log($"{letter} :: global = {rateGlobal}, inWord = {rateInWord}");
+                lettersConfig.SetRate(letter, rateGlobal, rateInWord);
+            }
+            
+            EditorUtility.SetDirty(lettersConfig);
+            AssetDatabase.SaveAssets();
         }
 
         private static Dictionary<char, List<string>> GroupByLetters(List<string> words)

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Game.Data;
 using UnityEngine;
 using Utils.Extensions;
 
@@ -26,23 +27,27 @@ namespace Game.Services
 
         private static char[] GetRandomLetters(int count)
         {
-            const float probabilityReducer = 0.007f;
             var result = new char[count];
-            var lettersRate = new Dictionary<char, float>(CharsRate);
+            
+            var lettersConfig = (LettersRateConfig)Resources.Load("LettersRateConfig");
+
+            var lettersRate = lettersConfig.ToDictionary();
             count.Iterate(index =>
             {
                 var rateSum = lettersRate.Values.Sum();
                 var eps = Random.Range(0f, rateSum);
+                
                 var currentDelta = eps;
-                var letter = Chars.First(l =>
+                var letter = lettersConfig.Letters.First(l =>
                 {
                     currentDelta -= lettersRate[l];
                     var match = currentDelta <= 0;
                     if (match)
                     {
-                        var newProb = Mathf.Max(lettersRate[l] - probabilityReducer * (result.Count(k => k == l) + 1), 0f);
-                        Debug.Log(
-                            $"Letter '{l}' :: count = {result.Count(k => k == l)}, prevProb = {lettersRate[l]}, prob = {newProb}");
+                        var newProb = Mathf.Max(lettersRate[l] - lettersRate[l] / lettersConfig.GetMaxOnField(l), 0f);
+                        
+                        Debug.Log($"Letter '{l}' :: count = {result.Count(k => k == l)}, " +
+                                  $"max = {lettersConfig.GetMaxOnField(l)}, prevProb = {lettersRate[l]}, prob = {newProb}");
                         lettersRate[l] = newProb;
                     }
                     return match;

@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddcf3d1801c242058e9f5df8da2e6d82, type: 3}
+  m_Name: LettersRateConfig
+  m_EditorClassIdentifier: 
+  _letters: 300431043204330491043404350454043604370438045604570439043a043b043c043d043e043f0440044104420443044404450446044704480449044c044e044f04
+  _lettersRate:
+  - <Letter>k__BackingField: 1072
+    <RateGlobal>k__BackingField: 0.0919
+    <RateInWord>k__BackingField: 3
+  - <Letter>k__BackingField: 1073
+    <RateGlobal>k__BackingField: 0.0164
+    <RateInWord>k__BackingField: 1
+  - <Letter>k__BackingField: 1074
+    <RateGlobal>k__BackingField: 0.043
+    <RateInWord>k__BackingField: 2
+  - <Letter>k__BackingField: 1075
+    <RateGlobal>k__BackingField: 0.0172
+    <RateInWord>k__BackingField: 1
+  - <Letter>k__BackingField: 1169
+    <RateGlobal>k__BackingField: 0.0002
+    <RateInWord>k__BackingField: 1
+  - <Letter>k__BackingField: 1076
+    <RateGlobal>k__BackingField: 0.0276
+    <RateInWord>k__BackingField: 2
+  - <Letter>k__BackingField: 1077
+    <RateGlobal>k__BackingField: 0.0572
+    <RateInWord>k__BackingField: 3
+  - <Letter>k__BackingField: 1108
+    <RateGlobal>k__BackingField: 0.0019
+    <RateInWord>k__BackingField: 1
+  - <Letter>k__BackingField: 1078
+    <RateGlobal>k__BackingField: 0.006
+    <RateInWord>k__BackingField: 1
+  - <Letter>k__BackingField: 1079
+    <RateGlobal>k__BackingField: 0.0191
+    <RateInWord>k__BackingField: 1
+  - <Letter>k__BackingField: 1080
+    <RateGlobal>k__BackingField: 0.0392
+    <RateInWord>k__BackingField: 2
+  - <Letter>k__BackingField: 1110
+    <RateGlobal>k__BackingField: 0.0601
+    <RateInWord>k__BackingField: 2
+  - <Letter>k__BackingField: 1111
+    <RateGlobal>k__BackingField: 0.001
+    <RateInWord>k__BackingField: 1
+  - <Letter>k__BackingField: 1081
+    <RateGlobal>k__BackingField: 0.005
+    <RateInWord>k__BackingField: 1
+  - <Letter>k__BackingField: 1082
+    <RateGlobal>k__BackingField: 0.0473
+    <RateInWord>k__BackingField: 2
+  - <Letter>k__BackingField: 1083
+    <RateGlobal>k__BackingField: 0.0382
+    <RateInWord>k__BackingField: 2
+  - <Letter>k__BackingField: 1084
+    <RateGlobal>k__BackingField: 0.0256
+    <RateInWord>k__BackingField: 2
+  - <Letter>k__BackingField: 1085
+    <RateGlobal>k__BackingField: 0.087
+    <RateInWord>k__BackingField: 2
+  - <Letter>k__BackingField: 1086
+    <RateGlobal>k__BackingField: 0.0867
+    <RateInWord>k__BackingField: 3
+  - <Letter>k__BackingField: 1087
+    <RateGlobal>k__BackingField: 0.0311
+    <RateInWord>k__BackingField: 2
+  - <Letter>k__BackingField: 1088
+    <RateGlobal>k__BackingField: 0.0623
+    <RateInWord>k__BackingField: 2
+  - <Letter>k__BackingField: 1089
+    <RateGlobal>k__BackingField: 0.0462
+    <RateInWord>k__BackingField: 2
+  - <Letter>k__BackingField: 1090
+    <RateGlobal>k__BackingField: 0.0628
+    <RateInWord>k__BackingField: 2
+  - <Letter>k__BackingField: 1091
+    <RateGlobal>k__BackingField: 0.026
+    <RateInWord>k__BackingField: 2
+  - <Letter>k__BackingField: 1092
+    <RateGlobal>k__BackingField: 0.0082
+    <RateInWord>k__BackingField: 1
+  - <Letter>k__BackingField: 1093
+    <RateGlobal>k__BackingField: 0.0062
+    <RateInWord>k__BackingField: 1
+  - <Letter>k__BackingField: 1094
+    <RateGlobal>k__BackingField: 0.0126
+    <RateInWord>k__BackingField: 1
+  - <Letter>k__BackingField: 1095
+    <RateGlobal>k__BackingField: 0.0106
+    <RateInWord>k__BackingField: 1
+  - <Letter>k__BackingField: 1096
+    <RateGlobal>k__BackingField: 0.0053
+    <RateInWord>k__BackingField: 1
+  - <Letter>k__BackingField: 1097
+    <RateGlobal>k__BackingField: 0.0018
+    <RateInWord>k__BackingField: 1
+  - <Letter>k__BackingField: 1100
+    <RateGlobal>k__BackingField: 0.0212
+    <RateInWord>k__BackingField: 1
+  - <Letter>k__BackingField: 1102
+    <RateGlobal>k__BackingField: 0.0042
+    <RateInWord>k__BackingField: 1
+  - <Letter>k__BackingField: 1103
+    <RateGlobal>k__BackingField: 0.0309
+    <RateInWord>k__BackingField: 1
