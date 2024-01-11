@@ -21,7 +21,7 @@ namespace Game.Field.Mediators
         protected GameFieldColorsConfig ColorConfig { get; private set; }
         protected string OwnerPlayerId { get; private set; }
 
-        public event Action<char> OnLetterPicked;
+        public event Action OnWordChanged;
         public event Action OnStorageUpdated;
         public event Action<string> OnWin;
 
@@ -33,7 +33,7 @@ namespace Game.Field.Mediators
             ColorConfig = colorConfig;
             OwnerPlayerId = ownerPlayerId;
 
-            GameField.OnLetterPick += LetterPickHandler;
+            GameField.OnPickedLettersChanged += PickedLettersChangedHandler;
             SessionStorage.Updated += StorageUpdatedHandler;
 
             ProcessPostInitializing();
@@ -44,7 +44,7 @@ namespace Game.Field.Mediators
 
         public void Dispose()
         {
-            GameField.OnLetterPick -= LetterPickHandler;
+            GameField.OnPickedLettersChanged -= PickedLettersChangedHandler;
             SessionStorage.Updated -= StorageUpdatedHandler;
         }
         
@@ -103,10 +103,10 @@ namespace Game.Field.Mediators
             .First(p => p.Uid != playerUid);
 
         
-        private void LetterPickHandler(char letter)
+        private void PickedLettersChangedHandler(string pickedWord)
         {
-            CurrentWord += letter;
-            OnLetterPicked?.Invoke(letter);
+            CurrentWord = pickedWord;
+            OnWordChanged?.Invoke();
         }
         
         private bool CheckPlayerWin(string playerUid)

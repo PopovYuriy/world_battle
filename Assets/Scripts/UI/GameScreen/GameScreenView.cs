@@ -79,9 +79,9 @@ namespace UI.GameScreen
             _resultField.text = string.Empty;
         }
 
-        public void ApplyToResult(char letter)
+        public void UpdateResultWord(string word)
         {
-            _resultField.text += letter;
+            _resultField.text = word;
         }
 
         public void ShowInfoField(string message)

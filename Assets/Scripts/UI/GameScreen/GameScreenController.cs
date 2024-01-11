@@ -11,6 +11,7 @@ using UI.GameScreen.Data;
 using UI.GameScreen.Validator;
 using UI.Popups.WinPopup;
 using UnityEngine;
+using Utils.Extensions;
 using Zenject;
 
 namespace UI.GameScreen
@@ -45,7 +46,7 @@ namespace UI.GameScreen
             
             View.GameField.Initialize(Data.GameSessionStorage.Data.Players);
             _gameMediator = Data.GameMediator;
-            _gameMediator.OnLetterPicked += LetterPickHandler;
+            _gameMediator.OnWordChanged += WordChangedHandler;
             _gameMediator.OnStorageUpdated += StorageUpdatedHandler;
             _gameMediator.OnWin += WinHandler;
             _gameMediator.Initialize(View.GameField, Data.GameSessionStorage, _colorsConfig, _player.Uid);
@@ -71,7 +72,7 @@ namespace UI.GameScreen
 
         public override void Dispose()
         {
-            _gameMediator.OnLetterPicked -= LetterPickHandler;
+            _gameMediator.OnWordChanged -= WordChangedHandler;
             _gameMediator.OnStorageUpdated -= StorageUpdatedHandler;
             _gameMediator.OnWin -= WinHandler;
             
@@ -94,10 +95,11 @@ namespace UI.GameScreen
             Object.Destroy(View.gameObject);
         }
         
-        private void LetterPickHandler(char letter)
+        private void WordChangedHandler()
         {
-            View.ApplyToResult(letter);
-            View.SetButtonsVisible(true);
+            View.UpdateResultWord(_gameMediator.CurrentWord);
+            var isEmptyWord = _gameMediator.CurrentWord.IsNullOrEmpty();
+            View.SetButtonsVisible(!isEmptyWord);
         }
         
         private void StorageUpdatedHandler()
@@ -126,29 +128,31 @@ namespace UI.GameScreen
         
         private void ApplyClickHandler()
         {
-            View.ClearResult();
-            View.SetButtonsVisible(false);
-            
             var validationResult = _wordValidator.Validate(_gameMediator.CurrentWord);
             switch (validationResult)
             {
                 case ValidationResultType.Valid:
+                    View.ClearResult();
+                    View.SetButtonsVisible(false);
                     _gameMediator.ApplyCurrentWord();
                     View.SetCurrentPlayer(_gameMediator.CurrentPlayer.Uid);
                     View.ShowLastTurn(Data.GameSessionStorage.Data.LastTurnPlayerId, Data.GameSessionStorage.Data.Turns.Last());
                     break;
                 
                 case ValidationResultType.AlreadyUsed:
+                    View.ClearResult();
+                    View.SetButtonsVisible(false);
                     _gameMediator.ClearCurrentWord();
                     View.ShowInfoField(AlreadyUsedWordMessage);
                     break;
                 
                 case ValidationResultType.NotFoundInVocabulary:
-                    _gameMediator.ClearCurrentWord();
                     View.ShowInfoField(NotFoundWordMessage);
                     break;
                 
                 default:
+                    View.ClearResult();
+                    View.SetButtonsVisible(false);
                     _gameMediator.ClearCurrentWord();
                     Debug.LogWarning("Invalid validation result");
                     break;

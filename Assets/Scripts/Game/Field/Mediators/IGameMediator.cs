@@ -7,7 +7,7 @@ namespace Game.Field.Mediators
 {
     public interface IGameMediator : IDisposable
     {
-        event Action<char> OnLetterPicked;
+        event Action OnWordChanged;
         event Action OnStorageUpdated;
         event Action<string> OnWin;
 

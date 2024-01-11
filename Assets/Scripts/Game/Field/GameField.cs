@@ -23,8 +23,8 @@ namespace Game.Field
         private Color _opposedStateCellColor;
         
         private List<Cell> _pickedCells;
-        
-        public event Action<char> OnLetterPick;
+
+        public event Action<string> OnPickedLettersChanged;
 
         public void Initialize(PlayerGameData[] players)
         {
@@ -32,7 +32,7 @@ namespace Game.Field
 
             InitializeGrid();
             
-            _pickedCells = new List<Cell>();
+            _pickedCells = new List<Cell>(_rows.Count * _rows[0].Cells.Length);
         }
         
         private void OnDestroy()
@@ -168,10 +168,18 @@ namespace Game.Field
 
         private void CellClickHandler(Cell cell)
         {
-            cell.SetPicked(true);
-            cell.SetInteractable(false);
-            _pickedCells.Add(cell);
-            OnLetterPick?.Invoke(cell.Model.Letter);
+            if (_pickedCells.Contains(cell))
+            {
+                _pickedCells.Remove(cell);
+                cell.SetPicked(false);
+            }
+            else
+            {
+                _pickedCells.Add(cell);
+                cell.SetPicked(true);
+            }
+            
+            OnPickedLettersChanged?.Invoke(new string(_pickedCells.Select(c => c.Model.Letter).ToArray()));
         }
 
         private void UpdateCell(Cell cell, CellModel model, string playerId)
