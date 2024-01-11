@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -158,6 +159,25 @@ namespace App.Services.Database
                 var userPush = usersRoot.Push();
                 await userPush.SetRawJsonValueAsync(JsonConvert.SerializeObject(player));
             }
+        }
+
+        public async Task SaveUserNotificationToken(string token)
+        {
+            var usersRoot = GetUsersRoot();
+            var userDataSnapshot = await usersRoot
+                .OrderByChild(Player.UidKey)
+                .EqualTo(_player.Uid)
+                .GetValueAsync();
+
+            if (!userDataSnapshot.Exists)
+                throw new Exception("There is no saved player. You must to authenticate user before saving a token");
+            
+            var playerDataSnapshot = userDataSnapshot.Children.First();
+                
+            await playerDataSnapshot.Reference.UpdateChildrenAsync(new Dictionary<string, object>
+            {
+                {Player.TokenKey, token}
+            });
         }
 
         private async Task AddGameToUser(string gameId, string playerId)

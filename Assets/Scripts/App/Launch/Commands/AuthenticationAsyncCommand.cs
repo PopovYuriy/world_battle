@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using App.Data.Player;
-using App.Services.Database;
 using App.Signals;
 using Core.Commands;
 using Firebase.Auth;
@@ -12,7 +11,7 @@ namespace App.Launch.Commands
 {
     public sealed class AuthenticationAsyncCommand : ICommandAsync
     {
-        private const string DefaultPlayerNamePrefix = "Гравець - "; 
+        private const string DefaultPlayerNamePrefix = "Гравець-"; 
         
         private IPlayerMutable _player;
         private SignalBus _signalBus;

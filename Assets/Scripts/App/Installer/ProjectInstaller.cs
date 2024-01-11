@@ -3,6 +3,7 @@ using App.Data.Device;
 using App.Data.Player;
 using App.Services;
 using App.Services.Database;
+using App.Services.PushNotifications;
 using App.Signals;
 using Core.Commands;
 using Core.Services.Scene;
@@ -21,6 +22,7 @@ namespace App.Installer
             Container.Bind<ScenesLoader>().AsSingle();
             Container.Bind<RealtimeDatabase>().AsSingle();
             Container.Bind<GameSessionsManager>().AsSingle();
+            Container.Bind<PushNotificationsService>().AsSingle();
             
             Container.DeclareSignalAndBindToAsyncCommand<UpdateUserNameSignal, UpdateUserNameCommand>();
         }

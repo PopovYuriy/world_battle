@@ -1,17 +1,13 @@
 using System;
 using System.Threading.Tasks;
-using App.Data.Device;
 using Core.Commands;
 using Firebase;
 using UnityEngine;
-using Zenject;
 
 namespace App.Launch.Commands
 {
     public sealed class InitializeFirebaseAsyncCommand : ICommandAsync
     {
-        [Inject] private IDeviceData _deviceData;
-        
         public async Task Execute()
         {
             if (Application.isEditor)

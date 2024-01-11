@@ -12,6 +12,7 @@ namespace App.Installer
             Container.Bind<InitializeFirebaseAsyncCommand>().AsSingle();
             Container.Bind<AuthenticationAsyncCommand>().AsSingle();
             Container.Bind<InitializeRealtimeDatabaseAsyncCommand>().AsSingle();
+            Container.Bind<InitializeFirebaseNotificationsAsyncCommand>().AsSingle();
             
             Container.DeclareSignalAndBindToAsyncCommand<LaunchFinishedSignal, LaunchFinishedCommand>();
         }

@@ -8,6 +8,7 @@ namespace App.Data.Player
     {
         public const string UidKey = "Uid";
         public const string NameKey = "Name";
+        public const string TokenKey = "Token";
         
         [JsonProperty(PropertyName = UidKey, Required = Required.Always)] public string Uid { get; private set; }
         [JsonProperty(PropertyName = NameKey, Required = Required.AllowNull)] public string Name { get; private set; }

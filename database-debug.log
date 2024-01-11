@@ -1,0 +1,14 @@
+22:48:15.699 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+22:48:15.934 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
+22:48:23.114 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO com.firebase.core.namespace.NamespaceActor - fake-server successfully activated FBKV (SurveyIdle(0)) wait: 145ms, init: 0ms
+22:48:23.166 [NamespaceSystem-blocking-namespace-operation-dispatcher-6] INFO com.firebase.core.namespace.StateManager - Namespace fake-server status Active to Active
+22:48:35.354 [FirebaseWorkerPool-1-3] WARN com.firebase.core.persistence.backend.dummy.EmulatorMetadataPersistence - Multiple projectIds are not recommended in single project mode. Requested 
+namespace word-battle-7fc6a, but the emulator is configured for fake-server. To 
+opt-out of single project mode add/set the singleProjectMode: false property in 
+the firebase.json emulators config. 
+22:48:35.363 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO com.firebase.core.namespace.NamespaceActor - word-battle-7fc6a successfully activated FBKV (SurveyIdle(0)) wait: 3ms, init: 0ms
+22:58:03.890 [Thread-0] INFO com.firebase.server.forge.App$ - Attempting graceful shutdown.
+22:58:03.897 [NamespaceSystem-akka.actor.default-dispatcher-11] INFO com.firebase.core.namespace.Terminator$Terminator - 2 actors left to terminate: fake-server, word-battle-7fc6a
+22:58:03.903 [NamespaceSystem-akka.actor.default-dispatcher-31] INFO com.firebase.core.namespace.NamespaceActor - stopped namespace actor for fake-server
+22:58:03.903 [NamespaceSystem-akka.actor.default-dispatcher-9] INFO com.firebase.core.namespace.NamespaceActor - stopped namespace actor for word-battle-7fc6a
+22:58:03.906 [Thread-0] INFO com.firebase.server.forge.App$ - Graceful shutdown complete.
