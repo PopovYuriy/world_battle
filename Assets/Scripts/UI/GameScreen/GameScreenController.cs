@@ -62,6 +62,9 @@ namespace UI.GameScreen
             View.SetButtonsVisible(false);
             View.SetPlayers(_gameMediator.GetOrderedPlayersList());
             View.SetCurrentPlayer(_gameMediator.CurrentPlayer.Uid);
+
+            var isOwnersFirstTurn = Data.GameSessionStorage.Data.Players.First().Uid == _player.Uid;
+            View.SettingsPanel.SetWordsList(Data.GameSessionStorage.Data.Turns, isOwnersFirstTurn);
             
             if (Data.GameSessionStorage.Data.Turns.Count > 0)
                 View.ShowLastTurn(Data.GameSessionStorage.Data.LastTurnPlayerId, Data.GameSessionStorage.Data.Turns.Last());
@@ -105,7 +108,9 @@ namespace UI.GameScreen
         private void StorageUpdatedHandler()
         {
             View.SetCurrentPlayer(_gameMediator.CurrentPlayer.Uid);
-            View.ShowLastTurn(Data.GameSessionStorage.Data.LastTurnPlayerId, Data.GameSessionStorage.Data.Turns.Last());
+            var lastTurn = Data.GameSessionStorage.Data.Turns.Last();
+            View.ShowLastTurn(Data.GameSessionStorage.Data.LastTurnPlayerId, lastTurn);
+            View.SettingsPanel.AddWord(lastTurn, Data.GameSessionStorage.Data.LastTurnPlayerId == _player.Uid);
         }
         
         private void WinHandler(string playerUid)
@@ -134,6 +139,7 @@ namespace UI.GameScreen
                 case ValidationResultType.Valid:
                     View.ClearResult();
                     View.SetButtonsVisible(false);
+                    View.SettingsPanel.AddWord(_gameMediator.CurrentWord, _gameMediator.CurrentPlayer.Uid == _player.Uid);
                     _gameMediator.ApplyCurrentWord();
                     View.SetCurrentPlayer(_gameMediator.CurrentPlayer.Uid);
                     View.ShowLastTurn(Data.GameSessionStorage.Data.LastTurnPlayerId, Data.GameSessionStorage.Data.Turns.Last());
