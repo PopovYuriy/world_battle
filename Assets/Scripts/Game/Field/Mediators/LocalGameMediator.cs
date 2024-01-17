@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Game.Data;
-using UnityEngine;
 
 namespace Game.Field.Mediators
 {
@@ -16,7 +15,7 @@ namespace Game.Field.Mediators
             GameField.UpdateInteractableForPlayer(CurrentPlayer.Uid);
         }
 
-        protected override void ProcessWinImpl(string winnerPlayerUid)
+        protected override void ProcessWinImpl(WinData winData)
         {
             SessionStorage.Delete();
         }

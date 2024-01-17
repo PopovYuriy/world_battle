@@ -6,7 +6,6 @@ using Game.Data;
 using Game.Field;
 using TMPro;
 using UI.GameScreen.Utils;
-using UI.GameScreen.SettingsPopup;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,7 +27,6 @@ namespace UI.GameScreen
         [SerializeField] private PlayerAreaView[] _playerAreaViews;
         [SerializeField] private GameFieldColorsConfig _colorsConfig;
 
-        [field: SerializeField] public SettingsPanelView SettingsPanel { get; private set; }
         [field: SerializeField] public GameField GameField { get; private set; }
         [field: SerializeField] public GameScreenDevUtils DevUtils { get; private set; }
         
@@ -38,17 +36,16 @@ namespace UI.GameScreen
         public event Action OnBack;
         public event Action OnApply;
         public event Action OnClear;
+        public event Action OnSettingsClick;
 
         public override void Initialize()
         {
             _backButton.onClick.AddListener(BackButtonClickHandler);
             _applyButton.onClick.AddListener(ApplyButtonClickHandler);
             _clearButton.onClick.AddListener(ClearButtonClickHandler);
-            _settingsButton.onClick.AddListener(SettingsButtonClicked);
+            _settingsButton.onClick.AddListener(SettingsButtonClickHandler);
             
             _infoField.gameObject.SetActive(false);
-            
-            SettingsPanel.gameObject.SetActive(false);
             
             _playerAreaViews[0].HideLasWord();
             _playerAreaViews[1].HideLasWord();
@@ -59,7 +56,7 @@ namespace UI.GameScreen
             _backButton.onClick.RemoveListener(BackButtonClickHandler);
             _applyButton.onClick.RemoveListener(ApplyButtonClickHandler);
             _clearButton.onClick.RemoveListener(ClearButtonClickHandler);
-            _settingsButton.onClick.RemoveListener(SettingsButtonClicked);
+            _settingsButton.onClick.RemoveListener(SettingsButtonClickHandler);
             
             _showInfoFieldTween?.Kill();
         }
@@ -126,10 +123,6 @@ namespace UI.GameScreen
         private void BackButtonClickHandler() => OnBack?.Invoke();
         private void ApplyButtonClickHandler() => OnApply?.Invoke();
         private void ClearButtonClickHandler() => OnClear?.Invoke();
-
-        private void SettingsButtonClicked()
-        {
-            SettingsPanel.Show();
-        }
+        private void SettingsButtonClickHandler() => OnSettingsClick?.Invoke();
     }
 }

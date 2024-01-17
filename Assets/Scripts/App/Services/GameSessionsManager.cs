@@ -94,6 +94,20 @@ namespace App.Services
 
         public IEnumerable<GameSessionData> GetOnlineGameSessions() => _storages.Select(s => s.Data);
 
+        public async Task DeleteGameForUserAsync(IGameSessionStorage gameSessionStorage)
+        {
+            gameSessionStorage.Deleted -= StorageDeletedHandler;
+            if (gameSessionStorage == LocalStorage)
+            {
+                LocalStorage = null;
+            }
+            else
+            {
+                _storages.Remove(gameSessionStorage);
+                await _database.RemoveGameFromExistGamesList(gameSessionStorage.Data.Uid);
+            }
+        }
+
         private void PlayerConnectedHandler(string sessionId, string userId)
         {
             ProcessPlayerConnectedAsync(sessionId, userId).Run();
@@ -202,11 +216,7 @@ namespace App.Services
         
         private void StorageDeletedHandler(IGameSessionStorage sender)
         {
-            sender.Deleted -= StorageDeletedHandler;
-            if (sender == LocalStorage)
-                LocalStorage = null;
-            else 
-                _storages.Remove(sender);
+            DeleteGameForUserAsync(sender).Run();
         }
     }
 }

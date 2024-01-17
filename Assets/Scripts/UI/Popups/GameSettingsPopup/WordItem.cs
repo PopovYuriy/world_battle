@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-namespace UI.GameScreen.SettingsPopup
+namespace UI.Popups.GameSettingsPopup
 {
     public sealed class WordItem : MonoBehaviour
     {

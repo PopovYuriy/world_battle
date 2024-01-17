@@ -10,14 +10,16 @@ namespace Game.Data
     {
         public const string UidKey = "Uid";
         public const string LastTurnPlayerIdKey = "LastTurnPlayerId";
-        public const string WinnerPlayerIdKey = "WinnerPlayerId";
+        public const string WinDataKey = "WinData";
+        public const string GiveUpDataKey = "GaveUpData";
         public const string PlayersKey = "Players";
         public const string GridKey = "Grid";
         public const string TurnsKey = "Turns";
         
         [JsonProperty(PropertyName = UidKey)] public string Uid { get; private set; }
         [JsonProperty(PropertyName = LastTurnPlayerIdKey)] public string LastTurnPlayerId { get; set; }
-        [JsonProperty(PropertyName = WinnerPlayerIdKey)] public string WinnerPlayerId { get; set; }
+        [JsonProperty(PropertyName = WinDataKey)] public WinData WinData { get; set; }
+        [JsonProperty(PropertyName = GiveUpDataKey)] public SurrenderData SurrenderData { get; set; }
         [JsonProperty(PropertyName = PlayersKey)] public PlayerGameData[] Players { get; private set; }
         [JsonProperty(PropertyName = GridKey)] public GridModel Grid { get; set; }
         [JsonProperty(PropertyName = TurnsKey)] public List<string> Turns { get; set; }
@@ -44,5 +46,37 @@ namespace Game.Data
             Uid = uid;
             Name = name;
         }
+    }
+
+    [Serializable]
+    public sealed class WinData
+    {
+        [JsonProperty(PropertyName = "PlayerId")] public string PlayerId { get; private set; }
+        [JsonProperty(PropertyName = "Reason")] public WinReason Reason { get; private set; }
+        [JsonProperty(PropertyName = "ProcessCount")] public int ProcessCount { get; set; }
+
+        public WinData(string playerId, WinReason reason)
+        {
+            PlayerId = playerId;
+            Reason = reason;
+        }
+    }
+
+    [Serializable]
+    public sealed class SurrenderData
+    {
+        [JsonProperty(PropertyName = "InitiatorUid")] public string InitiatorUid { get; private set; }
+
+        public SurrenderData(string initiatorUid)
+        {
+            InitiatorUid = initiatorUid;
+        }
+    }
+
+    public enum WinReason : byte
+    {
+        None = 0, 
+        BaseCaptured = 1,
+        Surrender = 2
     }
 }

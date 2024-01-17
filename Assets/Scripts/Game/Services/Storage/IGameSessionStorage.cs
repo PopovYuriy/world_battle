@@ -11,6 +11,7 @@ namespace Game.Services.Storage
         
         event SessionStorageEventHandler Updated;
         event SessionStorageEventHandler Deleted;
+        event SessionStorageEventHandler SurrenderDataUpdated;
 
         void Save();
         void Delete();

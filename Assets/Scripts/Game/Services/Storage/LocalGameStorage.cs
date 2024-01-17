@@ -10,6 +10,7 @@ namespace Game.Services.Storage
 
         public event SessionStorageEventHandler Updated;
         public event SessionStorageEventHandler Deleted;
+        public event SessionStorageEventHandler SurrenderDataUpdated;
 
         public void Dispose() { }
 

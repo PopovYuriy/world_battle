@@ -1,15 +1,19 @@
 using System;
+using System.Collections.Generic;
+using Game.Data;
 
 namespace UI.Popups.WinPopup
 {
     public sealed class WinPopupData
     {
-        public string PlayerName { get; }
+        public WinData WinData { get; }
+        public IReadOnlyList<PlayerGameData> Players { get; }
         public Action OnCloseCallback { get; }
 
-        public WinPopupData(string playerName, Action onCloseCallback)
+        public WinPopupData(WinData winData, IReadOnlyList<PlayerGameData> players, Action onCloseCallback)
         {
-            PlayerName = playerName;
+            WinData = winData;
+            Players = players;
             OnCloseCallback = onCloseCallback;
         }
     }

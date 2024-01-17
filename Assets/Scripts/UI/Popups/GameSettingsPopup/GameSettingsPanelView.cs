@@ -1,17 +1,23 @@
+using System;
 using System.Collections.Generic;
+using Core.UI.Components;
+using Core.UI.Screens;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using Button = UnityEngine.UI.Button;
 
-namespace UI.GameScreen.SettingsPopup
+namespace UI.Popups.GameSettingsPopup
 {
-    public sealed class SettingsPanelView : MonoBehaviour
+    public sealed class GameSettingsPanelView : ScreenView
     {
+        [SerializeField] private Button _faderButton;
+        [SerializeField] private TextButton _giveUpButton;
+        [SerializeField] private Button _declareDefeatButton;
+        
         [SerializeField] private Transform _wordsContainer;
         [SerializeField] private WordItem _ownWordPrefab;
         [SerializeField] private WordItem _opposedWordPrefab;
-        [SerializeField] private Button _faderButton;
         [SerializeField] private CanvasGroup _contentCanvasGroup;
         [SerializeField] private Transform _contentTransform;
         [SerializeField] private ScrollRect _scrollRect;
@@ -22,17 +28,25 @@ namespace UI.GameScreen.SettingsPopup
         [SerializeField] private float _duration;
 
         private Tween _tween;
-        
-        private void Start()
+
+        public event Action OnCloseClicked;
+        public event Action OnGiveUpClicked; 
+        public event Action OnDeclareDefeatClicked;
+
+        public override void Initialize()
         {
             _faderButton.onClick.AddListener(CloseClickHandler);
+            _giveUpButton.onClick.AddListener(GiveUpClickHandler);
+            _declareDefeatButton.onClick.AddListener(DeclareDefeatClickHandler);
             _contentCanvasGroup.interactable = false;
         }
 
-        private void OnDestroy()
+        public override void Dispose()
         {
             _tween?.Kill();
             _faderButton.onClick.RemoveListener(CloseClickHandler);
+            _giveUpButton.onClick.RemoveListener(GiveUpClickHandler);
+            _declareDefeatButton.onClick.RemoveListener(DeclareDefeatClickHandler);
         }
 
         public void SetWordsList(IEnumerable<string> words, bool isOwnersFirstTurn)
@@ -50,8 +64,23 @@ namespace UI.GameScreen.SettingsPopup
             CreateWord(word, isOwnerTurn);
             _scrollRect.verticalNormalizedPosition = 0;
         }
+
+        public void SetGiveUpButtonInteractable(bool isInteractable)
+        {
+            _giveUpButton.interactable = isInteractable;
+        }
         
-        public void Show()
+        public void SetDeclareDefeatButtonInteractable(bool isInteractable)
+        {
+            _declareDefeatButton.interactable = isInteractable;
+        }
+
+        public void SetGiveUpButtonLabel(string label)
+        {
+            _giveUpButton.SetLabelText(label);
+        }
+        
+        public void PlayShowAnimation()
         {
             _tween?.Kill();
             _contentTransform.localPosition = new Vector2(_hidedXPosition, _contentTransform.localPosition.y);
@@ -64,7 +93,7 @@ namespace UI.GameScreen.SettingsPopup
                 .OnComplete(() => { _contentCanvasGroup.interactable = true; });
         }
 
-        private void Hide()
+        public void PlayHideAnimation(Action onComplete)
         {
             _tween?.Kill();
             
@@ -72,7 +101,12 @@ namespace UI.GameScreen.SettingsPopup
 
             var targetPosition = new Vector2(_hidedXPosition, _contentTransform.localPosition.y);
             _tween = _contentTransform.DOLocalMove(targetPosition, _duration)
-                .OnComplete(() => { gameObject.SetActive(false); });
+                .OnComplete(() => onComplete?.Invoke());
+        }
+
+        public void SetDeclareDefeatButtonVisible(bool isVisible)
+        {
+            _declareDefeatButton.gameObject.SetActive(isVisible);
         }
 
         private void CreateWord(string word, bool isOwnerTurn)
@@ -82,9 +116,8 @@ namespace UI.GameScreen.SettingsPopup
             wordItem.SetWord(word);
         }
 
-        private void CloseClickHandler()
-        {
-            Hide();
-        }
+        private void CloseClickHandler() => OnCloseClicked?.Invoke();
+        private void GiveUpClickHandler() => OnGiveUpClicked?.Invoke();
+        private void DeclareDefeatClickHandler() => OnDeclareDefeatClicked?.Invoke();
     }
 }

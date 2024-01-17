@@ -6,6 +6,8 @@ namespace Game.Field.Mediators
 {
     public sealed class OnlineGameMediator : GameMediatorAbstract
     {
+        private const int PlayersCount = 2;
+        
         public override IReadOnlyList<PlayerGameData> GetOrderedPlayersList()
         {
             var result = new List<PlayerGameData>(2)
@@ -32,10 +34,13 @@ namespace Game.Field.Mediators
             GameField.TurnOffCellsInteractable();
         }
 
-        protected override void ProcessWinImpl(string winnerPlayerUid)
+        protected override void ProcessWinImpl(WinData winData)
         {
-            if (winnerPlayerUid != OwnerPlayerId)
+            winData.ProcessCount++;
+            if (winData.ProcessCount == PlayersCount)
                 SessionStorage.Delete();
+            else
+                SessionStorage.Save();
         }
 
         protected override void StorageUpdatedImpl()

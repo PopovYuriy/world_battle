@@ -4,7 +4,9 @@ using UI.GameScreen;
 using UI.GamesManagingScreen;
 using UI.LoadingScreen;
 using UI.MainMenuScreen;
+using UI.Popups.ConfirmationPopup;
 using UI.Popups.EnterNamePopup;
+using UI.Popups.GameSettingsPopup;
 using UI.Popups.NewOnlineGamePopup;
 using UI.Popups.WinPopup;
 using UnityEngine;
@@ -25,6 +27,8 @@ namespace App.Installer
         [SerializeField] private ScreenView _newOnlineGamePopupPrefab;
         [SerializeField] private ScreenView _winPopupPrefab;
         [SerializeField] private ScreenView _updateNamePopupPrefab;
+        [SerializeField] private ScreenView _gameSettingsPanelPrefab;
+        [SerializeField] private ScreenView _confirmationPopup;
 
         public override void InstallBindings()
         {
@@ -63,6 +67,14 @@ namespace App.Installer
             
             Container.BindInstance(_updateNamePopupPrefab).WithId(PopupId.UpdateName);
             Container.Bind<IScreenController>().WithId(PopupId.UpdateName).To<UpdateNamePopupController>()
+                .AsTransient();
+            
+            Container.BindInstance(_gameSettingsPanelPrefab).WithId(PopupId.GameSettingsPanel);
+            Container.Bind<IScreenController>().WithId(PopupId.GameSettingsPanel).To<GameSettingsPanelController>()
+                .AsTransient();
+            
+            Container.BindInstance(_confirmationPopup).WithId(PopupId.ConfirmationPopup);
+            Container.Bind<IScreenController>().WithId(PopupId.ConfirmationPopup).To<ConfirmationPopupController>()
                 .AsTransient();
         }
     }

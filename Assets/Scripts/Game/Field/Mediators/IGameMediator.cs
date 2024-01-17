@@ -9,7 +9,7 @@ namespace Game.Field.Mediators
     {
         event Action OnWordChanged;
         event Action OnStorageUpdated;
-        event Action<string> OnWin;
+        event Action<WinData> OnWin;
 
         PlayerGameData CurrentPlayer { get; }
         string CurrentWord { get; }
@@ -18,6 +18,7 @@ namespace Game.Field.Mediators
         void ClearCurrentWord();
         void ApplyCurrentWord();
         void DeleteGame();
+        void ProcessWin();
         IReadOnlyList<PlayerGameData> GetOrderedPlayersList();
     }
 }

@@ -4,7 +4,6 @@ using System.Linq;
 using Game.Data;
 using Game.Services.Storage;
 using UnityEngine;
-using Utils.Extensions;
 
 namespace Game.Field.Mediators
 {
@@ -23,7 +22,7 @@ namespace Game.Field.Mediators
 
         public event Action OnWordChanged;
         public event Action OnStorageUpdated;
-        public event Action<string> OnWin;
+        public event Action<WinData> OnWin;
 
         public void Initialize(GameField gameField, IGameSessionStorage sessionStorage, GameFieldColorsConfig colorConfig, 
             string ownerPlayerId)
@@ -38,8 +37,8 @@ namespace Game.Field.Mediators
 
             ProcessPostInitializing();
             
-            if (!SessionStorage.Data.WinnerPlayerId.IsNullOrEmpty())
-                ProcessWin(SessionStorage.Data.WinnerPlayerId);
+            if (SessionStorage.Data.WinData != null)
+                ProcessWin();
         }
 
         public void Dispose()
@@ -66,14 +65,14 @@ namespace Game.Field.Mediators
 
             var isWin = CheckPlayerWin(playerUid);
             if (isWin)
-                SessionStorage.Data.WinnerPlayerId = playerUid;
+                SessionStorage.Data.WinData = new WinData(playerUid, WinReason.BaseCaptured);
             
             SessionStorage.Save();
             
             ClearCurrentWord();
             
             if (isWin)
-                ProcessWin(playerUid);
+                ProcessWin();
             else
                 ProcessFinishTurn();
         }
@@ -86,23 +85,19 @@ namespace Game.Field.Mediators
         }
 
         protected virtual void ProcessPostInitializing() {}
-
-        protected virtual void ProcessWinImpl(string winnerPlayerUid) { }
+        protected virtual void ProcessWinImpl(WinData winData) { }
 
         protected abstract void ProcessFinishTurn();
         protected abstract void StorageUpdatedImpl();
 
-        private void ProcessWin(string winnerPlayerUid)
+        public void ProcessWin()
         {
+            var winData = SessionStorage.Data.WinData;
             GameField.TurnOffCellsInteractable();
-            ProcessWinImpl(winnerPlayerUid);
-            OnWin?.Invoke(winnerPlayerUid);
+            ProcessWinImpl(winData);
+            OnWin?.Invoke(winData);
         }
-        
-        private PlayerGameData GetOpposedPlayer(string playerUid) => SessionStorage.Data.Players
-            .First(p => p.Uid != playerUid);
 
-        
         private void PickedLettersChangedHandler(string pickedWord)
         {
             CurrentWord = pickedWord;
@@ -125,9 +120,12 @@ namespace Game.Field.Mediators
             
             OnStorageUpdated?.Invoke();
 
-            if (!SessionStorage.Data.WinnerPlayerId.IsNullOrEmpty())
-                ProcessWin(SessionStorage.Data.WinnerPlayerId);
+            if (sender.Data.WinData != null)
+                ProcessWin();
         }
+
+        private PlayerGameData GetOpposedPlayer(string playerUid) => SessionStorage.Data.Players
+            .First(p => p.Uid != playerUid);
         
         private bool CheckOpposedBaseCaptured(string uid)
         {

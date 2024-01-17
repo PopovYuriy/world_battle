@@ -8,7 +8,8 @@ namespace UI.Popups.WinPopup
 {
     public sealed class WinPopupView : ScreenView
     {
-        [SerializeField] private TextMeshProUGUI _playerName;
+        [SerializeField] private TextMeshProUGUI _header;
+        [SerializeField] private TextMeshProUGUI _text;
         [SerializeField] private Button _okButton;
 
         public event Action OnOkClicked;
@@ -23,9 +24,9 @@ namespace UI.Popups.WinPopup
             _okButton.onClick.RemoveListener(OkClickHandler);
         }
 
-        public void SetPlayerName(string name)
+        public void SetText(string text)
         {
-            _playerName.SetText(name);
+            // _playerName.SetText(text);
         }
 
         private void OkClickHandler()

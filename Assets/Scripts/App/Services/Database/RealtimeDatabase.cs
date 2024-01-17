@@ -85,6 +85,26 @@ namespace App.Services.Database
             return result;
         }
 
+        public async Task RemoveGameFromExistGamesList(string gameId)
+        {
+            var usersGamesRoot = GetUsersGamesRoot();
+            var gamesSnapshot = await usersGamesRoot
+                .OrderByKey()
+                .EqualTo(_player.Uid)
+                .LimitToFirst(1)
+                .GetValueAsync();
+            
+            if (!gamesSnapshot.Exists)
+                return;
+
+            var gameIdSnapshot = gamesSnapshot.Children.First().Child(gameId);
+            
+            if (!gamesSnapshot.Exists)
+                return;
+
+            await gameIdSnapshot.Reference.RemoveValueAsync();
+        }
+
         public async Task<DatabaseReference> CreateNewGame(GameSessionData data)
         {
             var newGameRoot = GetGamesRoot().Push();
