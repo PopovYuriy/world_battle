@@ -8,9 +8,10 @@ namespace Game.Services.Storage
     { 
         public GameSessionData Data { get; set; }
 
-        public event SessionStorageEventHandler Updated;
-        public event SessionStorageEventHandler Deleted;
-        public event SessionStorageEventHandler SurrenderDataUpdated;
+        public event SessionStorageEventHandler OnTurn;
+        public event SessionStorageEventHandler OnWin;
+        public event SessionStorageEventHandler OnDeleted;
+        public event SessionStorageEventHandler OnSurrenderDataUpdated;
 
         public void Dispose() { }
 
@@ -18,7 +19,7 @@ namespace Game.Services.Storage
         {
             var jsonData = JsonConvert.SerializeObject(Data);
             PlayerPrefs.SetString(Data.Uid, jsonData);
-            Updated?.Invoke(this);
+            OnTurn?.Invoke(this);
         }
 
         public void Delete()
@@ -27,7 +28,7 @@ namespace Game.Services.Storage
                 return;
             
             PlayerPrefs.DeleteKey(Data.Uid);
-            Deleted?.Invoke(this);
+            OnDeleted?.Invoke(this);
         }
     }
 }

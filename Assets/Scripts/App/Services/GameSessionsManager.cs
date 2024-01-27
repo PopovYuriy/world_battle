@@ -6,9 +6,10 @@ using App.Data.Player;
 using App.Services.Database;
 using App.Services.Database.Controllers;
 using Firebase.Database;
+using Game.Abilities;
 using Game.Data;
 using Game.Grid;
-using Game.Grid.Cell.Model;
+using Game.Grid.Cells.Model;
 using Game.Services;
 using Game.Services.Storage;
 using Newtonsoft.Json;
@@ -25,6 +26,7 @@ namespace App.Services
         
         private RealtimeDatabase _database;
         private IPlayer _player;
+        private AbilityConfigsStorage _abilitiesConfig;
 
         private List<IGameSessionStorage> _storages;
         private PendingGameController _pendingGameController;
@@ -34,10 +36,11 @@ namespace App.Services
         public event Action<IGameSessionStorage> OnPendingGameConnected;
 
         [Inject]
-        private void Construct(RealtimeDatabase database, IPlayer player)
+        private void Construct(RealtimeDatabase database, IPlayer player, AbilityConfigsStorage abilitiesConfig)
         {
             _database = database;
             _player = player;
+            _abilitiesConfig = abilitiesConfig;
         }
 
         public async Task InitializeAsync()
@@ -62,15 +65,15 @@ namespace App.Services
             var guestUser = Player.CreateGuestUser();
             var players = new PlayerGameData[]
             {
-                new (_player.Uid, _player.Name),
-                new (guestUser.Uid, guestUser.Name)
+                new (_player.Uid, _player.Name, _abilitiesConfig.GetDefaultCosts(), true),
+                new (guestUser.Uid, guestUser.Name, _abilitiesConfig.GetDefaultCosts(), true)
             };
             ((LocalGameSessionStorage) LocalStorage).Data = 
                 CreateSessionData(LocalSessionStorageKey, new Vector2Int(5, 5), players);
 
             LocalStorage.Save();
 
-            LocalStorage.Deleted += StorageDeletedHandler;
+            LocalStorage.OnDeleted += StorageOnDeletedHandler;
 
             return LocalStorage;
         }
@@ -96,7 +99,7 @@ namespace App.Services
 
         public async Task DeleteGameForUserAsync(IGameSessionStorage gameSessionStorage)
         {
-            gameSessionStorage.Deleted -= StorageDeletedHandler;
+            gameSessionStorage.OnDeleted -= StorageOnDeletedHandler;
             if (gameSessionStorage == LocalStorage)
             {
                 LocalStorage = null;
@@ -118,8 +121,8 @@ namespace App.Services
             var secondPlayer = await _database.GetPlayer(userId);
             var playersData = new PlayerGameData[]
             {
-                new (_player.Uid, _player.Name),
-                new (secondPlayer.Uid, secondPlayer.Name)
+                new (_player.Uid, _player.Name, _abilitiesConfig.GetDefaultCosts(), true),
+                new (secondPlayer.Uid, secondPlayer.Name, _abilitiesConfig.GetDefaultCosts(), false)
             };
             
             var gameSessionData = CreateSessionData(sessionId, new Vector2Int(5, 5), playersData);
@@ -144,8 +147,8 @@ namespace App.Services
         {
             var gameSessionStorage = new OnlineGameSessionStorage();
             await gameSessionStorage.InitializeDataAsync(gameDatabaseReference, _player.Uid);
-            
-            gameSessionStorage.Deleted += StorageDeletedHandler;
+            UpdateOnlinePlayersIsControllable(gameSessionStorage.Data.Players);
+            gameSessionStorage.OnDeleted += StorageOnDeletedHandler;
             _storages.Add(gameSessionStorage);
             return gameSessionStorage;
         }
@@ -175,7 +178,7 @@ namespace App.Services
                 {
                     var points = x == size.x - 1 || x == 0 ? BasePointsNumber : 0;
                     var playerId = x == size.x - 1 ? players[0].Uid : x == 0 ? players[1].Uid : string.Empty;
-                    var model = new CellModel(letters[letterIndex++], points, playerId);
+                    var model = new CellModel(letterIndex, letters[letterIndex++], points, playerId);
                     cellModels[x][y] = model;
                 }
             }
@@ -192,10 +195,12 @@ namespace App.Services
 
             var data = JsonConvert.DeserializeObject<GameSessionData>(jsonData);
             data.Turns ??= new List<string>();
+            foreach (var player in data.Players)
+                player.IsControllable = true;
 
             LocalStorage = new LocalGameSessionStorage { Data = data };
 
-            LocalStorage.Deleted += StorageDeletedHandler;
+            LocalStorage.OnDeleted += StorageOnDeletedHandler;
         }
 
         private async Task LoadExistGames()
@@ -209,14 +214,21 @@ namespace App.Services
             {
                 var storage = new OnlineGameSessionStorage();
                 await storage.InitializeDataAsync(gameSessionData, _player.Uid);
+                UpdateOnlinePlayersIsControllable(storage.Data.Players);
                 
                 _storages.Add(storage);
             }
         }
         
-        private void StorageDeletedHandler(IGameSessionStorage sender)
+        private void StorageOnDeletedHandler(IGameSessionStorage sender)
         {
             DeleteGameForUserAsync(sender).Run();
+        }
+
+        private void UpdateOnlinePlayersIsControllable(PlayerGameData[] playerGamesData)
+        {
+            foreach (var playerGameData in playerGamesData)
+                playerGameData.IsControllable = playerGameData.Uid == _player.Uid;
         }
     }
 }

@@ -1,4 +1,4 @@
-namespace Game.Grid.Cell.Enum
+namespace Game.Grid.Cells.Enum
 {
     public enum CellState : byte
     {

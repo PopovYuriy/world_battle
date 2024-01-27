@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Game.Grid.Cell.Model;
+using Game.Grid.Cells.Model;
 using Newtonsoft.Json;
 using UnityEngine;
 using Utils.Extensions;

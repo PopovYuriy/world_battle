@@ -18,7 +18,7 @@ namespace UI.GameScreen.Utils
 
         private ILettersProvider _lettersProvider;
         private WordsProvider _wordsProvider;
-        private IGameMediator _gameMediator;
+        private IGamePlayController _gamePlayController;
         private IGameTurnsProvider _turnsProvider;
         private UISystem _uiSystem;
         private bool _openDevPanel;
@@ -34,12 +34,12 @@ namespace UI.GameScreen.Utils
         private float ScreenTopBorder => Screen.safeArea.yMin;
         private float ScreenBottomBorder => Screen.safeArea.yMax;
 
-        public void Initialize(ILettersProvider lettersProvider, WordsProvider wordsProvider, IGameMediator gameMediator,
+        public void Initialize(ILettersProvider lettersProvider, WordsProvider wordsProvider, IGamePlayController gamePlayController,
             IGameTurnsProvider turnsProvider, UISystem uiSystem)
         {
             _lettersProvider = lettersProvider;
             _wordsProvider = wordsProvider;
-            _gameMediator = gameMediator;
+            _gamePlayController = gamePlayController;
             _turnsProvider = turnsProvider;
             _uiSystem = uiSystem;
             
@@ -101,7 +101,7 @@ namespace UI.GameScreen.Utils
             if (DrawGroupButton(2, "Delete game"))
             {
                 _openDevPanel = false;
-                _gameMediator.DeleteGame();
+                _gamePlayController.DeleteGame();
                 _uiSystem.ShowScreen(ScreenId.GamesManaging);
             }
             
@@ -120,7 +120,7 @@ namespace UI.GameScreen.Utils
 
         private string DetermineAvailableWord()
         {
-            var letters = _lettersProvider.GetLettersForPlayer(_gameMediator.CurrentPlayer.Uid);
+            var letters = _lettersProvider.GetLettersForPlayer(_gamePlayController.CurrentPlayer.Uid);
             var words = _wordsProvider.GetAvailableWords(letters, _turnsProvider.TurnsList);
             return words.OrderByDescending(w => w.Length).First();
         }

@@ -27,7 +27,8 @@ namespace Core.UI
         private IScreenController ShowWithId(object id, object data)
         {
             var elementViewPrefab = _diContainer.ResolveId<ScreenView>(id);
-            var elementView = Instantiate(elementViewPrefab, _screenContainer);
+            var elementViewGO = _diContainer.InstantiatePrefab(elementViewPrefab, _screenContainer);
+            var elementView = elementViewGO.GetComponent<ScreenView>();
             var controller = _diContainer.TryResolveId<IScreenController>(id);
             controller.SetView(elementView);
             controller.SetData(data);

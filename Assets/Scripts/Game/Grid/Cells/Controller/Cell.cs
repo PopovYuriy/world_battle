@@ -1,11 +1,11 @@
 using System;
-using Game.Grid.Cell.Enum;
-using Game.Grid.Cell.Model;
+using Game.Grid.Cells.Enum;
+using Game.Grid.Cells.Model;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Game.Grid.Cell.Controller
+namespace Game.Grid.Cells.Controller
 {
     public sealed class Cell : MonoBehaviour
     {
@@ -18,10 +18,12 @@ namespace Game.Grid.Cell.Controller
         [SerializeField] private Button _button;
         [SerializeField] private TextMeshProUGUI _letter;
         [SerializeField] private TextMeshProUGUI _points;
+        
+        [field: SerializeField] public bool IsBase { get; private set; }
 
         public CellState State { get; private set; }
         public CellModel Model { get; private set; }
-        
+
         public event Action<Cell> OnClick;
 
         private void Awake() => _button.onClick.AddListener(ClickHandler);

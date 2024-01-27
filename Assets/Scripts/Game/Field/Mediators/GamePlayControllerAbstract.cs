@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Game.Field.Mediators
 {
-    public abstract class GameMediatorAbstract : IGameMediator
+    public abstract class GamePlayControllerAbstract : IGamePlayController
     {
         public PlayerGameData CurrentPlayer => SessionStorage.Data.LastTurnPlayerId == null 
             ? SessionStorage.Data.Players[0]
@@ -32,21 +32,30 @@ namespace Game.Field.Mediators
             ColorConfig = colorConfig;
             OwnerPlayerId = ownerPlayerId;
 
-            GameField.OnPickedLettersChanged += PickedLettersChangedHandler;
-            SessionStorage.Updated += StorageUpdatedHandler;
-
-            ProcessPostInitializing();
-            
             if (SessionStorage.Data.WinData != null)
                 ProcessWin();
         }
 
         public void Dispose()
         {
-            GameField.OnPickedLettersChanged -= PickedLettersChangedHandler;
-            SessionStorage.Updated -= StorageUpdatedHandler;
+            Deactivate();
         }
-        
+
+        public void Activate()
+        {
+            GameField.Activate();
+            GameField.OnPickedLettersChanged += PickedLettersChangedHandler;
+            SessionStorage.OnTurn += StorageOnTurnHandler;
+            ProcessPostActivating();
+        }
+
+        public void Deactivate()
+        {
+            GameField.Deactivate();
+            GameField.OnPickedLettersChanged -= PickedLettersChangedHandler;
+            SessionStorage.OnTurn -= StorageOnTurnHandler;
+        }
+
         public void ClearCurrentWord()
         {
             CurrentWord = string.Empty;
@@ -56,6 +65,8 @@ namespace Game.Field.Mediators
         public void ApplyCurrentWord()
         {
             GameField.ApplyWordForPlayer(CurrentPlayer.Uid);
+            var earnedPoints = GameField.PickedCells.Sum(c => c.Model.Points);
+            CurrentPlayer.Points += earnedPoints;
 
             var playerUid = CurrentPlayer.Uid;
             SessionStorage.Data.LastTurnPlayerId = playerUid;
@@ -84,7 +95,7 @@ namespace Game.Field.Mediators
             SessionStorage.Delete();
         }
 
-        protected virtual void ProcessPostInitializing() {}
+        protected virtual void ProcessPostActivating() {}
         protected virtual void ProcessWinImpl(WinData winData) { }
 
         protected abstract void ProcessFinishTurn();
@@ -114,7 +125,7 @@ namespace Game.Field.Mediators
             return baseCaptured;
         }
         
-        private void StorageUpdatedHandler(IGameSessionStorage sender)
+        private void StorageOnTurnHandler(IGameSessionStorage sender)
         {
             StorageUpdatedImpl();
             

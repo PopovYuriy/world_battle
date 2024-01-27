@@ -1,3 +1,4 @@
+using Game.Abilities;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +15,8 @@ namespace UI.GameScreen
         [SerializeField] private GameObject _activeState;
         [SerializeField] private Color _normalNameTextColor;
         [SerializeField] private Color _disabledNameTextColor;
+        
+        [field: SerializeField] public AbilitiesController AbilitiesController { get; private set; }
 
         public void Initialize(string name, Color color)
         {

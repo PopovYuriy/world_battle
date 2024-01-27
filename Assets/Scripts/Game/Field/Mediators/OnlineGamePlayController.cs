@@ -4,7 +4,7 @@ using Game.Data;
 
 namespace Game.Field.Mediators
 {
-    public sealed class OnlineGameMediator : GameMediatorAbstract
+    public sealed class OnlineGamePlayController : GamePlayControllerAbstract
     {
         private const int PlayersCount = 2;
         
@@ -18,7 +18,7 @@ namespace Game.Field.Mediators
             return result;
         }
 
-        protected override void ProcessPostInitializing()
+        protected override void ProcessPostActivating()
         {
             GameField.SetColors(ColorConfig.OwnerColor, ColorConfig.OpponentColor);
             GameField.SetGridForPlayer(SessionStorage.Data.Grid, OwnerPlayerId);

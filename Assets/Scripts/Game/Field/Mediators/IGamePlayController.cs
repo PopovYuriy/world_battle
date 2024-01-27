@@ -5,7 +5,7 @@ using Game.Services.Storage;
 
 namespace Game.Field.Mediators
 {
-    public interface IGameMediator : IDisposable
+    public interface IGamePlayController : IDisposable
     {
         event Action OnWordChanged;
         event Action OnStorageUpdated;
@@ -15,6 +15,8 @@ namespace Game.Field.Mediators
         string CurrentWord { get; }
 
         void Initialize(GameField gameField, IGameSessionStorage sessionStorage, GameFieldColorsConfig colorConfig, string ownerPlayerId);
+        void Activate();
+        void Deactivate();
         void ClearCurrentWord();
         void ApplyCurrentWord();
         void DeleteGame();

@@ -4,7 +4,9 @@ using App.Enums;
 using App.Services;
 using Core.UI;
 using Core.UI.Screens;
+using Game.Abilities;
 using Game.Data;
+using Game.Field;
 using Game.Field.Mediators;
 using Game.Services;
 using Game.Services.Storage;
@@ -31,17 +33,20 @@ namespace UI.GameScreen
         private IPlayer _player;
         private GameSessionsManager _gameSessionsManager;
         
-        private IGameMediator _gameMediator;
+        private IGamePlayController _gamePlayController;
         private WordValidator _wordValidator;
         private AvailableLettersProvider _availableLettersProvider;
+        private AbilityConfigsStorage _abilitiesConfig;
 
         [Inject]
-        private void Construct(UISystem uiSystem, GameFieldColorsConfig colorsConfig, IPlayer player, GameSessionsManager gameSessionsManager)
+        private void Construct(UISystem uiSystem, GameFieldColorsConfig colorsConfig, IPlayer player, 
+            GameSessionsManager gameSessionsManager, AbilityConfigsStorage abilitiesConfig)
         {
             _uiSystem = uiSystem;
             _colorsConfig = colorsConfig;
             _player = player;
             _gameSessionsManager = gameSessionsManager;
+            _abilitiesConfig = abilitiesConfig;
         }
         
         public override void Initialize()
@@ -51,17 +56,19 @@ namespace UI.GameScreen
             var wordsProvider = new WordsProvider();
             wordsProvider.Initialize(letters);
             
-            View.GameField.Initialize(Data.GameSessionStorage.Data.Players);
-            _gameMediator = Data.GameMediator;
-            _gameMediator.OnWordChanged += WordChangedHandler;
-            _gameMediator.OnStorageUpdated += StorageUpdatedHandler;
-            _gameMediator.OnWin += WinHandler;
-            _gameMediator.Initialize(View.GameField, Data.GameSessionStorage, _colorsConfig, _player.Uid);
+            View.GridController.Initialize();
+            var gameField = new GameField(Data.GameSessionStorage.Data.Players, View.GridController);
+            _gamePlayController = Data.GamePlayController;
+            _gamePlayController.OnWordChanged += WordChangedHandler;
+            _gamePlayController.OnStorageUpdated += StorageUpdatedHandler;
+            _gamePlayController.OnWin += WinHandler;
+            _gamePlayController.Initialize(gameField, Data.GameSessionStorage, _colorsConfig, _player.Uid);
+            _gamePlayController.Activate();
             
-            Data.GameSessionStorage.SurrenderDataUpdated += SurrenderDataUpdated;
+            Data.GameSessionStorage.OnSurrenderDataUpdated += SurrenderDataUpdated;
 
             _wordValidator = new WordValidator(Data.GameSessionStorage.Data, wordsProvider);
-            _availableLettersProvider = new AvailableLettersProvider(View.GameField);
+            _availableLettersProvider = new AvailableLettersProvider(gameField);
 
             View.OnBack += BackClickHandler;
             View.OnApply += ApplyClickHandler;
@@ -70,25 +77,37 @@ namespace UI.GameScreen
             View.Initialize();
             View.ClearResult();
             View.SetButtonsVisible(false);
-            View.SetPlayers(_gameMediator.GetOrderedPlayersList());
-            View.SetCurrentPlayer(_gameMediator.CurrentPlayer.Uid);
+            View.SetPlayers(_gamePlayController.GetOrderedPlayersList());
+            View.SetCurrentPlayer(_gamePlayController.CurrentPlayer.Uid);
+
+            foreach (var playerGameData in Data.GameSessionStorage.Data.Players)
+            {
+                var abilitiesController = View.GetAbilitiesController(playerGameData.Uid);
+                abilitiesController.Initialize(playerGameData, _abilitiesConfig, Data.GameSessionStorage, _gamePlayController,
+                    _uiSystem);
+
+                if (playerGameData.Uid == _gamePlayController.CurrentPlayer.Uid)
+                    abilitiesController.Activate();
+                else
+                    abilitiesController.Deactivate();
+            }
 
             if (Data.GameSessionStorage.Data.Turns.Count > 0)
                 View.ShowLastTurn(Data.GameSessionStorage.Data.LastTurnPlayerId, Data.GameSessionStorage.Data.Turns.Last());
             
-            View.DevUtils.Initialize(_availableLettersProvider, wordsProvider, _gameMediator, Data.GameSessionStorage.Data,
+            View.DevUtils.Initialize(_availableLettersProvider, wordsProvider, _gamePlayController, Data.GameSessionStorage.Data,
                 _uiSystem);
         }
 
         public override void Dispose()
         {
-            _gameMediator.OnWordChanged -= WordChangedHandler;
-            _gameMediator.OnStorageUpdated -= StorageUpdatedHandler;
-            _gameMediator.OnWin -= WinHandler;
+            _gamePlayController.OnWordChanged -= WordChangedHandler;
+            _gamePlayController.OnStorageUpdated -= StorageUpdatedHandler;
+            _gamePlayController.OnWin -= WinHandler;
+            _gamePlayController.Dispose();
             
-            Data.GameSessionStorage.SurrenderDataUpdated -= SurrenderDataUpdated;
+            Data.GameSessionStorage.OnSurrenderDataUpdated -= SurrenderDataUpdated;
             
-            _gameMediator.Dispose();
             
             View.OnBack -= BackClickHandler;
             View.OnApply -= ApplyClickHandler;
@@ -110,16 +129,18 @@ namespace UI.GameScreen
         
         private void WordChangedHandler()
         {
-            View.UpdateResultWord(_gameMediator.CurrentWord);
-            var isEmptyWord = _gameMediator.CurrentWord.IsNullOrEmpty();
+            View.UpdateResultWord(_gamePlayController.CurrentWord);
+            var isEmptyWord = _gamePlayController.CurrentWord.IsNullOrEmpty();
             View.SetButtonsVisible(!isEmptyWord);
         }
         
         private void StorageUpdatedHandler()
         {
-            View.SetCurrentPlayer(_gameMediator.CurrentPlayer.Uid);
+            View.SetCurrentPlayer(_gamePlayController.CurrentPlayer.Uid);
             var lastTurn = Data.GameSessionStorage.Data.Turns.Last();
             View.ShowLastTurn(Data.GameSessionStorage.Data.LastTurnPlayerId, lastTurn);
+            foreach (var playerGameData in Data.GameSessionStorage.Data.Players)
+                View.GetAbilitiesController(playerGameData.Uid).UpdatePlayerAbilitiesInfo();
         }
         
         private void WinHandler(WinData winData)
@@ -140,21 +161,30 @@ namespace UI.GameScreen
         
         private void ApplyClickHandler()
         {
-            var validationResult = _wordValidator.Validate(_gameMediator.CurrentWord);
+            var validationResult = _wordValidator.Validate(_gamePlayController.CurrentWord);
             switch (validationResult)
             {
                 case ValidationResultType.Valid:
                     View.ClearResult();
                     View.SetButtonsVisible(false);
-                    _gameMediator.ApplyCurrentWord();
-                    View.SetCurrentPlayer(_gameMediator.CurrentPlayer.Uid);
+                    _gamePlayController.ApplyCurrentWord();
+                    foreach (var playerGameData in Data.GameSessionStorage.Data.Players)
+                    {
+                        var abilitiesController = View.GetAbilitiesController(playerGameData.Uid);
+                        abilitiesController.UpdatePlayerAbilitiesInfo();
+                        if (playerGameData.Uid == _gamePlayController.CurrentPlayer.Uid)
+                            abilitiesController.Activate();
+                        else
+                            abilitiesController.Deactivate();
+                    }
+                    View.SetCurrentPlayer(_gamePlayController.CurrentPlayer.Uid);
                     View.ShowLastTurn(Data.GameSessionStorage.Data.LastTurnPlayerId, Data.GameSessionStorage.Data.Turns.Last());
                     break;
                 
                 case ValidationResultType.AlreadyUsed:
                     View.ClearResult();
                     View.SetButtonsVisible(false);
-                    _gameMediator.ClearCurrentWord();
+                    _gamePlayController.ClearCurrentWord();
                     View.ShowInfoField(AlreadyUsedWordMessage);
                     break;
                 
@@ -165,7 +195,7 @@ namespace UI.GameScreen
                 default:
                     View.ClearResult();
                     View.SetButtonsVisible(false);
-                    _gameMediator.ClearCurrentWord();
+                    _gamePlayController.ClearCurrentWord();
                     Debug.LogWarning("Invalid validation result");
                     break;
             }
@@ -175,7 +205,7 @@ namespace UI.GameScreen
         {
             View.ClearResult();
             View.SetButtonsVisible(false);
-            _gameMediator.ClearCurrentWord();
+            _gamePlayController.ClearCurrentWord();
         }
 
         private void SettingsClickHandler()
@@ -218,7 +248,7 @@ namespace UI.GameScreen
 
                 _gameSessionsManager.DeleteGameForUserAsync(Data.GameSessionStorage).Run();
                 
-                _gameMediator.ProcessWin();
+                _gamePlayController.ProcessWin();
             }
 
             void onDecline()

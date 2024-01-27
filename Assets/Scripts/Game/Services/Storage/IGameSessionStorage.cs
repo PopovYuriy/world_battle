@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Game.Data;
 
 namespace Game.Services.Storage
@@ -9,11 +10,14 @@ namespace Game.Services.Storage
     {
         GameSessionData Data { get; }
         
-        event SessionStorageEventHandler Updated;
-        event SessionStorageEventHandler Deleted;
-        event SessionStorageEventHandler SurrenderDataUpdated;
+        event SessionStorageEventHandler OnTurn;
+        event SessionStorageEventHandler OnWin;
+        event SessionStorageEventHandler OnDeleted;
+        event SessionStorageEventHandler OnSurrenderDataUpdated;
 
         void Save();
         void Delete();
+
+        public PlayerGameData GetPlayerData(string playerId) => Data.Players.First(p => p.Uid == playerId);
     }
 }

@@ -31,7 +31,7 @@ namespace App.Commands
             await _scenesLoader.LoadTransitionSceneWithCancellationToken(cancellationToken);
             
             var sessionStorage = _gameSessionsManager.GetExistOrCreateLocalGame();
-            var localGameSessionMediator = new LocalGameMediator();
+            var localGameSessionMediator = new LocalGamePlayController();
             var screenData = new GameScreenData(localGameSessionMediator, sessionStorage);
             
             _uiSystem.ShowScreen(ScreenId.Game, screenData);

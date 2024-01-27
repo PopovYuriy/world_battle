@@ -3,42 +3,46 @@ using System.Collections.Generic;
 using System.Linq;
 using Game.Data;
 using Game.Grid;
-using Game.Grid.Cell.Controller;
-using Game.Grid.Cell.Enum;
-using Game.Grid.Cell.Model;
+using Game.Grid.Cells.Controller;
+using Game.Grid.Cells.Enum;
+using Game.Grid.Cells.Model;
 using ModestTree;
 using UnityEngine;
 
 namespace Game.Field
 {
-    public sealed class GameField : MonoBehaviour
+    public sealed class GameField
     {
         private const int OpposedBaseRowIndex = 0;
         private const int OwnBaseRowIndex = 4;
 
-        [SerializeField] private List<CellsRow> _rows;
+        private GridController _grid;
         
         private PlayerGameData[] _players;
         private Color _capturedStateCellColor;
         private Color _opposedStateCellColor;
-        
-        private List<Cell> _pickedCells;
+
+        public List<Cell> PickedCells { get; }
 
         public event Action<string> OnPickedLettersChanged;
 
-        public void Initialize(PlayerGameData[] players)
+        public GameField(PlayerGameData[] players, GridController grid)
         {
             _players = players;
-
-            InitializeGrid();
+            _grid = grid;
+            _grid.ForEach(cell => cell.SetPicked(false));
             
-            _pickedCells = new List<Cell>(_rows.Count * _rows[0].Cells.Length);
+            PickedCells = new List<Cell>(_grid.Rows * _grid.Columns);
+        }
+
+        public void Activate()
+        {
+            _grid.OnCellClicked += CellClickHandler;
         }
         
-        private void OnDestroy()
+        public void Deactivate()
         {
-            foreach (var cell in _rows.SelectMany(t => t.Cells))
-                cell.OnClick -= CellClickHandler;
+            _grid.OnCellClicked -= CellClickHandler;
         }
 
         public void SetColors(Color capturedCellColor, Color opposedCellColor)
@@ -49,12 +53,12 @@ namespace Game.Field
         
         public void ResetPickedCells()
         {
-            foreach (var cellController in _pickedCells)
+            foreach (var cellController in PickedCells)
             {
                 cellController.SetPicked(false);
                 cellController.SetInteractable(true);
             }
-            _pickedCells.Clear();
+            PickedCells.Clear();
         }
 
         public void SetGridForPlayer(GridModel grid, string uid)
@@ -68,9 +72,9 @@ namespace Game.Field
                     var row = grid.Cells[rowIndex];
                     for (var columnIndex = 0; columnIndex < row.Count; columnIndex++)
                     {
-                        var cell = _rows[rowIndex].Cells[columnIndex];
+                        var cell = _grid.GetCell(rowIndex, columnIndex);
                         var model = row[columnIndex];
-                        UpdateCell(cell, model, uid);
+                        UpdateCellModel(cell, model, uid);
                     }
                 }
             }
@@ -81,9 +85,9 @@ namespace Game.Field
                     var row = grid.Cells[rowIndex].ToArray().Reverse().ToArray();
                     for (var columnIndex = 0; columnIndex < row.Length; columnIndex++)
                     {
-                        var cell = _rows[rowsCount - rowIndex - 1].Cells[columnIndex];
+                        var cell = _grid.GetCell(rowsCount - rowIndex - 1, columnIndex);
                         var model = row[columnIndex];
-                        UpdateCell(cell, model, uid);
+                        UpdateCellModel(cell, model, uid);
                     }
                 }
             }
@@ -91,12 +95,11 @@ namespace Game.Field
 
         public void TurnOffCellsInteractable()
         {
-            for (var rowIndex = 0; rowIndex < _rows.Count; rowIndex++)
+            for (var rowIndex = 0; rowIndex < _grid.Rows; rowIndex++)
             {
-                var row = _rows[rowIndex];
-                for (var columnIndex = 0; columnIndex < row.Cells.Length; columnIndex++)
+                for (var columnIndex = 0; columnIndex < _grid.Columns; columnIndex++)
                 {
-                    var cell = _rows[rowIndex].Cells[columnIndex];
+                    var cell = _grid.GetCell(rowIndex, columnIndex);
                     cell.SetInteractable(false);
                 }
             }
@@ -107,10 +110,9 @@ namespace Game.Field
             var availableCells = GetAvailableCellsForPlayer(uid);
             for (var rowIndex = OwnBaseRowIndex; rowIndex >= 0; rowIndex--)
             {
-                var row = _rows[rowIndex];
-                for (var columnIndex = 0; columnIndex < row.Cells.Length; columnIndex++)
+                for (var columnIndex = 0; columnIndex < _grid.Columns; columnIndex++)
                 {
-                    var cell = row.Cells[columnIndex];
+                    var cell = _grid.GetCell(rowIndex, columnIndex);
                     var isReachable = availableCells.Contains(cell);
                     cell.SetInteractable(isReachable);
                     cell.SetReachable(isReachable);
@@ -120,7 +122,7 @@ namespace Game.Field
 
         public void ApplyWordForPlayer(string uid)
         {
-            foreach (var cell in _pickedCells)
+            foreach (var cell in PickedCells)
             {
                 switch (cell.State)
                 {
@@ -136,9 +138,22 @@ namespace Game.Field
                         cell.UpdatePoints();
                         break;
                     case CellState.Opposed:
+                        cell.Model.SetPoints(0);
                         cell.SetState(CellState.Default);
                         cell.Model.SetPlayerId(string.Empty);
                         break;
+                }
+            }
+        }
+
+        public void UpdateGridCellsStatesForPlayer(string playerUid)
+        {
+            for (var rowIndex = 0; rowIndex < _grid.Rows; rowIndex++)
+            {
+                for (var columnIndex = 0; columnIndex < _grid.Columns; columnIndex++)
+                {
+                    var cell = _grid.GetCell(rowIndex, columnIndex);
+                    UpdateCellStateForPlayer(cell, playerUid);
                 }
             }
         }
@@ -150,44 +165,36 @@ namespace Game.Field
 
         public IEnumerable<CellModel> GetOpposedBaseCellModels()
         {
-            return _rows[OpposedBaseRowIndex].Cells.Select(c => c.Model);
-        }
-
-        private void InitializeGrid()
-        {
-            foreach (var cellsRow in _rows)
-            {
-                for (var y = 0; y < _rows[0].Cells.Length; y++)
-                {
-                    var cell = cellsRow.Cells[y];
-                    cell.OnClick += CellClickHandler;
-                    cell.SetPicked(false);
-                }
-            }
+            return _grid.GetRow(OpposedBaseRowIndex).Select(c => c.Model);
         }
 
         private void CellClickHandler(Cell cell)
         {
-            if (_pickedCells.Contains(cell))
+            if (PickedCells.Contains(cell))
             {
-                _pickedCells.Remove(cell);
+                PickedCells.Remove(cell);
                 cell.SetPicked(false);
             }
             else
             {
-                _pickedCells.Add(cell);
+                PickedCells.Add(cell);
                 cell.SetPicked(true);
             }
             
-            OnPickedLettersChanged?.Invoke(new string(_pickedCells.Select(c => c.Model.Letter).ToArray()));
+            OnPickedLettersChanged?.Invoke(new string(PickedCells.Select(c => c.Model.Letter).ToArray()));
         }
 
-        private void UpdateCell(Cell cell, CellModel model, string playerId)
+        private void UpdateCellModel(Cell cell, CellModel model, string playerId)
         {
             cell.SetModel(model);
-            var state = model.PlayerId == string.Empty
+            UpdateCellStateForPlayer(cell, playerId);
+        }
+
+        private void UpdateCellStateForPlayer(Cell cell, string playerId)
+        {
+            var state = cell.Model.PlayerId == string.Empty
                 ? CellState.Default
-                : model.PlayerId == playerId
+                : cell.Model.PlayerId == playerId
                     ? CellState.Captured
                     : CellState.Opposed;
             cell.SetState(state);
@@ -198,15 +205,14 @@ namespace Game.Field
         
         private IReadOnlyList<Cell> GetAvailableCellsForPlayer(string uid)
         {
-            var result = new List<Cell>(_rows.Count * _rows[0].Cells.Length);
+            var result = new List<Cell>(_grid.Rows * _grid.Columns);
             for (var rowIndex = OwnBaseRowIndex; rowIndex >= 0; rowIndex--)
             {
-                var row = _rows[rowIndex];
-                for (var columnIndex = 0; columnIndex < row.Cells.Length; columnIndex++)
+                for (var columnIndex = 0; columnIndex < _grid.Columns; columnIndex++)
                 {
                     var ownCell = new Vector2Int(rowIndex, columnIndex);
                     var leftCell = new Vector2Int(rowIndex, Mathf.Max(0, columnIndex - 1));
-                    var rightCell = new Vector2Int(rowIndex, Mathf.Min(row.Cells.Length - 1, columnIndex + 1));
+                    var rightCell = new Vector2Int(rowIndex, Mathf.Min(_grid.Columns - 1, columnIndex + 1));
                     var upperCell = new Vector2Int(Mathf.Max(0, rowIndex - 1), columnIndex);
                     var lowerCell = new Vector2Int(Mathf.Min(OwnBaseRowIndex, rowIndex + 1), columnIndex);
 
@@ -217,20 +223,13 @@ namespace Game.Field
                                       || IsCaptured(lowerCell);
                     
                     if (isReachable)
-                        result.Add(row.Cells[columnIndex]);
+                        result.Add(_grid.GetCell(rowIndex, columnIndex));
                 }
             }
 
             return result;
 
-            bool IsCaptured(Vector2Int cellPosition) =>
-                _rows[cellPosition.x].Cells[cellPosition.y].Model.PlayerId == uid;
-        }
-
-        [Serializable]
-        private sealed class CellsRow
-        {
-            [field: SerializeField] public Cell[] Cells { get; private set; }
+            bool IsCaptured(Vector2Int cellPos) => _grid.GetCell(cellPos.x,cellPos.y).Model.PlayerId == uid;
         }
     }
 }

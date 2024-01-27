@@ -39,7 +39,7 @@ namespace UI.Popups.GameSettingsPopup
             var isOwnersFirstTurn = Data.GameSessionStorage.Data.Players.First().Uid == _player.Uid;
             View.SetWordsList(Data.GameSessionStorage.Data.Turns, isOwnersFirstTurn);
             
-            Data.GameSessionStorage.Updated += GameSessionStorageUpdatedHandler;
+            Data.GameSessionStorage.OnTurn += GameSessionStorageOnTurnHandler;
             
             var hasSurrenderData = Data.GameSessionStorage.Data.SurrenderData != null;
             View.SetGiveUpButtonInteractable(true);
@@ -62,7 +62,7 @@ namespace UI.Popups.GameSettingsPopup
             View.OnDeclareDefeatClicked -= DeclareDefeatClickHandler;
             View.OnCloseClicked -= CloseClickHandler;
 
-            Data.GameSessionStorage.Updated -= GameSessionStorageUpdatedHandler;
+            Data.GameSessionStorage.OnTurn -= GameSessionStorageOnTurnHandler;
         }
 
         public override void Show()
@@ -76,7 +76,7 @@ namespace UI.Popups.GameSettingsPopup
             Object.Destroy(View.gameObject);
         }
         
-        private void GameSessionStorageUpdatedHandler(IGameSessionStorage sender)
+        private void GameSessionStorageOnTurnHandler(IGameSessionStorage sender)
         {
             var isOwnersTurn = Data.GameSessionStorage.Data.LastTurnPlayerId == _player.Uid;
             View.AddWord(Data.GameSessionStorage.Data.Turns.Last(), isOwnersTurn);

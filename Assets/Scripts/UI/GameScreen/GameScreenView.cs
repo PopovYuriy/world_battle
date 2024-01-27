@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using Core.UI.Screens;
 using DG.Tweening;
+using Game.Abilities;
 using Game.Data;
-using Game.Field;
+using Game.Grid;
 using TMPro;
 using UI.GameScreen.Utils;
 using UnityEngine;
@@ -27,7 +28,7 @@ namespace UI.GameScreen
         [SerializeField] private PlayerAreaView[] _playerAreaViews;
         [SerializeField] private GameFieldColorsConfig _colorsConfig;
 
-        [field: SerializeField] public GameField GameField { get; private set; }
+        [field: SerializeField] public GridController GridController { get; private set; }
         [field: SerializeField] public GameScreenDevUtils DevUtils { get; private set; }
         
         private readonly Dictionary<string, PlayerAreaView> _playersMap = new(2);
@@ -119,6 +120,8 @@ namespace UI.GameScreen
                     _playersMap[uid].HideLasWord();
             }
         }
+
+        public AbilitiesController GetAbilitiesController(string playerUid) => _playersMap[playerUid].AbilitiesController;
 
         private void BackButtonClickHandler() => OnBack?.Invoke();
         private void ApplyButtonClickHandler() => OnApply?.Invoke();

@@ -3,11 +3,11 @@ using Game.Data;
 
 namespace Game.Field.Mediators
 {
-    public sealed class LocalGameMediator : GameMediatorAbstract
+    public sealed class LocalGamePlayController : GamePlayControllerAbstract
     {
         public override IReadOnlyList<PlayerGameData> GetOrderedPlayersList() => SessionStorage.Data.Players;
 
-        protected override void ProcessPostInitializing()
+        protected override void ProcessPostActivating()
         {
             DetermineUserColors();
             

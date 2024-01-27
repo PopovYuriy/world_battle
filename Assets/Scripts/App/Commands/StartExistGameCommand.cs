@@ -36,11 +36,11 @@ namespace App.Commands
             await _scenesLoader.LoadTransitionSceneWithCancellationToken(cancellationToken);
             
             var gameSessionStorage = _gameSessionsManager.GetGame(_signal.GameUid);
-            IGameMediator gameSessionMediator = _gameSessionsManager.IsLocalGame(_signal.GameUid) 
-                ? new LocalGameMediator()
-                : new OnlineGameMediator();
+            IGamePlayController gameSessionPlayController = _gameSessionsManager.IsLocalGame(_signal.GameUid) 
+                ? new LocalGamePlayController()
+                : new OnlineGamePlayController();
             
-            var screenData = new GameScreenData(gameSessionMediator, gameSessionStorage);
+            var screenData = new GameScreenData(gameSessionPlayController, gameSessionStorage);
             _uiSystem.ShowScreen(ScreenId.Game, screenData);
             
             cancellationToken.Cancel();

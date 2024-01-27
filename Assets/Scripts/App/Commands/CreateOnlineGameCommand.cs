@@ -51,7 +51,7 @@ namespace App.Commands
             _gameSessionsManager.OnPendingGameConnected -= PendingGameConnectedHandler;
             
             _signal.DispatchGameStarted();
-            var onlineGameSessionMediator = new OnlineGameMediator();
+            var onlineGameSessionMediator = new OnlineGamePlayController();
             var screenData = new GameScreenData(onlineGameSessionMediator, gameSessionSessionStorage);
             _uiSystem.ShowScreen(ScreenId.Game, screenData);
         }

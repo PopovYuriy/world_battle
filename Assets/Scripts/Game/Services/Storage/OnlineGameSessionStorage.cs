@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using App.Services.Database.Observers;
 using Firebase.Database;
@@ -20,9 +21,10 @@ namespace Game.Services.Storage
         
         public GameSessionData Data { get; private set; }
         
-        public event SessionStorageEventHandler Updated;
-        public event SessionStorageEventHandler Deleted;
-        public event SessionStorageEventHandler SurrenderDataUpdated;
+        public event SessionStorageEventHandler OnTurn;
+        public event SessionStorageEventHandler OnWin;
+        public event SessionStorageEventHandler OnDeleted;
+        public event SessionStorageEventHandler OnSurrenderDataUpdated;
 
         public async Task InitializeDataAsync(DatabaseReference databaseReference, string ownPlayerId)
         {
@@ -97,7 +99,7 @@ namespace Game.Services.Storage
         private async Task DeleteAsync()
         {
             await _databaseReference.RemoveValueAsync();
-            Deleted?.Invoke(this);
+            OnDeleted?.Invoke(this);
         }
 
         private void PlayerMadeTurnHandler(DatabaseReference dataReference, string playerId)
@@ -119,25 +121,37 @@ namespace Game.Services.Storage
             Data.LastTurnPlayerId = data.LastTurnPlayerId;
             Data.WinData = data.WinData;
             Data.SurrenderData = data.SurrenderData;
-            Updated?.Invoke(this);
+            Data.AbilityData = data.AbilityData;
+            MergePlayersData(Data.Players, data.Players);
+            OnTurn?.Invoke(this);
         }
         
         private void GiveUpDataUpdatedHandler(DatabaseReference dataReference, SurrenderData data)
         {
             Data.SurrenderData = data;
-            SurrenderDataUpdated?.Invoke(this);
+            OnSurrenderDataUpdated?.Invoke(this);
         }
         
         private void GiveUpDataRemovedHandler(DatabaseReference dataReference, SurrenderData data)
         {
             Data.SurrenderData = null;
-            SurrenderDataUpdated?.Invoke(this);
+            OnSurrenderDataUpdated?.Invoke(this);
         }
 
         private void WinDataUpdatedHandler(DatabaseReference dataReference, WinData data)
         {
             Data.WinData = data;
-            Updated?.Invoke(this);
+            OnWin?.Invoke(this);
+        }
+
+        private void MergePlayersData(PlayerGameData[] origin, PlayerGameData[] source)
+        {
+            foreach (var originPlayerData in origin)
+            {
+                var sourcePlayerData = source.First(p => p.Uid == originPlayerData.Uid);
+                originPlayerData.Points = sourcePlayerData.Points;
+                originPlayerData.AbilitiesCosts = sourcePlayerData.AbilitiesCosts;
+            }
         }
     }
 }

@@ -347,7 +347,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _defaultNameField: {fileID: 1360794676521707610}
   _inputField: {fileID: 6319286029893566849}
-  _okButton: {fileID: 8827333934115577400}
+  _okButton: {fileID: 7880253967872633677}
 --- !u!1 &5405573879962898643
 GameObject:
   m_ObjectHideFlags: 0
@@ -1034,14 +1034,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3790971925655308057, guid: 011bc98d9bf6942c8a53a803a89f44ce, type: 3}
   m_PrefabInstance: {fileID: 9063044190012976384}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8827333934115577400 stripped
+--- !u!114 &7880253967872633677 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 524277782705992504, guid: 011bc98d9bf6942c8a53a803a89f44ce, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1196320977807279693, guid: 011bc98d9bf6942c8a53a803a89f44ce, type: 3}
   m_PrefabInstance: {fileID: 9063044190012976384}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 2dacec17fb2c41eab69897d54d7f711e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

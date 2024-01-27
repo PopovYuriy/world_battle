@@ -5,12 +5,12 @@ namespace UI.GameScreen.Data
 {
     public sealed class GameScreenData
     {
-        public IGameMediator GameMediator { get; }
+        public IGamePlayController GamePlayController { get; }
         public IGameSessionStorage GameSessionStorage { get; }
 
-        public GameScreenData(IGameMediator gameMediator, IGameSessionStorage gameSessionStorage)
+        public GameScreenData(IGamePlayController gamePlayController, IGameSessionStorage gameSessionStorage)
         {
-            GameMediator = gameMediator;
+            GamePlayController = gamePlayController;
             GameSessionStorage = gameSessionStorage;
         }
     }
