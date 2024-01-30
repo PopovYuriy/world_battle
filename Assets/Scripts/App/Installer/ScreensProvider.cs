@@ -8,6 +8,7 @@ using UI.Popups.ConfirmationPopup;
 using UI.Popups.EnterNamePopup;
 using UI.Popups.GameSettingsPopup;
 using UI.Popups.NewOnlineGamePopup;
+using UI.Popups.PickLetterPopup;
 using UI.Popups.WinPopup;
 using UnityEngine;
 using Zenject;
@@ -29,6 +30,7 @@ namespace App.Installer
         [SerializeField] private ScreenView _updateNamePopupPrefab;
         [SerializeField] private ScreenView _gameSettingsPanelPrefab;
         [SerializeField] private ScreenView _confirmationPopup;
+        [SerializeField] private ScreenView _pickLetterPopup;
 
         public override void InstallBindings()
         {
@@ -75,6 +77,10 @@ namespace App.Installer
             
             Container.BindInstance(_confirmationPopup).WithId(PopupId.ConfirmationPopup);
             Container.Bind<IScreenController>().WithId(PopupId.ConfirmationPopup).To<ConfirmationPopupController>()
+                .AsTransient();
+            
+            Container.BindInstance(_pickLetterPopup).WithId(PopupId.PickLetter);
+            Container.Bind<IScreenController>().WithId(PopupId.PickLetter).To<PickLetterPopupController>()
                 .AsTransient();
         }
     }

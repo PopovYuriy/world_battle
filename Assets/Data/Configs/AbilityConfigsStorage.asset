@@ -16,3 +16,6 @@ MonoBehaviour:
   - <Type>k__BackingField: 3
     <InitialCost>k__BackingField: 50
     <CostMultiplier>k__BackingField: 2
+  - <Type>k__BackingField: 2
+    <InitialCost>k__BackingField: 30
+    <CostMultiplier>k__BackingField: 2

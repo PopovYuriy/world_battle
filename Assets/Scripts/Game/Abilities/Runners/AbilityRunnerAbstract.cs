@@ -1,20 +1,54 @@
 using System;
 using Core.UI;
 using Game.Data;
+using Game.Grid;
+using Game.Grid.Cells.Controller;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Game.Abilities.Runners
 {
     public abstract class AbilityRunnerAbstract : MonoBehaviour
     {
         [field: SerializeField] public AbilityType AbilityType { get; private set; }
+        [field: SerializeField] protected GridController GridController { get; private set; }
+        [field: SerializeField] protected Button FaderButton { get; private set; }
+
+        protected string InitiatorUid { get; private set; }
+        protected UISystem UiSystem { get; private set; }
+        protected Cell PickedCell { get; private set; }
         
         public event Action<AbilityData> OnApplied;
         public event Action OnDeclined;
+        
 
-        public abstract void Initialize(UISystem uiSystem);
-        public abstract void Run(string initiatorUid);
-        public abstract void Finalize();
+        public virtual void Initialize(UISystem uiSystem)
+        {
+            UiSystem = uiSystem;
+        }
+        
+        public virtual void Run(string initiatorUid)
+        {
+            InitiatorUid = initiatorUid;
+            GridController.OnCellClicked += CellClickedHandler;
+            FaderButton.gameObject.SetActive(true);
+            FaderButton.onClick.AddListener(FaderClickHandler);
+        }
+
+        public virtual void Finalize()
+        {
+            GridController.OnCellClicked -= CellClickedHandler;
+            FaderButton.gameObject.SetActive(false);
+            FaderButton.onClick.RemoveListener(FaderClickHandler);
+        }
+
+        private void CellClickedHandler(Cell cell)
+        {
+            PickedCell = cell;
+            ProcessCellPick(cell);
+        }
+
+        protected abstract void ProcessCellPick(Cell cell);
 
         protected void ProcessApply(AbilityData data)
         {
@@ -24,6 +58,12 @@ namespace Game.Abilities.Runners
         protected void ProcessDecline()
         {
             OnDeclined?.Invoke();
+        }
+        
+        private void FaderClickHandler()
+        {
+            PickedCell?.SetPicked(false);
+            ProcessDecline();
         }
     }
 }

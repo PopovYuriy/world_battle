@@ -8,6 +8,7 @@ namespace App.Enums
         Win = 3,
         UpdateName = 4,
         GameSettingsPanel = 5,
-        ConfirmationPopup = 6
+        ConfirmationPopup = 6,
+        PickLetter = 7
     }
 }

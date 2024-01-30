@@ -25,6 +25,12 @@ namespace Game.Grid.Cells.Model
             OnChanged?.Invoke();
             Points = points;
         }
+
+        public void SetLetter(char letter)
+        {
+            OnChanged?.Invoke();
+            Letter = letter;
+        }
         
         public void SetPlayerId(string playerId) => PlayerId = playerId;
     }

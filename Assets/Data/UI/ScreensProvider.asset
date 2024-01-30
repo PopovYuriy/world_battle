@@ -21,3 +21,4 @@ MonoBehaviour:
   _updateNamePopupPrefab: {fileID: 7308015716563546002, guid: 9e3bef50cf9734c9eb0af821e5559a4e, type: 3}
   _gameSettingsPanelPrefab: {fileID: 4112150553228162855, guid: f1b7c8e0ab4da4c77a67efa25e5c28b5, type: 3}
   _confirmationPopup: {fileID: 7687309074969508543, guid: d0d31f3c24c4c4e4a92225abe41d1e50, type: 3}
+  _pickLetterPopup: {fileID: 1522640886614655917, guid: fe59503b1917e421ca9a4dbc53a1d7ab, type: 3}

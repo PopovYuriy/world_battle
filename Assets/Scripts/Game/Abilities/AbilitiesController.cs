@@ -84,7 +84,11 @@ namespace Game.Abilities
         private void UpdateAbilitiesCost()
         {
             foreach (var abilityView in _abilityViews)
+            {
+                if (!_playerData.AbilitiesCosts.TryGetValue(abilityView.AbilityType, out var cost))
+                    _playerData.AbilitiesCosts = _abilitiesConfig.GetDefaultCosts();
                 abilityView.SetCost(_playerData.AbilitiesCosts[abilityView.AbilityType]);
+            }
         }
 
         private void AbilityActivated(AbilityView abilityView)
