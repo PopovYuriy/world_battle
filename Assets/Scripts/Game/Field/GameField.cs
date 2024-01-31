@@ -50,6 +50,8 @@ namespace Game.Field
             _capturedStateCellColor = capturedCellColor;
             _opposedStateCellColor = opposedCellColor;
         }
+
+        public Cell GetCellById(int cellId) => _grid.GetCell(cellId);
         
         public void ResetPickedCells()
         {
@@ -187,6 +189,7 @@ namespace Game.Field
         private void UpdateCellModel(Cell cell, CellModel model, string playerId)
         {
             cell.SetModel(model);
+            cell.SetLocked(false);
             UpdateCellStateForPlayer(cell, playerId);
         }
 

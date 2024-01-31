@@ -15,6 +15,7 @@ namespace Game.Grid.Cells.Controller
         [SerializeField] private Color _defaultStateTextColor;
         [SerializeField] private GameObject _pickedView;
         [SerializeField] private GameObject _disabledCoverView;
+        [SerializeField] private GameObject _lockedCoverView;
         [SerializeField] private Button _button;
         [SerializeField] private TextMeshProUGUI _letter;
         [SerializeField] private TextMeshProUGUI _points;
@@ -26,9 +27,18 @@ namespace Game.Grid.Cells.Controller
 
         public event Action<Cell> OnClick;
 
-        private void Awake() => _button.onClick.AddListener(ClickHandler);
+        private void Awake()
+        {
+            _button.onClick.AddListener(ClickHandler);
+            SetLocked(false);
+        }
 
-        private void OnDestroy() => _button.onClick.RemoveListener(ClickHandler);
+        private void OnDestroy()
+        {
+            _button.onClick.RemoveListener(ClickHandler);
+            if (Model != null)
+                Model.OnChanged -= ModelChangedHandler;
+        }
 
         public void SetModel(CellModel model)
         {
@@ -59,15 +69,17 @@ namespace Game.Grid.Cells.Controller
         
         public void SetPicked(bool isPicked) => _pickedView.SetActive(isPicked);
 
-        public void SetInteractable(bool isInteractable)
+        public void SetLocked(bool isLocked)
         {
-            _button.interactable = isInteractable;
+            _lockedCoverView.SetActive(isLocked);
+            SetInteractable(!isLocked);
+            SetReachable(!isLocked);
+            _letter.gameObject.SetActive(!isLocked);
         }
 
-        public void SetReachable(bool isReachable)
-        {
-            _disabledCoverView.SetActive(!isReachable);
-        }
+        public void SetInteractable(bool isInteractable) => _button.interactable = isInteractable;
+
+        public void SetReachable(bool isReachable) => _disabledCoverView.SetActive(!isReachable);
 
         public void UpdatePoints()
         {

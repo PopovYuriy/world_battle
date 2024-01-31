@@ -12,7 +12,6 @@ namespace Game.Abilities.Runners
         {
             base.Run(initiatorUid);
             
-            GridController.SetCellsInteractable(true);
             GridController.ForEach(cell =>
             {
                 var isCaptured = cell.State == CellState.Captured || cell.IsBase;
@@ -41,6 +40,7 @@ namespace Game.Abilities.Runners
 
         private void OnCaptureConfirmed()
         {
+            PickedCell.SetPicked(false);
             switch (PickedCell.State)
             {
                 case CellState.Captured:
@@ -52,11 +52,8 @@ namespace Game.Abilities.Runners
                     PickedCell.Model.SetPlayerId(string.Empty);
                     break;
             }
-
-            PickedCell.SetPicked(false);
-            
-            var data = new AbilityData(AbilityType.Capture, InitiatorUid, PickedCell.Model.Id, null);
-            ProcessApply(data);
+            GameSessionData.AbilityData = new AbilityData(AbilityType.Capture, InitiatorUid, PickedCell.Model.Id, -1);
+            ProcessApply();
         }
 
         private void OnCaptureDeclined()

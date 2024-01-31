@@ -47,6 +47,7 @@ namespace Game.Field.Mediators
             GameField.OnPickedLettersChanged += PickedLettersChangedHandler;
             SessionStorage.OnTurn += StorageOnTurnHandler;
             ProcessPostActivating();
+            ApplyModifications();
         }
 
         public void Deactivate()
@@ -86,6 +87,31 @@ namespace Game.Field.Mediators
                 ProcessWin();
             else
                 ProcessFinishTurn();
+            
+            ApplyModifications();
+        }
+
+        private void ApplyModifications()
+        {
+            if (SessionStorage.Data.ModificationsData == null)
+                return;
+
+            var completedLockedCellData = new List<LockedCellData>();
+            foreach (var lockedCellData in SessionStorage.Data.ModificationsData.LockedCells)
+            {
+                var cell = GameField.GetCellById(lockedCellData.CellId);
+                if (SessionStorage.Data.Turns.Count > lockedCellData.FinalTurnNumber)
+                {
+                    cell.SetLocked(false);
+                    completedLockedCellData.Add(lockedCellData);
+                    continue;
+                }
+                
+                cell.SetLocked(true);
+            }
+
+            foreach (var lockedCellData in completedLockedCellData)
+                SessionStorage.Data.ModificationsData.LockedCells.Remove(lockedCellData);
         }
 
         public abstract IReadOnlyList<PlayerGameData> GetOrderedPlayersList();
@@ -130,6 +156,7 @@ namespace Game.Field.Mediators
             StorageUpdatedImpl();
             
             OnStorageUpdated?.Invoke();
+            ApplyModifications();
 
             if (sender.Data.WinData != null)
                 ProcessWin();

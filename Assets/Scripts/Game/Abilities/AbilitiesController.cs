@@ -40,7 +40,7 @@ namespace Game.Abilities
             }
 
             foreach (var abilityRunner in _runners)
-                abilityRunner.Initialize(_uiSystem);
+                abilityRunner.Initialize(_uiSystem, _gameSessionStorage.Data);
             
             UpdatePlayerAbilitiesInfo();
         }
@@ -103,13 +103,12 @@ namespace Game.Abilities
             _currentAbilityRunnerAbstract.Run(_playerData.Uid);
         }
 
-        private void AbilityAppliedHandler(AbilityData data)
+        private void AbilityAppliedHandler()
         {
             _playerData.Points -= _playerData.AbilitiesCosts[_currentAbilityRunnerAbstract.AbilityType];
             _playerData.AbilitiesCosts[_currentAbilityRunnerAbstract.AbilityType] *= _abilitiesConfig
                 .GetConfig(_currentAbilityRunnerAbstract.AbilityType).CostMultiplier;
 
-            _gameSessionStorage.Data.AbilityData = data;
             _gameSessionStorage.Save();
             
             _gamePlayController.Activate();
@@ -121,7 +120,7 @@ namespace Game.Abilities
 
         private void AbilityDeclinedHandler()
         {
-            Activate();
+            UpdateViewsInteractable();
             _gamePlayController.Activate();
 
             FinalizeCurrentRunner();

@@ -10,7 +10,6 @@ namespace Game.Abilities.Runners
         public override void Run(string initiatorUid)
         {
             base.Run(initiatorUid);
-            GridController.SetCellsInteractable(true);
             GridController.ForEach(cell => cell.SetReachable(true));
         }
 
@@ -23,11 +22,11 @@ namespace Game.Abilities.Runners
         
         private void ConfirmHandler(char letter)
         {
-            PickedCell.Model.SetLetter(letter);
             PickedCell.SetPicked(false);
+            PickedCell.Model.SetLetter(letter);
             
-            var data = new AbilityData(AbilityType.Transform, InitiatorUid, PickedCell.Model.Id, null);
-            ProcessApply(data);
+            GameSessionData.AbilityData = new AbilityData(AbilityType.Transform, InitiatorUid, PickedCell.Model.Id, -1);
+            ProcessApply();
         }
 
         private void DeclineHandler()

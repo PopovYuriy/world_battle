@@ -13,6 +13,7 @@ namespace Game.Data
         public const string LastTurnPlayerIdKey = "LastTurnPlayerId";
         public const string WinDataKey = "WinData";
         public const string GiveUpDataKey = "GaveUpData";
+        public const string ModificationsDataKey = "ModificationsData";
         public const string AbilityDataKey = "AbilityData";
         public const string PlayersKey = "Players";
         public const string GridKey = "Grid";
@@ -22,6 +23,7 @@ namespace Game.Data
         [JsonProperty(PropertyName = LastTurnPlayerIdKey)] public string LastTurnPlayerId { get; set; }
         [JsonProperty(PropertyName = WinDataKey)] public WinData WinData { get; set; }
         [JsonProperty(PropertyName = GiveUpDataKey)] public SurrenderData SurrenderData { get; set; }
+        [JsonProperty(PropertyName = ModificationsDataKey)] public ModificationsData ModificationsData { get; set; }
         [JsonProperty(PropertyName = AbilityDataKey)] public AbilityData AbilityData { get; set; }
         [JsonProperty(PropertyName = PlayersKey)] public PlayerGameData[] Players { get; private set; }
         [JsonProperty(PropertyName = GridKey)] public GridModel Grid { get; set; }
@@ -97,14 +99,43 @@ namespace Game.Data
         [JsonProperty(PropertyName = "Type")] public AbilityType Type { get; private set; }
         [JsonProperty(PropertyName = "Initiator")] public string InitiatorUid { get; private set; }
         [JsonProperty(PropertyName = "CellId")] public int CellId { get; private set; }
-        [JsonProperty(PropertyName = "Data")] public string Data { get; private set; }
+        [JsonProperty(PropertyName = "FinalTurnId")] public int FinalTurnId { get; private set; }
 
-        public AbilityData(AbilityType type, string initiatorUid, int cellId, string data)
+        public AbilityData(AbilityType type, string initiatorUid, int cellId, int finalTurnId)
         {
             Type = type;
             InitiatorUid = initiatorUid;
+            FinalTurnId = finalTurnId;
+        }
+    }
+
+    [Serializable]
+    public sealed class ModificationsData
+    {
+        [JsonProperty(PropertyName = "LockedCells")] public List<LockedCellData> LockedCells { get; private set; }
+
+        [JsonConstructor]
+        public ModificationsData(List<LockedCellData> lockedCells)
+        {
+            LockedCells = lockedCells;
+        }
+
+        public ModificationsData()
+        {
+            LockedCells = new List<LockedCellData>();
+        }
+    }
+
+    [Serializable]
+    public sealed class LockedCellData
+    {
+        [JsonProperty(PropertyName = "CellId")] public int CellId { get; private set; }
+        [JsonProperty(PropertyName = "FinalTurnNumber")] public int FinalTurnNumber { get; private set; }
+
+        public LockedCellData(int cellId, int finalTurnNumber)
+        {
             CellId = cellId;
-            Data = data;
+            FinalTurnNumber = finalTurnNumber;
         }
     }
 

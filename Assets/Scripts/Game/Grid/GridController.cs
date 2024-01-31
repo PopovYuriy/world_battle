@@ -39,6 +39,15 @@ namespace Game.Grid
 
         public Cell GetCell(int rowIndex, int columnIndex) => _rows[rowIndex].Cells[columnIndex];
 
+        public Cell GetCell(int cellId)
+        {
+            foreach (var cell in _rows.SelectMany(t => t.Cells))
+                if (cell.Model.Id == cellId)
+                    return cell;
+
+            return null;
+        }
+
         public IEnumerable<Cell> GetRow(int rowIndex) => _rows[rowIndex].Cells;
         
         public void SetCellsInteractable(bool isInteractable)

@@ -16,21 +16,25 @@ namespace Game.Abilities.Runners
 
         protected string InitiatorUid { get; private set; }
         protected UISystem UiSystem { get; private set; }
+        protected GameSessionData GameSessionData { get; private set; }
         protected Cell PickedCell { get; private set; }
         
-        public event Action<AbilityData> OnApplied;
+        public event Action OnApplied;
         public event Action OnDeclined;
-        
 
-        public virtual void Initialize(UISystem uiSystem)
+        public virtual void Initialize(UISystem uiSystem, GameSessionData data)
         {
             UiSystem = uiSystem;
+            GameSessionData = data;
         }
         
         public virtual void Run(string initiatorUid)
         {
             InitiatorUid = initiatorUid;
+            
             GridController.OnCellClicked += CellClickedHandler;
+            GridController.SetCellsInteractable(true);
+            
             FaderButton.gameObject.SetActive(true);
             FaderButton.onClick.AddListener(FaderClickHandler);
         }
@@ -50,9 +54,9 @@ namespace Game.Abilities.Runners
 
         protected abstract void ProcessCellPick(Cell cell);
 
-        protected void ProcessApply(AbilityData data)
+        protected void ProcessApply()
         {
-            OnApplied?.Invoke(data);
+            OnApplied?.Invoke();
         }
 
         protected void ProcessDecline()
