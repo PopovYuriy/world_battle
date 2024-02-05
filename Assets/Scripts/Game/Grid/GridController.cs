@@ -9,7 +9,8 @@ namespace Game.Grid
     public sealed class GridController : MonoBehaviour
     {
         [SerializeField] private List<CellsRow> _rows;
-
+        [field: SerializeField] public Cell ApostropheCell { get; private set; }
+        
         public int Rows { get; private set; }
         public int Columns { get; private set; }
 
@@ -29,12 +30,16 @@ namespace Game.Grid
                     cell.SetPicked(false);
                 }
             }
+
+            ApostropheCell.OnClick += CellClickHandler;
         }
         
         private void OnDestroy()
         {
             foreach (var cell in _rows.SelectMany(t => t.Cells))
                 cell.OnClick -= CellClickHandler;
+            
+            ApostropheCell.OnClick -= CellClickHandler;
         }
 
         public Cell GetCell(int rowIndex, int columnIndex) => _rows[rowIndex].Cells[columnIndex];
@@ -60,6 +65,8 @@ namespace Game.Grid
                     cell.SetInteractable(isInteractable);
                 }
             }
+            
+            ApostropheCell.SetInteractable(isInteractable);
         }
 
         public void ForEach(Action<Cell> action)

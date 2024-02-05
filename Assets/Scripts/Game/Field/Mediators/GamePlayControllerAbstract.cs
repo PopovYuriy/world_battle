@@ -32,6 +32,8 @@ namespace Game.Field.Mediators
             ColorConfig = colorConfig;
             OwnerPlayerId = ownerPlayerId;
 
+            ProcessPostInitializing();
+            
             if (SessionStorage.Data.WinData != null)
                 ProcessWin();
         }
@@ -118,6 +120,7 @@ namespace Game.Field.Mediators
             SessionStorage.Delete();
         }
 
+        protected virtual void ProcessPostInitializing() {}
         protected virtual void ProcessPostActivating() {}
         protected virtual void ProcessWinImpl(WinData winData) { }
 

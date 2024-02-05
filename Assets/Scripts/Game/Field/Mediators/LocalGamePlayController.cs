@@ -7,6 +7,11 @@ namespace Game.Field.Mediators
     {
         public override IReadOnlyList<PlayerGameData> GetOrderedPlayersList() => SessionStorage.Data.Players;
 
+        protected override void ProcessPostInitializing()
+        {
+            UpdateApostropheColor();
+        }
+
         protected override void ProcessPostActivating()
         {
             DetermineUserColors();
@@ -23,7 +28,7 @@ namespace Game.Field.Mediators
         protected override void ProcessFinishTurn()
         {
             DetermineUserColors();
-            
+            UpdateApostropheColor();
             GameField.SetGridForPlayer(SessionStorage.Data.Grid, CurrentPlayer.Uid);
             GameField.UpdateInteractableForPlayer(CurrentPlayer.Uid);
         }
@@ -36,6 +41,12 @@ namespace Game.Field.Mediators
                 GameField.SetColors(ColorConfig.OwnerColor, ColorConfig.OpponentColor);
             else
                 GameField.SetColors(ColorConfig.OpponentColor, ColorConfig.OwnerColor);
+        }
+
+        private void UpdateApostropheColor()
+        {
+            var color = CurrentPlayer.Uid == OwnerPlayerId ? ColorConfig.OwnerColor : ColorConfig.OpponentColor;
+            GameField.SetApostropheCellColor(color);
         }
     }
 }

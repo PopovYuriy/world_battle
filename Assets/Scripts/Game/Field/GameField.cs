@@ -31,7 +31,8 @@ namespace Game.Field
             _players = players;
             _grid = grid;
             _grid.ForEach(cell => cell.SetPicked(false));
-            
+            _grid.ApostropheCell.SetPicked(false);
+            _grid.ApostropheCell.SetModel(new CellModel(-1, '\'', 0, string.Empty));
             PickedCells = new List<Cell>(_grid.Rows * _grid.Columns);
         }
 
@@ -43,6 +44,16 @@ namespace Game.Field
         public void Deactivate()
         {
             _grid.OnCellClicked -= CellClickHandler;
+        }
+
+        public void SetApostropheCellColor(Color color)
+        {
+            _grid.ApostropheCell.SetColor(color);
+        }
+        
+        public void SetApostropheCellInteractable(bool isInteractable)
+        {
+            _grid.ApostropheCell.SetInteractable(isInteractable);
         }
 
         public void SetColors(Color capturedCellColor, Color opposedCellColor)
@@ -97,38 +108,31 @@ namespace Game.Field
 
         public void TurnOffCellsInteractable()
         {
-            for (var rowIndex = 0; rowIndex < _grid.Rows; rowIndex++)
-            {
-                for (var columnIndex = 0; columnIndex < _grid.Columns; columnIndex++)
-                {
-                    var cell = _grid.GetCell(rowIndex, columnIndex);
-                    cell.SetInteractable(false);
-                }
-            }
+            _grid.ForEach(cell => cell.SetInteractable(false));
+            _grid.ApostropheCell.SetInteractable(false);
         }
         
         public void UpdateInteractableForPlayer(string uid)
         {
             var availableCells = GetAvailableCellsForPlayer(uid);
-            for (var rowIndex = OwnBaseRowIndex; rowIndex >= 0; rowIndex--)
+            _grid.ForEach(cell =>
             {
-                for (var columnIndex = 0; columnIndex < _grid.Columns; columnIndex++)
-                {
-                    var cell = _grid.GetCell(rowIndex, columnIndex);
-                    if (cell.Model.IsLocked)
-                        continue;
+                if (cell.Model.IsLocked)
+                    return;
                     
-                    var isReachable = availableCells.Contains(cell);
-                    cell.SetInteractable(isReachable);
-                    cell.SetReachable(isReachable);
-                }
-            }
+                var isReachable = availableCells.Contains(cell);
+                cell.SetInteractable(isReachable);
+                cell.SetReachable(isReachable);
+            });
         }
 
         public void ApplyWordForPlayer(string uid)
         {
             foreach (var cell in PickedCells)
             {
+                if (cell.IsUtilCell)
+                    continue;
+                
                 switch (cell.State)
                 {
                     case CellState.Captured:
@@ -153,14 +157,7 @@ namespace Game.Field
 
         public void UpdateGridCellsStatesForPlayer(string playerUid)
         {
-            for (var rowIndex = 0; rowIndex < _grid.Rows; rowIndex++)
-            {
-                for (var columnIndex = 0; columnIndex < _grid.Columns; columnIndex++)
-                {
-                    var cell = _grid.GetCell(rowIndex, columnIndex);
-                    UpdateCellStateForPlayer(cell, playerUid);
-                }
-            }
+            _grid.ForEach(cell => UpdateCellStateForPlayer(cell, playerUid));
         }
 
         public IReadOnlyList<char> GetAvailableLettersForPlayer(string uid)

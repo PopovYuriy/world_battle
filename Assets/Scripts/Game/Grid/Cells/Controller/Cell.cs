@@ -19,6 +19,8 @@ namespace Game.Grid.Cells.Controller
         [SerializeField] private Button _button;
         [SerializeField] private TextMeshProUGUI _letter;
         [SerializeField] private TextMeshProUGUI _points;
+        [field: SerializeField] public bool IsUtilCell { get; private set; }
+        
         
         [field: SerializeField] public bool IsBase { get; private set; }
 

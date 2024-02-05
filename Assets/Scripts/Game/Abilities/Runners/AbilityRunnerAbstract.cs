@@ -34,6 +34,7 @@ namespace Game.Abilities.Runners
             
             GridController.OnCellClicked += CellClickedHandler;
             GridController.SetCellsInteractable(true);
+            GridController.ApostropheCell.SetInteractable(false);
             
             FaderButton.gameObject.SetActive(true);
             FaderButton.onClick.AddListener(FaderClickHandler);
@@ -43,6 +44,7 @@ namespace Game.Abilities.Runners
         {
             GridController.OnCellClicked -= CellClickedHandler;
             FaderButton.gameObject.SetActive(false);
+            GridController.ApostropheCell.SetInteractable(true);
             FaderButton.onClick.RemoveListener(FaderClickHandler);
         }
 

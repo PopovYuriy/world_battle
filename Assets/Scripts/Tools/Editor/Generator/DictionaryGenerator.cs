@@ -58,7 +58,7 @@ namespace Tools.Editor.Generator
                             continue;
 
                         var word = parts[0];
-                        if (word.Contains('-') || word.Contains('.') || word.Contains('\'') || word.Any(char.IsUpper))
+                        if (word.Contains('-') || word.Contains('.') || word.Any(char.IsUpper))
                         {
                             Debug.Log($"Skipped word :: {word}");
                             continue;
@@ -109,7 +109,7 @@ namespace Tools.Editor.Generator
                     Directory.CreateDirectory(OutFilePath);
                 
                 var files = Directory.GetFiles($"{FilePath}{FilePathWithNouns}")
-                    .Where(f => !f.Contains(".meta"))
+                    .Where(f => !f.Contains(".meta") && !f.Contains(".DS_Store"))
                     .ToArray();
                 var counter = 1;
                 foreach (var file in files)

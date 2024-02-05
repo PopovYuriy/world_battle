@@ -7,7 +7,12 @@ namespace Game.Field.Mediators
     public sealed class OnlineGamePlayController : GamePlayControllerAbstract
     {
         private const int PlayersCount = 2;
-        
+
+        protected override void ProcessPostInitializing()
+        {
+            GameField.SetApostropheCellColor(ColorConfig.OwnerColor);
+        }
+
         public override IReadOnlyList<PlayerGameData> GetOrderedPlayersList()
         {
             var result = new List<PlayerGameData>(2)
@@ -47,6 +52,7 @@ namespace Game.Field.Mediators
         {
             GameField.SetGridForPlayer(SessionStorage.Data.Grid, CurrentPlayer.Uid);
             GameField.UpdateInteractableForPlayer(CurrentPlayer.Uid);
+            GameField.SetApostropheCellInteractable(true);
         }
     }
 }

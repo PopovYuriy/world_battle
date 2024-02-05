@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using App.Data.DevMode;
 using App.Enums;
@@ -81,7 +82,7 @@ namespace UI.GameScreen.Utils
 
         private void DrawDevPanel()
         {
-            const int buttonsCount = 5;
+            const int buttonsCount = 6;
             
             var groupWidth = _styleConfig.GroupButtonsDefaultSize.x + _styleConfig.DefaultGroupMargin.left + 
                              _styleConfig.DefaultGroupMargin.right;
@@ -104,20 +105,26 @@ namespace UI.GameScreen.Utils
                 _resultWord = DetermineShortestAvailableWord();
             }
             
-            if (DrawGroupButton(2, "Show turns"))
+            if (DrawGroupButton(2, "Get word with apostrophe"))
+            {
+                _openDevPanel = false;
+                _resultWord = DetermineAvailableWordWithApostrophe();
+            }
+            
+            if (DrawGroupButton(3, "Show turns"))
             {
                 _openDevPanel = false;
                 _openTurnsPanel = true;
             }
             
-            if (DrawGroupButton(3, "Delete game"))
+            if (DrawGroupButton(4, "Delete game"))
             {
                 _openDevPanel = false;
                 _gamePlayController.DeleteGame();
                 _uiSystem.ShowScreen(ScreenId.GamesManaging);
             }
 
-            if (DrawGroupButton(4, "Add 100 points"))
+            if (DrawGroupButton(5, "Add 100 points"))
             {
                 _openDevPanel = false;
                 _gamePlayController.CurrentPlayer.Points += 100;
@@ -140,16 +147,17 @@ namespace UI.GameScreen.Utils
 
         private string DetermineLargestAvailableWord()
         {
-            var letters = _lettersProvider.GetLettersForPlayer(_gamePlayController.CurrentPlayer.Uid);
-            var words = _wordsProvider.GetAvailableWords(letters, _turnsProvider.TurnsList);
-            return words.OrderByDescending(w => w.Length).First();
+            return GetAvailableWords().OrderByDescending(w => w.Length).First();
         }
         
         private string DetermineShortestAvailableWord()
         {
-            var letters = _lettersProvider.GetLettersForPlayer(_gamePlayController.CurrentPlayer.Uid);
-            var words = _wordsProvider.GetAvailableWords(letters, _turnsProvider.TurnsList);
-            return words.OrderByDescending(w => w.Length).Last();
+            return GetAvailableWords().OrderByDescending(w => w.Length).Last();
+        }
+        
+        private string DetermineAvailableWordWithApostrophe()
+        {
+            return GetAvailableWords().FirstOrDefault(w => w.Contains('\''));
         }
 
         private void DrawResultLabel()
@@ -202,6 +210,13 @@ namespace UI.GameScreen.Utils
             }
             
             GUI.EndGroup();
+        }
+
+        private IEnumerable<string> GetAvailableWords()
+        {
+            var letters = new List<char>(_lettersProvider.GetLettersForPlayer(_gamePlayController.CurrentPlayer.Uid));
+            letters.Add('\'');
+            return _wordsProvider.GetAvailableWords(letters, _turnsProvider.TurnsList);
         }
     }
 }
