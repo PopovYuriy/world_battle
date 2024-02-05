@@ -96,7 +96,7 @@ namespace UI.GameScreen
                 View.ShowLastTurn(Data.GameSessionStorage.Data.LastTurnPlayerId, Data.GameSessionStorage.Data.Turns.Last());
             
             View.DevUtils.Initialize(_availableLettersProvider, wordsProvider, _gamePlayController, Data.GameSessionStorage.Data,
-                _uiSystem);
+                _uiSystem, Data.GameSessionStorage, StorageUpdatedHandler);
         }
 
         public override void Dispose()
@@ -139,8 +139,11 @@ namespace UI.GameScreen
             View.SetCurrentPlayer(_gamePlayController.CurrentPlayer.Uid);
             var lastTurn = Data.GameSessionStorage.Data.Turns.Last();
             View.ShowLastTurn(Data.GameSessionStorage.Data.LastTurnPlayerId, lastTurn);
+            
             foreach (var playerGameData in Data.GameSessionStorage.Data.Players)
                 View.GetAbilitiesController(playerGameData.Uid).UpdatePlayerAbilitiesInfo();
+
+            Data.GameSessionStorage.Data.AbilityData = null;
         }
         
         private void WinHandler(WinData winData)

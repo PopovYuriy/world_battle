@@ -75,8 +75,10 @@ namespace Game.Abilities
         {
             foreach (var abilityView in _abilityViews)
             {
+                var isCurrentUser = _playerData.Uid == _gamePlayController.CurrentPlayer.Uid;
+                var isAlreadyUsed = _gameSessionStorage.Data.AbilityData?.InitiatorUid == _playerData.Uid;
                 var isPointsEnough = _playerData.Points >= abilityView.Cost;
-                var isInteractable = isPointsEnough && _playerData.IsControllable;
+                var isInteractable = isCurrentUser && !isAlreadyUsed && isPointsEnough && _playerData.IsControllable;
                 abilityView.SetInteractable(isInteractable);
             }
         }

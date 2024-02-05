@@ -115,6 +115,9 @@ namespace Game.Field
                 for (var columnIndex = 0; columnIndex < _grid.Columns; columnIndex++)
                 {
                     var cell = _grid.GetCell(rowIndex, columnIndex);
+                    if (cell.Model.IsLocked)
+                        continue;
+                    
                     var isReachable = availableCells.Contains(cell);
                     cell.SetInteractable(isReachable);
                     cell.SetReachable(isReachable);
@@ -189,7 +192,6 @@ namespace Game.Field
         private void UpdateCellModel(Cell cell, CellModel model, string playerId)
         {
             cell.SetModel(model);
-            cell.SetLocked(false);
             UpdateCellStateForPlayer(cell, playerId);
         }
 
@@ -219,11 +221,12 @@ namespace Game.Field
                     var upperCell = new Vector2Int(Mathf.Max(0, rowIndex - 1), columnIndex);
                     var lowerCell = new Vector2Int(Mathf.Min(OwnBaseRowIndex, rowIndex + 1), columnIndex);
 
-                    var isReachable = IsCaptured(ownCell) 
+                    var isReachable = !_grid.GetCell(rowIndex,columnIndex).Model.IsLocked
+                                      && (IsCaptured(ownCell) 
                                       || IsCaptured(leftCell)
                                       || IsCaptured(rightCell)
                                       || IsCaptured(upperCell)
-                                      || IsCaptured(lowerCell);
+                                      || IsCaptured(lowerCell));
                     
                     if (isReachable)
                         result.Add(_grid.GetCell(rowIndex, columnIndex));

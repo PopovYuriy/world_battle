@@ -100,14 +100,11 @@ namespace Game.Field.Mediators
             foreach (var lockedCellData in SessionStorage.Data.ModificationsData.LockedCells)
             {
                 var cell = GameField.GetCellById(lockedCellData.CellId);
-                if (SessionStorage.Data.Turns.Count > lockedCellData.FinalTurnNumber)
-                {
-                    cell.SetLocked(false);
-                    completedLockedCellData.Add(lockedCellData);
+                if (SessionStorage.Data.Turns.Count <= lockedCellData.FinalTurnNumber) 
                     continue;
-                }
                 
-                cell.SetLocked(true);
+                cell.Model.SetIsLocked(false);
+                completedLockedCellData.Add(lockedCellData);
             }
 
             foreach (var lockedCellData in completedLockedCellData)

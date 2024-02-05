@@ -69,14 +69,6 @@ namespace Game.Grid.Cells.Controller
         
         public void SetPicked(bool isPicked) => _pickedView.SetActive(isPicked);
 
-        public void SetLocked(bool isLocked)
-        {
-            _lockedCoverView.SetActive(isLocked);
-            SetInteractable(!isLocked);
-            SetReachable(!isLocked);
-            _letter.gameObject.SetActive(!isLocked);
-        }
-
         public void SetInteractable(bool isInteractable) => _button.interactable = isInteractable;
 
         public void SetReachable(bool isReachable) => _disabledCoverView.SetActive(!isReachable);
@@ -92,6 +84,15 @@ namespace Game.Grid.Cells.Controller
         {
             _letter.SetText(new[] {model.Letter});
             UpdatePoints();
+            SetLocked(model.IsLocked);
+        }
+        
+        private void SetLocked(bool isLocked)
+        {
+            _lockedCoverView.SetActive(isLocked);
+            SetInteractable(!isLocked);
+            SetReachable(!isLocked);
+            _letter.gameObject.SetActive(!isLocked);
         }
         
         private void ClickHandler() => OnClick?.Invoke(this);

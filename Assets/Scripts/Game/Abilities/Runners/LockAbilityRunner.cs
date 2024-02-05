@@ -31,8 +31,8 @@ namespace Game.Abilities.Runners
         private void ConfirmHandler()
         {
             PickedCell.SetPicked(false);
-            PickedCell.SetLocked(true);
 
+            PickedCell.Model.SetIsLocked(true);
             GameSessionData.ModificationsData ??= new ModificationsData();
             GameSessionData.ModificationsData.LockedCells.Add(new LockedCellData(PickedCell.Model.Id, GameSessionData.Turns.Count + 1));
             GameSessionData.AbilityData = new AbilityData(AbilityType.Lock, InitiatorUid, PickedCell.Model.Id,

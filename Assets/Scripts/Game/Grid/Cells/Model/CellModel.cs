@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 
 namespace Game.Grid.Cells.Model
 {
@@ -9,6 +10,7 @@ namespace Game.Grid.Cells.Model
         public char Letter { get; private set; }
         public int Points { get; private set; }
         public string PlayerId { get; private set; }
+        public bool IsLocked { get; private set; }
 
         public event Action OnChanged;
 
@@ -19,6 +21,16 @@ namespace Game.Grid.Cells.Model
             Points = points;
             PlayerId = playerId;
         }
+        
+        [JsonConstructor]
+        public CellModel(int id, char letter, int points, string playerId, bool isLocked)
+        {
+            Id = id;
+            Letter = letter;
+            Points = points;
+            PlayerId = playerId;
+            IsLocked = isLocked;
+        }
 
         public void SetPoints(int points)
         {
@@ -28,8 +40,14 @@ namespace Game.Grid.Cells.Model
 
         public void SetLetter(char letter)
         {
-            OnChanged?.Invoke();
             Letter = letter;
+            OnChanged?.Invoke();
+        }
+
+        public void SetIsLocked(bool isLocked)
+        {
+            IsLocked = isLocked;
+            OnChanged?.Invoke();
         }
         
         public void SetPlayerId(string playerId) => PlayerId = playerId;

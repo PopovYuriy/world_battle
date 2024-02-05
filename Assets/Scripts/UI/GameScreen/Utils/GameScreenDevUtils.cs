@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using App.Data.DevMode;
 using App.Enums;
@@ -5,6 +6,7 @@ using Core.UI;
 using Game.Data;
 using Game.Field.Mediators;
 using Game.Services;
+using Game.Services.Storage;
 using Game.Services.Utils;
 using UnityEngine;
 using Utils.Extensions;
@@ -19,11 +21,13 @@ namespace UI.GameScreen.Utils
         private ILettersProvider _lettersProvider;
         private WordsProvider _wordsProvider;
         private IGamePlayController _gamePlayController;
+        private IGameSessionStorage _gameSessionStorage;
         private IGameTurnsProvider _turnsProvider;
         private UISystem _uiSystem;
         private bool _openDevPanel;
         private bool _openTurnsPanel;
         private string _resultWord;
+        private Action _viewUpdate;
 
         private Vector2 _scrollPosition = Vector2.zero;
         
@@ -35,13 +39,15 @@ namespace UI.GameScreen.Utils
         private float ScreenBottomBorder => Screen.safeArea.yMax;
 
         public void Initialize(ILettersProvider lettersProvider, WordsProvider wordsProvider, IGamePlayController gamePlayController,
-            IGameTurnsProvider turnsProvider, UISystem uiSystem)
+            IGameTurnsProvider turnsProvider, UISystem uiSystem, IGameSessionStorage gameSessionStorage, Action viewUpdate)
         {
             _lettersProvider = lettersProvider;
             _wordsProvider = wordsProvider;
             _gamePlayController = gamePlayController;
             _turnsProvider = turnsProvider;
             _uiSystem = uiSystem;
+            _gameSessionStorage = gameSessionStorage;
+            _viewUpdate = viewUpdate;
             
             _isInitialized = true;
         }
@@ -75,7 +81,7 @@ namespace UI.GameScreen.Utils
 
         private void DrawDevPanel()
         {
-            const int buttonsCount = 3;
+            const int buttonsCount = 5;
             
             var groupWidth = _styleConfig.GroupButtonsDefaultSize.x + _styleConfig.DefaultGroupMargin.left + 
                              _styleConfig.DefaultGroupMargin.right;
@@ -86,23 +92,37 @@ namespace UI.GameScreen.Utils
             
             GUI.BeginGroup(groupRect, _styleConfig.DefaultStyle);
 
-            if (DrawGroupButton(0, "Get word"))
+            if (DrawGroupButton(0, "Get largest word"))
             {
                 _openDevPanel = false;
-                _resultWord = DetermineAvailableWord();
+                _resultWord = DetermineLargestAvailableWord();
             }
             
-            if (DrawGroupButton(1, "Show turns"))
+            if (DrawGroupButton(1, "Get shortest word"))
+            {
+                _openDevPanel = false;
+                _resultWord = DetermineShortestAvailableWord();
+            }
+            
+            if (DrawGroupButton(2, "Show turns"))
             {
                 _openDevPanel = false;
                 _openTurnsPanel = true;
             }
             
-            if (DrawGroupButton(2, "Delete game"))
+            if (DrawGroupButton(3, "Delete game"))
             {
                 _openDevPanel = false;
                 _gamePlayController.DeleteGame();
                 _uiSystem.ShowScreen(ScreenId.GamesManaging);
+            }
+
+            if (DrawGroupButton(4, "Add 100 points"))
+            {
+                _openDevPanel = false;
+                _gamePlayController.CurrentPlayer.Points += 100;
+                _gameSessionStorage.Save();
+                _viewUpdate?.Invoke();
             }
             
             GUI.EndGroup();
@@ -118,11 +138,18 @@ namespace UI.GameScreen.Utils
                 _styleConfig.GroupButtonsDefaultStyle);
         }
 
-        private string DetermineAvailableWord()
+        private string DetermineLargestAvailableWord()
         {
             var letters = _lettersProvider.GetLettersForPlayer(_gamePlayController.CurrentPlayer.Uid);
             var words = _wordsProvider.GetAvailableWords(letters, _turnsProvider.TurnsList);
             return words.OrderByDescending(w => w.Length).First();
+        }
+        
+        private string DetermineShortestAvailableWord()
+        {
+            var letters = _lettersProvider.GetLettersForPlayer(_gamePlayController.CurrentPlayer.Uid);
+            var words = _wordsProvider.GetAvailableWords(letters, _turnsProvider.TurnsList);
+            return words.OrderByDescending(w => w.Length).Last();
         }
 
         private void DrawResultLabel()
