@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/firebase_database_url,@string/gcm_defaultSenderId,@string/google_storage_bucket,@string/project_id,@string/google_api_key,@string/google_crash_reporting_api_key,@string/google_app_id">
+  <string name="firebase_database_url" translatable="false">https://word-battle-7fc6a-default-rtdb.europe-west1.firebasedatabase.app</string>
+  <string name="gcm_defaultSenderId" translatable="false">395555636051</string>
+  <string name="google_storage_bucket" translatable="false">word-battle-7fc6a.appspot.com</string>
+  <string name="project_id" translatable="false">word-battle-7fc6a</string>
+  <string name="google_api_key" translatable="false">AIzaSyBhF0xZU3gzG4yxChGWYf79-t1q7BSP1Hg</string>
+  <string name="google_crash_reporting_api_key" translatable="false">AIzaSyBhF0xZU3gzG4yxChGWYf79-t1q7BSP1Hg</string>
+  <string name="google_app_id" translatable="false">1:395555636051:android:a5aa296bfc8e15baded7a6</string>
+</resources>
