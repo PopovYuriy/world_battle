@@ -1,19 +1,13 @@
 {
     "m_SelectedDeviceId": "7DDU8TFMTOCQRCEQ",
     "m_SelectedProcess": {
-        "deviceId": "7DDU8TFMTOCQRCEQ",
-        "name": "com.twentytwomonkeys.wordbattle",
-        "processId": 31448,
+        "deviceId": "",
+        "name": "",
+        "processId": 0,
         "exited": false
     },
     "m_SelectedPriority": 0,
     "m_KnownProcessesForSerialization": [
-        {
-            "deviceId": "7DDU8TFMTOCQRCEQ",
-            "name": "com.twentytwomonkeys.wordbattle",
-            "processId": 10230,
-            "exited": true
-        },
         {
             "deviceId": "7DDU8TFMTOCQRCEQ",
             "name": "com.twentytwomonkeys.wordbattle",
@@ -36,6 +30,12 @@
             "deviceId": "7DDU8TFMTOCQRCEQ",
             "name": "com.twentytwomonkeys.wordbattle",
             "processId": 31448,
+            "exited": true
+        },
+        {
+            "deviceId": "7DDU8TFMTOCQRCEQ",
+            "name": "com.android.launcher",
+            "processId": 3004,
             "exited": false
         }
     ],
@@ -93,7 +93,7 @@
         "AutoCapture": true
     },
     "m_FilterOptions": {
-        "m_Filter": "Token received",
+        "m_Filter": "",
         "m_UseRegularExpressions": false,
         "m_MatchCase": false
     },
