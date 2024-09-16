@@ -30,17 +30,19 @@ exports.touch = functions.database.onValueUpdated({
                             console.log('Player has no token, player : ', player);
                             return;
                         }
-                        sendLastTurnNotification(player, gameData.Uid);
+                        
+                        const playerName = gameData.Players.find((p) => p.Uid === lastTurnPlayerUid).Name;
+                        sendLastTurnNotification(player, playerName, gameData.Uid);
                     });
             });
     }
 )
 
-function sendLastTurnNotification(player, gameId) {
+function sendLastTurnNotification(targetPlayer, opposedPlayerName, gameId) {
     const payload = {
-        token: player.Token,
+        token: targetPlayer.Token,
         notification: {
-            title: `${player.Name} зробив свій хід`,
+            title: `${opposedPlayerName} зробив свій хід`,
             body: `Зробіть хід у відповідь`
         },
         data: {
@@ -54,7 +56,7 @@ function sendLastTurnNotification(player, gameId) {
 
 function sendNotification(payload) {
     admin.messaging().send(payload).then((response) => {
-        console.log('Successfully sent message:', response);
+        console.log('Successfully sent message:', payload.notification.title);
         return {success: true};
     }).catch((error) => {
         console.log('Error during sent message:', error);
