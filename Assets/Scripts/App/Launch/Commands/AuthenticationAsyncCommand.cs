@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using App.Data.Player;
+using App.Services.Database;
 using App.Signals;
 using Core.Commands;
 using Firebase.Auth;
@@ -14,13 +15,13 @@ namespace App.Launch.Commands
         private const string DefaultPlayerNamePrefix = "Гравець-"; 
         
         private IPlayerMutable _player;
-        private SignalBus _signalBus;
+        private RealtimeDatabase _database;
 
         [Inject]
-        private void Construct(IPlayerMutable player, SignalBus signalBus)
+        private void Construct(IPlayerMutable player, RealtimeDatabase database)
         {
             _player = player;
-            _signalBus = signalBus;
+            _database = database;
         }
 
         public async Task Execute()
@@ -39,7 +40,8 @@ namespace App.Launch.Commands
             if (user.DisplayName.IsNullOrEmpty())
             {
                 var name = CreateNewPlayerName(user.UserId);
-                _signalBus.Fire(new UpdateUserNameSignal(name));
+                _player.SetName(name);
+                await _database.TrySaveUser(_player);
             }
             else
             {
