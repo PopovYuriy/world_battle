@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
 using Firebase.Messaging;
 using UnityEngine;
 
@@ -9,35 +8,26 @@ namespace App.Services.PushNotifications.Providers
 {
     public sealed class FirebasePushNotificationsProvider : INotificationsProvider
     {
-        private bool _tokenReceived;
-        
         public string Token { get; private set; }
 
         public event Action<MessageData> OnMessageReceived;
 
         public async Task Initialize()
         {
-            FirebaseMessaging.TokenReceived += TokenReceivedHandler;
+            Token = await FirebaseMessaging.GetTokenAsync();
+            
             FirebaseMessaging.MessageReceived += MessageReceivedHandler;
-
-            await UniTask.WaitUntil(() => _tokenReceived);
         }
 
         public void Dispose()
         {
             FirebaseMessaging.MessageReceived -= MessageReceivedHandler;
         }
-        
-        private void TokenReceivedHandler(object sender, TokenReceivedEventArgs e)
-        {
-            FirebaseMessaging.TokenReceived -= TokenReceivedHandler;
-            Debug.Log($"Token received :: {e.Token}");
-            Token = e.Token;
-            _tokenReceived = true;
-        }
 
         private void MessageReceivedHandler(object sender, MessageReceivedEventArgs e)
         {
+            Debug.Log("MessageReceivedHandler");
+            
             if (!e.Message.Data.TryGetValue(MessageDataFields.Type, out var messageTypeString))
             {
                 Debug.LogWarning("Received message has no type");
