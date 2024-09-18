@@ -60,10 +60,9 @@ namespace CoolishUI
                 }
                 if (blockToggleConsoleTime <= 0f)
                 {
-                    if (Input.touchCount == 3
+                    if (Input.touchCount == 2
                         && Input.GetTouch(0).phase == TouchPhase.Moved
-                        && Input.GetTouch(1).phase == TouchPhase.Moved
-                        && Input.GetTouch(2).phase == TouchPhase.Moved)
+                        && Input.GetTouch(1).phase == TouchPhase.Moved)
                     {
                         isVisible = true;
                         blockToggleConsoleTime = 0.5f;
