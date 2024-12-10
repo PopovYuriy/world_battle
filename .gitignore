@@ -1,10 +1,18 @@
+# General
+/Assets/GeneratedLocalRepo
+/Assets/GeneratedLocalRepo.meta
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
 [Bb]uild/
 [Bb]uilds/
 [Ll]ogs/
-UserSettings/Layouts
+UserSettings/
+
+# Asset bundles folder * metadata.
+!/Assets/StreamingAssets/
+!/Assets/StreamingAssets.meta
+/Assets/StreamingAssets/*
 
 # Visual Studio cache directory
 .vs/
