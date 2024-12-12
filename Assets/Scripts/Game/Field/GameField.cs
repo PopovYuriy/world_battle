@@ -16,7 +16,7 @@ namespace Game.Field
         private const int OpposedBaseRowIndex = 0;
         private const int OwnBaseRowIndex = 4;
 
-        private GridController _grid;
+        private GridView _grid;
         
         private PlayerGameData[] _players;
         private Color _capturedStateCellColor;
@@ -26,7 +26,7 @@ namespace Game.Field
 
         public event Action<string> OnPickedLettersChanged;
 
-        public GameField(PlayerGameData[] players, GridController grid)
+        public GameField(PlayerGameData[] players, GridView grid)
         {
             _players = players;
             _grid = grid;

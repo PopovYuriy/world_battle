@@ -28,7 +28,7 @@ namespace UI.GameScreen
         [SerializeField] private PlayerAreaView[] _playerAreaViews;
         [SerializeField] private GameFieldColorsConfig _colorsConfig;
 
-        [field: SerializeField] public GridController GridController { get; private set; }
+        [field: SerializeField] public GridView GridView { get; private set; }
         [field: SerializeField] public GameScreenDevUtils DevUtils { get; private set; }
         
         private readonly Dictionary<string, PlayerAreaView> _playersMap = new(2);

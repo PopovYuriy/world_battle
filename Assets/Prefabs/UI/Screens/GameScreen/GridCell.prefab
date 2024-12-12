@@ -578,6 +578,7 @@ MonoBehaviour:
   _button: {fileID: 8807150192365767923}
   _letter: {fileID: 8807150194066875546}
   _points: {fileID: 8807150192788428771}
+  <IsUtilCell>k__BackingField: 0
   <IsBase>k__BackingField: 0
 --- !u!114 &4203039774937184497
 MonoBehaviour:

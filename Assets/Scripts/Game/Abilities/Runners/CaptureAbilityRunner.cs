@@ -12,7 +12,7 @@ namespace Game.Abilities.Runners
         {
             base.Run(initiatorUid);
             
-            GridController.ForEach(cell =>
+            GridView.ForEach(cell =>
             {
                 var isCaptured = cell.State == CellState.Captured || cell.IsBase;
                 cell.SetInteractable(!isCaptured);

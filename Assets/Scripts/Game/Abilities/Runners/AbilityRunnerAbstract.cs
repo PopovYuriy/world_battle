@@ -11,7 +11,7 @@ namespace Game.Abilities.Runners
     public abstract class AbilityRunnerAbstract : MonoBehaviour
     {
         [field: SerializeField] public AbilityType AbilityType { get; private set; }
-        [field: SerializeField] protected GridController GridController { get; private set; }
+        [field: SerializeField] protected GridView GridView { get; private set; }
         [field: SerializeField] protected Button FaderButton { get; private set; }
 
         protected string InitiatorUid { get; private set; }
@@ -32,9 +32,9 @@ namespace Game.Abilities.Runners
         {
             InitiatorUid = initiatorUid;
             
-            GridController.OnCellClicked += CellClickedHandler;
-            GridController.SetCellsInteractable(true);
-            GridController.ApostropheCell.SetInteractable(false);
+            GridView.OnCellClicked += CellClickedHandler;
+            GridView.SetCellsInteractable(true);
+            GridView.ApostropheCell.SetInteractable(false);
             
             FaderButton.gameObject.SetActive(true);
             FaderButton.onClick.AddListener(FaderClickHandler);
@@ -42,9 +42,9 @@ namespace Game.Abilities.Runners
 
         public virtual void Finalize()
         {
-            GridController.OnCellClicked -= CellClickedHandler;
+            GridView.OnCellClicked -= CellClickedHandler;
             FaderButton.gameObject.SetActive(false);
-            GridController.ApostropheCell.SetInteractable(true);
+            GridView.ApostropheCell.SetInteractable(true);
             FaderButton.onClick.RemoveListener(FaderClickHandler);
         }
 

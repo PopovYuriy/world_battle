@@ -10,7 +10,7 @@ namespace Game.Abilities.Runners
         public override void Run(string initiatorUid)
         {
             base.Run(initiatorUid);
-            GridController.ForEach(cell => cell.SetReachable(true));
+            GridView.ForEach(cell => cell.SetReachable(true));
         }
 
         protected override void ProcessCellPick(Cell cell)

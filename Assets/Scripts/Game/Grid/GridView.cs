@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Game.Grid
 {
-    public sealed class GridController : MonoBehaviour
+    public sealed class GridView : MonoBehaviour
     {
         [SerializeField] private List<CellsRow> _rows;
         [field: SerializeField] public Cell ApostropheCell { get; private set; }
@@ -58,13 +58,8 @@ namespace Game.Grid
         public void SetCellsInteractable(bool isInteractable)
         {
             foreach (var cellsRow in _rows)
-            {
                 for (var y = 0; y < _rows[0].Cells.Length; y++)
-                {
-                    var cell = cellsRow.Cells[y];
-                    cell.SetInteractable(isInteractable);
-                }
-            }
+                    cellsRow.Cells[y].SetInteractable(isInteractable);
             
             ApostropheCell.SetInteractable(isInteractable);
         }

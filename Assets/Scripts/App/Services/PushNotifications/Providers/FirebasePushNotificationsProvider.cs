@@ -1,8 +1,14 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Firebase.Messaging;
 using UnityEngine;
+using Utils.Extensions;
+
+#if UNITY_IOS
+using Unity.Notifications.iOS;
+#endif
 
 namespace App.Services.PushNotifications.Providers
 {
@@ -14,14 +20,59 @@ namespace App.Services.PushNotifications.Providers
 
         public async Task Initialize()
         {
-            Token = await FirebaseMessaging.GetTokenAsync();
-            
+            #if UNITY_IOS
+            await InitializeIOSNotifications();
+            #endif
+
+            // Subscribe to messaging events
+            FirebaseMessaging.TokenReceived += OnTokenReceived;
             FirebaseMessaging.MessageReceived += MessageReceivedHandler;
+
+            // Get the token
+            await RequestFCMToken();
         }
 
         public void Dispose()
         {
+            FirebaseMessaging.TokenReceived -= OnTokenReceived;
             FirebaseMessaging.MessageReceived -= MessageReceivedHandler;
+        }
+        
+        #if UNITY_IOS
+        private async Task InitializeIOSNotifications()
+        {
+            // Request authorization
+            using var authRequest = new AuthorizationRequest(AuthorizationOption.Alert |
+                                                             AuthorizationOption.Badge |
+                                                             AuthorizationOption.Sound, true);
+            
+            await new WaitUntil(() => authRequest is { IsFinished: true });
+            
+            if (authRequest.Granted)
+                Debug.Log("iOS notification permission granted");
+            else if (authRequest.Error.IsNullOrEmpty())
+                Debug.LogError($"Authorization error: {authRequest.Error}");
+            else
+                Debug.Log("iOS notification permission declined");
+        }
+        #endif
+        
+        private async Task RequestFCMToken()
+        {
+            try
+            {
+                Token = await FirebaseMessaging.GetTokenAsync();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Failed to get FCM token: {ex.Message}");
+            }
+        }
+        
+        private void OnTokenReceived(object sender, TokenReceivedEventArgs token)
+        {
+            Debug.Log($"Received Registration Token: {token.Token}");
+            // Send this token to your server
         }
 
         private void MessageReceivedHandler(object sender, MessageReceivedEventArgs e)

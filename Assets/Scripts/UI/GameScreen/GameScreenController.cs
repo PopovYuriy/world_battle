@@ -56,8 +56,8 @@ namespace UI.GameScreen
             var wordsProvider = new WordsProvider();
             wordsProvider.Initialize(letters);
             
-            View.GridController.Initialize();
-            var gameField = new GameField(Data.GameSessionStorage.Data.Players, View.GridController);
+            View.GridView.Initialize();
+            var gameField = new GameField(Data.GameSessionStorage.Data.Players, View.GridView);
             _gamePlayController = Data.GamePlayController;
             _gamePlayController.OnWordChanged += WordChangedHandler;
             _gamePlayController.OnStorageUpdated += StorageUpdatedHandler;

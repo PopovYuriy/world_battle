@@ -264,7 +264,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <AbilityType>k__BackingField: 1
-  <GridController>k__BackingField: {fileID: 8071663867177178939}
+  <GridView>k__BackingField: {fileID: 0}
   <FaderButton>k__BackingField: {fileID: 1585628105974124495}
 --- !u!1 &1821997737909404372
 GameObject:
@@ -1525,7 +1525,7 @@ GameObject:
   - component: {fileID: 1227132336689840287}
   - component: {fileID: 4536879304576525352}
   m_Layer: 0
-  m_Name: GameScreen
+  m_Name: GameScreenView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1595,7 +1595,7 @@ MonoBehaviour:
   - {fileID: 6336565437177117732}
   - {fileID: 1599311718782157310}
   _colorsConfig: {fileID: 11400000, guid: 4bf8db67aa6aa411f9b0c6ffe78fae63, type: 2}
-  <GridController>k__BackingField: {fileID: 8071663867177178939}
+  <GridView>k__BackingField: {fileID: 8071663867177178939}
   <DevUtils>k__BackingField: {fileID: 7806368444526019937}
 --- !u!222 &3035336873577649030
 CanvasRenderer:
@@ -1894,7 +1894,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <AbilityType>k__BackingField: 2
-  <GridController>k__BackingField: {fileID: 8071663867177178939}
+  <GridView>k__BackingField: {fileID: 0}
   <FaderButton>k__BackingField: {fileID: 1585628105974124495}
 --- !u!1 &4870152177636798589
 GameObject:
@@ -2079,7 +2079,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <AbilityType>k__BackingField: 3
-  <GridController>k__BackingField: {fileID: 8071663867177178939}
+  <GridView>k__BackingField: {fileID: 0}
   <FaderButton>k__BackingField: {fileID: 1585628105974124495}
 --- !u!1 &5356522831480537800
 GameObject:
