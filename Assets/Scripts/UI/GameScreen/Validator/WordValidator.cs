@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using Game.Data;
 using Game.Services;
@@ -18,7 +17,7 @@ namespace UI.GameScreen.Validator
 
         public ValidationResultType Validate(string word)
         {
-            if (_turnsProvider.TurnsList.Contains(word))
+            if (_turnsProvider.TurnsList != null && _turnsProvider.TurnsList.Contains(word))
                 return ValidationResultType.AlreadyUsed;
 
             if (!_wordsProvider.IsValidWord(word))

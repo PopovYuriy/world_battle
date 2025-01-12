@@ -1,3 +1,4 @@
+using Core.API.Common;
 using Firebase.Database;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -7,6 +8,8 @@ namespace App.Services.Database.Observers
     public sealed class ValueAddedObserver<T> : IDataObserver<T>
     {
         private readonly Query _databaseReference;
+        
+        private bool _retrieved;
 
         public event DataChangedHandler<T> OnChangeOccured;
         
@@ -38,11 +41,17 @@ namespace App.Services.Database.Observers
                 return;
             }
             
+            if (!_retrieved)
+            {
+                _retrieved = true;
+                return;
+            }
+            
             if (e.Snapshot.Value == null)
                 return;
 
-            T value = JsonConvert.DeserializeObject<T>(e.Snapshot.GetRawJsonValue());
-            OnChangeOccured?.Invoke(e.Snapshot.Reference, value);
+            var value = JsonConvert.DeserializeObject<T>(e.Snapshot.GetRawJsonValue());
+            OnChangeOccured?.Invoke(value);
         }
     }
 }

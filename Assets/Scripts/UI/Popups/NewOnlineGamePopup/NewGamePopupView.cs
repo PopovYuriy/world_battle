@@ -1,6 +1,5 @@
 using System;
 using Core.UI.Screens;
-using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,7 +21,6 @@ namespace UI.Popups.NewOnlineGamePopup
         
         public string InputText => _inputField.text;
 
-        public event Action OnEditEnd;
         public event Action OnCloseClick;
         public event Action OnCreateOnlineClick;
         public event Action OnFindOnlineClick;
@@ -54,6 +52,7 @@ namespace UI.Popups.NewOnlineGamePopup
         }
 
         public void ShowPendingState() => _pendingState.SetActive(true);
+        public void HidePendingState() => _pendingState.SetActive(false);
 
         public void ShowInfoText(string text)
         {
@@ -67,8 +66,5 @@ namespace UI.Popups.NewOnlineGamePopup
         private void FindButtonClickHandler() => OnFindOnlineClick?.Invoke();
 
         private void CreateLocalClickHandler() => OnCreateLocalClick?.Invoke();
-
-        [UsedImplicitly]
-        public void EndEditHandler() => OnEditEnd?.Invoke();
     }
 }

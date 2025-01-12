@@ -1,10 +1,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using App.Enums;
-using App.Services;
+using App.Modules.GameSessions;
+using App.Modules.GameSessions.API.Enums;
 using Core.Commands;
 using Core.Services.Scene;
 using Core.UI;
+using Cysharp.Threading.Tasks;
 using Game.Field.Mediators;
 using UI.GameScreen.Data;
 using Zenject;
@@ -13,30 +15,43 @@ namespace App.Commands
 {
     public sealed class CreateLocalGameCommand : ICommandAsync
     {
-        private GameSessionsManager _gameSessionsManager;
-        private UISystem _uiSystem;
-        private ScenesLoader _scenesLoader;
+        [Inject] private IGameSessionsManager GameSessionsManager { get; set; }
+        [Inject] private UISystem             UiSystem            { get; set; }
+        [Inject] private ScenesLoader         ScenesLoader        { get; set; }
+        [Inject] private SignalBus            SignalBus           { get; set; }
 
-        [Inject]
-        private void Construct(GameSessionsManager gameSessionsManager, UISystem uiSystem, ScenesLoader scenesLoader)
-        {
-            _gameSessionsManager = gameSessionsManager;
-            _uiSystem = uiSystem;
-            _scenesLoader = scenesLoader;
-        }
+        private bool _hold;
 
         public async Task Execute()
         {
-            var cancellationToken = new CancellationTokenSource();
-            await _scenesLoader.LoadTransitionSceneWithCancellationToken(cancellationToken);
+            if (GameSessionsManager.LocalController != null)
+                return;
+
+            using var cancellationToken = new CancellationTokenSource();
+            await ScenesLoader.LoadTransitionSceneWithCancellationToken(cancellationToken);
+
+            _hold = true;
+            SignalBus.Subscribe<GameSessionsSignal.GameCreatedSignal>(GameCreatedHandler);
+            GameSessionsManager.CreateLocalGame();
             
-            var sessionStorage = _gameSessionsManager.GetExistOrCreateLocalGame();
-            var localGameSessionMediator = new LocalGamePlayController();
-            var screenData = new GameScreenData(localGameSessionMediator, sessionStorage);
-            
-            _uiSystem.ShowScreen(ScreenId.Game, screenData);
+            await UniTask.WaitWhile(() => _hold);
             
             cancellationToken.Cancel();
+        }
+
+        private void GameCreatedHandler(GameSessionsSignal.GameCreatedSignal signal)
+        {
+            if (signal.Arg1 != GameSessionType.Local)
+            {
+                _hold = false;
+                return;
+            }
+            
+            var localGameSessionMediator = new LocalGamePlayController();
+            var screenData = new GameScreenData(localGameSessionMediator, GameSessionsManager.GetGame(signal.Arg2.Uid));
+
+            UiSystem.ShowScreen(ScreenId.Game, screenData);
+            _hold = false;
         }
     }
 }

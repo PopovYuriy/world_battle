@@ -1,6 +1,6 @@
 using App.Data.Player;
+using App.Modules.GameSessions.Data;
 using Core.UI.Screens;
-using Game.Data;
 using UI.Popups.ConfirmationPopup;
 using UnityEngine;
 using Zenject;

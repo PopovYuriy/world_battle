@@ -1,22 +1,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using App.Modules.GameSessions.Controller;
+using App.Modules.GameSessions.Data;
 using Game.Data;
-using Game.Services.Storage;
 using UnityEngine;
 
 namespace Game.Field.Mediators
 {
     public abstract class GamePlayControllerAbstract : IGamePlayController
     {
-        public PlayerGameData CurrentPlayer => SessionStorage.Data.LastTurnPlayerId == null 
-            ? SessionStorage.Data.Players[0]
-            : SessionStorage.Data.Players.First(p => p.Uid != SessionStorage.Data.LastTurnPlayerId);
+        public PlayerGameData CurrentPlayer => SessionController.Data.LastTurnPlayerId == null 
+            ? SessionController.Data.Players[0]
+            : SessionController.Data.Players.First(p => p.Uid != SessionController.Data.LastTurnPlayerId);
 
         public string CurrentWord { get; private set; }
 
         protected GameField GameField { get; private set; }
-        protected IGameSessionStorage SessionStorage { get; private set; }
+        protected IGameSessionController SessionController { get; private set; }
         protected GameFieldColorsConfig ColorConfig { get; private set; }
         protected string OwnerPlayerId { get; private set; }
 
@@ -24,17 +25,17 @@ namespace Game.Field.Mediators
         public event Action OnStorageUpdated;
         public event Action<WinData> OnWin;
 
-        public void Initialize(GameField gameField, IGameSessionStorage sessionStorage, GameFieldColorsConfig colorConfig, 
+        public void Initialize(GameField gameField, IGameSessionController sessionController, GameFieldColorsConfig colorConfig, 
             string ownerPlayerId)
         {
             GameField = gameField;
-            SessionStorage = sessionStorage;
+            SessionController = sessionController;
             ColorConfig = colorConfig;
             OwnerPlayerId = ownerPlayerId;
 
             ProcessPostInitializing();
             
-            if (SessionStorage.Data.WinData != null)
+            if (SessionController.Data.WinData != null)
                 ProcessWin();
         }
 
@@ -47,7 +48,7 @@ namespace Game.Field.Mediators
         {
             GameField.Activate();
             GameField.OnPickedLettersChanged += PickedLettersChangedHandler;
-            SessionStorage.OnTurn += StorageOnTurnHandler;
+            SessionController.OnTurn += ControllerOnTurnHandler;
             ProcessPostActivating();
             ApplyModifications();
         }
@@ -56,7 +57,7 @@ namespace Game.Field.Mediators
         {
             GameField.Deactivate();
             GameField.OnPickedLettersChanged -= PickedLettersChangedHandler;
-            SessionStorage.OnTurn -= StorageOnTurnHandler;
+            SessionController.OnTurn -= ControllerOnTurnHandler;
         }
 
         public void ClearCurrentWord()
@@ -72,16 +73,16 @@ namespace Game.Field.Mediators
             CurrentPlayer.Points += earnedPoints;
 
             var playerUid = CurrentPlayer.Uid;
-            SessionStorage.Data.LastTurnPlayerId = playerUid;
+            SessionController.Data.LastTurnPlayerId = playerUid;
             
-            SessionStorage.Data.Turns ??= new List<string>();
-            SessionStorage.Data.Turns.Add(CurrentWord);
+            SessionController.Data.Turns ??= new List<string>();
+            SessionController.Data.Turns.Add(CurrentWord);
 
             var isWin = CheckPlayerWin(playerUid);
             if (isWin)
-                SessionStorage.Data.WinData = new WinData(playerUid, WinReason.BaseCaptured);
+                SessionController.Data.WinData = new WinData(playerUid, WinReason.BaseCaptured);
             
-            SessionStorage.Save();
+            SessionController.Save();
             
             ClearCurrentWord();
             
@@ -95,14 +96,14 @@ namespace Game.Field.Mediators
 
         private void ApplyModifications()
         {
-            if (SessionStorage.Data.ModificationsData == null)
+            if (SessionController.Data.ModificationsData == null)
                 return;
 
             var completedLockedCellData = new List<LockedCellData>();
-            foreach (var lockedCellData in SessionStorage.Data.ModificationsData.LockedCells)
+            foreach (var lockedCellData in SessionController.Data.ModificationsData.LockedCells)
             {
                 var cell = GameField.GetCellById(lockedCellData.CellId);
-                if (SessionStorage.Data.Turns.Count <= lockedCellData.FinalTurnNumber) 
+                if (SessionController.Data.Turns.Count <= lockedCellData.FinalTurnNumber) 
                     continue;
                 
                 cell.Model.SetIsLocked(false);
@@ -110,14 +111,14 @@ namespace Game.Field.Mediators
             }
 
             foreach (var lockedCellData in completedLockedCellData)
-                SessionStorage.Data.ModificationsData.LockedCells.Remove(lockedCellData);
+                SessionController.Data.ModificationsData.LockedCells.Remove(lockedCellData);
         }
 
         public abstract IReadOnlyList<PlayerGameData> GetOrderedPlayersList();
 
         public void DeleteGame()
         {
-            SessionStorage.Delete();
+            SessionController.Delete();
         }
 
         protected virtual void ProcessPostInitializing() {}
@@ -129,7 +130,7 @@ namespace Game.Field.Mediators
 
         public void ProcessWin()
         {
-            var winData = SessionStorage.Data.WinData;
+            var winData = SessionController.Data.WinData;
             GameField.TurnOffCellsInteractable();
             ProcessWinImpl(winData);
             OnWin?.Invoke(winData);
@@ -151,7 +152,7 @@ namespace Game.Field.Mediators
             return baseCaptured;
         }
         
-        private void StorageOnTurnHandler(IGameSessionStorage sender)
+        private void ControllerOnTurnHandler(IGameSessionController sender)
         {
             StorageUpdatedImpl();
             
@@ -162,7 +163,7 @@ namespace Game.Field.Mediators
                 ProcessWin();
         }
 
-        private PlayerGameData GetOpposedPlayer(string playerUid) => SessionStorage.Data.Players
+        private PlayerGameData GetOpposedPlayer(string playerUid) => SessionController.Data.Players
             .First(p => p.Uid != playerUid);
         
         private bool CheckOpposedBaseCaptured(string uid)

@@ -11,6 +11,12 @@ namespace Core.Commands
             var signalType = typeof(TSignal);
             BindSignalToCommandImpl(container, signalType, typeof(TCommand), false);
         }
+        
+        public static void BindSignalToAsyncCommand<TSignal, TCommand>(this DiContainer container) where TCommand : ICommandAsync
+        {
+            var signalType = typeof(TSignal);
+            BindSignalToCommandImpl(container, signalType, typeof(TCommand), false);
+        }
 
         public static void DeclareSignalAndBindToCommand<TSignal, TCommand>(this DiContainer container)
             where TCommand : ICommand

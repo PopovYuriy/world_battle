@@ -1,12 +1,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using App.Enums;
-using App.Services;
+using App.Modules.GameSessions;
 using App.Signals;
 using Core.Commands;
 using Core.Services.Scene;
 using Core.UI;
-using Cysharp.Threading.Tasks;
 using Game.Field.Mediators;
 using UI.GameScreen.Data;
 using Zenject;
@@ -15,20 +14,10 @@ namespace App.Commands
 {
     public sealed class StartExistGameCommand : ICommandAsync
     {
-        private StartExistGameSignal _signal;
-        private GameSessionsManager _gameSessionsManager;
-        private UISystem _uiSystem;
-        private ScenesLoader _scenesLoader;
-
-        [Inject]
-        private void Construct(StartExistGameSignal signal, GameSessionsManager gameSessionsManager, UISystem uiSystem,
-            ScenesLoader scenesLoader)
-        {
-            _signal = signal;
-            _gameSessionsManager = gameSessionsManager;
-            _uiSystem = uiSystem;
-            _scenesLoader = scenesLoader;
-        }
+        [Inject] private StartExistGameSignal _signal;
+        [Inject] private IGameSessionsManager _gameSessionsManager;
+        [Inject] private UISystem _uiSystem;
+        [Inject] private ScenesLoader _scenesLoader;
 
         public async Task Execute()
         {

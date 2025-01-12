@@ -14,7 +14,7 @@ namespace Core.UI.Components.Layout
         {
             var parentTransform = (RectTransform) _gridContainer.parent;
             float containerWidth = parentTransform.rect.width;
-            float totalPaddingWidth = (_gridLayout.constraintCount - 1) * _gridLayout.spacing.x 
+            float totalPaddingWidth = (_gridLayout.constraintCount - 1) * _gridLayout.spacing.x
                                       + _gridLayout.padding.left + _gridLayout.padding.right;
             float adjustedItemWidth = (containerWidth - totalPaddingWidth) / _gridLayout.constraintCount;
 

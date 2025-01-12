@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Game.Data;
+using App.Modules.GameSessions.Data;
 
 namespace UI.Popups.WinPopup
 {

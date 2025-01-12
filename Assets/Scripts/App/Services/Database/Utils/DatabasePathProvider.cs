@@ -1,27 +1,21 @@
 namespace App.Services.Database.Utils
 {
-    public sealed class DatabasePathProvider
+    public static class DatabasePathProvider
     {
-        private const string GamesNode = "games";
-        private const string PendingGameNode = "pending";
+        public static string Games { get; }
+        public static string PendingGames { get; }
+        public static string Users { get; }
+        public static string UserGames { get; }
 
-        private const string UsersNode = "users";
-        private const string UsersGamesNode = "usersGames";
-
-        public string Games { get; }
-        public string PendingGames { get; }
-        public string Users { get; }
-        public string UserGames { get; }
-
-        public DatabasePathProvider()
+        static DatabasePathProvider()
         {
-            Games = GeneratePath(GamesNode);
-            PendingGames = GeneratePath(PendingGameNode);
-            Users = GeneratePath(UsersNode);
-            UserGames = GeneratePath(UsersGamesNode);
+            Games = GeneratePath("games");
+            PendingGames = GeneratePath("pending");
+            Users = GeneratePath("users");
+            UserGames = GeneratePath("usersGames");
         }
         
-        public string GeneratePath(params string[] nodes)
+        public static string GeneratePath(params string[] nodes)
         {
             var result = "/";
             foreach (var node in nodes)

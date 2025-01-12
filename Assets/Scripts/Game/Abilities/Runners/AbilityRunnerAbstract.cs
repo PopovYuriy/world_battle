@@ -1,6 +1,6 @@
 using System;
+using App.Modules.GameSessions.Data;
 using Core.UI;
-using Game.Data;
 using Game.Grid;
 using Game.Grid.Cells.Controller;
 using UnityEngine;

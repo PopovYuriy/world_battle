@@ -1,14 +1,14 @@
-using Game.Services.Storage;
+using App.Modules.GameSessions.Controller;
 
 namespace UI.Popups.GameSettingsPopup
 {
     public sealed class GameSettingsPanelData
     {
-        public IGameSessionStorage GameSessionStorage { get; }
+        public IGameSessionController GameSessionController { get; }
 
-        public GameSettingsPanelData(IGameSessionStorage gameSessionStorage)
+        public GameSettingsPanelData(IGameSessionController gameSessionController)
         {
-            GameSessionStorage = gameSessionStorage;
+            GameSessionController = gameSessionController;
         }
     }
 }

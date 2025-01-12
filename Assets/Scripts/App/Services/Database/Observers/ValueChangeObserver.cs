@@ -1,3 +1,4 @@
+using Core.API.Common;
 using Firebase.Database;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -6,15 +7,15 @@ namespace App.Services.Database.Observers
 {
     public sealed class ValueChangeObserver<T> : IDataObserver<T>
     {
-        private readonly Query _databaseReference;
+        private readonly Query _databaseQuery;
 
         private bool _retrieved;
 
         public event DataChangedHandler<T> OnChangeOccured;
 
-        public ValueChangeObserver(Query databaseReference)
+        public ValueChangeObserver(Query databaseQuery)
         {
-            _databaseReference = databaseReference;
+            _databaseQuery = databaseQuery;
         }
 
         public void Dispose()
@@ -24,12 +25,12 @@ namespace App.Services.Database.Observers
 
         public void Observe()
         {
-            _databaseReference.ValueChanged += ValueChangedHandler;
+            _databaseQuery.ValueChanged += ValueChangedHandler;
         }
 
         public void Stop()
         {
-            _databaseReference.ValueChanged -= ValueChangedHandler;
+            _databaseQuery.ValueChanged -= ValueChangedHandler;
         }
 
         private void ValueChangedHandler(object sender, ValueChangedEventArgs e)
@@ -49,8 +50,8 @@ namespace App.Services.Database.Observers
             if (e.Snapshot.Value == null)
                 return;
 
-            T value = JsonConvert.DeserializeObject<T>(e.Snapshot.GetRawJsonValue());
-            OnChangeOccured?.Invoke(e.Snapshot.Reference, value);
+            var value = JsonConvert.DeserializeObject<T>(e.Snapshot.GetRawJsonValue());
+            OnChangeOccured?.Invoke(value);
         }
     }
 }

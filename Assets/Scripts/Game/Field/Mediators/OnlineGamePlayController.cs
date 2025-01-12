@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Game.Data;
+using App.Modules.GameSessions.Data;
 
 namespace Game.Field.Mediators
 {
@@ -17,8 +17,8 @@ namespace Game.Field.Mediators
         {
             var result = new List<PlayerGameData>(2)
             {
-                SessionStorage.Data.Players.First(p => p.Uid == OwnerPlayerId),
-                SessionStorage.Data.Players.First(p => p.Uid != OwnerPlayerId)
+                SessionController.Data.Players.First(p => p.Uid == OwnerPlayerId),
+                SessionController.Data.Players.First(p => p.Uid != OwnerPlayerId)
             };
             return result;
         }
@@ -26,7 +26,7 @@ namespace Game.Field.Mediators
         protected override void ProcessPostActivating()
         {
             GameField.SetColors(ColorConfig.OwnerColor, ColorConfig.OpponentColor);
-            GameField.SetGridForPlayer(SessionStorage.Data.Grid, OwnerPlayerId);
+            GameField.SetGridForPlayer(SessionController.Data.Grid, OwnerPlayerId);
             
             if (CurrentPlayer.Uid != OwnerPlayerId)
                 GameField.TurnOffCellsInteractable();
@@ -43,14 +43,14 @@ namespace Game.Field.Mediators
         {
             winData.ProcessCount++;
             if (winData.ProcessCount == PlayersCount)
-                SessionStorage.Delete();
+                SessionController.Delete();
             else
-                SessionStorage.Save();
+                SessionController.Save();
         }
 
         protected override void StorageUpdatedImpl()
         {
-            GameField.SetGridForPlayer(SessionStorage.Data.Grid, CurrentPlayer.Uid);
+            GameField.SetGridForPlayer(SessionController.Data.Grid, CurrentPlayer.Uid);
             GameField.UpdateInteractableForPlayer(CurrentPlayer.Uid);
             GameField.SetApostropheCellInteractable(true);
         }

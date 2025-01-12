@@ -1,31 +1,13 @@
 {
     "m_SelectedDeviceId": "7DDU8TFMTOCQRCEQ",
     "m_SelectedProcess": {
-        "deviceId": "",
-        "name": "",
-        "processId": 0,
+        "deviceId": "7DDU8TFMTOCQRCEQ",
+        "name": "com.twentytwomonkeys.wordbattle",
+        "processId": 26928,
         "exited": false
     },
     "m_SelectedPriority": 0,
     "m_KnownProcessesForSerialization": [
-        {
-            "deviceId": "7DDU8TFMTOCQRCEQ",
-            "name": "com.twentytwomonkeys.wordbattle",
-            "processId": 26876,
-            "exited": true
-        },
-        {
-            "deviceId": "7DDU8TFMTOCQRCEQ",
-            "name": "com.twentytwomonkeys.wordbattle",
-            "processId": 27321,
-            "exited": true
-        },
-        {
-            "deviceId": "7DDU8TFMTOCQRCEQ",
-            "name": "com.twentytwomonkeys.wordbattle",
-            "processId": 28768,
-            "exited": true
-        },
         {
             "deviceId": "7DDU8TFMTOCQRCEQ",
             "name": "com.twentytwomonkeys.wordbattle",
@@ -36,6 +18,24 @@
             "deviceId": "7DDU8TFMTOCQRCEQ",
             "name": "com.android.launcher",
             "processId": 3004,
+            "exited": true
+        },
+        {
+            "deviceId": "7DDU8TFMTOCQRCEQ",
+            "name": "com.twentytwomonkeys.wordbattle",
+            "processId": 5996,
+            "exited": true
+        },
+        {
+            "deviceId": "7DDU8TFMTOCQRCEQ",
+            "name": "com.twentytwomonkeys.wordbattle",
+            "processId": 7375,
+            "exited": true
+        },
+        {
+            "deviceId": "7DDU8TFMTOCQRCEQ",
+            "name": "com.twentytwomonkeys.wordbattle",
+            "processId": 26928,
             "exited": false
         }
     ],
@@ -108,6 +108,13 @@
         "BitRateK": 20000,
         "DisplayIdEnabled": false,
         "DisplayId": ""
+    },
+    "m_ScreenCaptureSettings": {
+        "Mode": 0,
+        "m_LastSaveLocation": [
+            "/Users/yuriypopov/Desktop/projects/Pet/word_battle",
+            "/Users/yuriypopov/Desktop/projects/Pet/word_battle"
+        ]
     },
     "m_InputSettings": {
         "ShiftModifier": false,

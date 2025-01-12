@@ -1,5 +1,5 @@
 using App.Enums;
-using Game.Data;
+using App.Modules.GameSessions.Data;
 using Game.Grid.Cells.Controller;
 using UI.Popups.PickLetterPopup;
 

@@ -1,3 +1,4 @@
+using Core.API.Common;
 using Firebase.Database;
 using UnityEngine;
 
@@ -37,7 +38,7 @@ namespace App.Services.Database.Observers
                 return;
             }
 
-            OnChangeOccured?.Invoke(e.Snapshot.Reference, default);
+            OnChangeOccured?.Invoke(default);
         }
     }
 }

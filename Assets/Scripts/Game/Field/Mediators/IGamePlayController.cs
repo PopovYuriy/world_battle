@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using App.Modules.GameSessions.Controller;
+using App.Modules.GameSessions.Data;
 using Game.Data;
-using Game.Services.Storage;
 
 namespace Game.Field.Mediators
 {
@@ -14,7 +15,7 @@ namespace Game.Field.Mediators
         PlayerGameData CurrentPlayer { get; }
         string CurrentWord { get; }
 
-        void Initialize(GameField gameField, IGameSessionStorage sessionStorage, GameFieldColorsConfig colorConfig, string ownerPlayerId);
+        void Initialize(GameField gameField, IGameSessionController sessionController, GameFieldColorsConfig colorConfig, string ownerPlayerId);
         void Activate();
         void Deactivate();
         void ClearCurrentWord();

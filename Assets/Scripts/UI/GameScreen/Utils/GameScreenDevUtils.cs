@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using App.Data.DevMode;
 using App.Enums;
+using App.Modules.GameSessions.Controller;
 using Core.UI;
 using Game.Data;
 using Game.Field.Mediators;
 using Game.Services;
-using Game.Services.Storage;
 using Game.Services.Utils;
 using UnityEngine;
 using Utils.Extensions;
@@ -22,7 +22,7 @@ namespace UI.GameScreen.Utils
         private ILettersProvider _lettersProvider;
         private WordsProvider _wordsProvider;
         private IGamePlayController _gamePlayController;
-        private IGameSessionStorage _gameSessionStorage;
+        private IGameSessionController _iGameSessionController;
         private IGameTurnsProvider _turnsProvider;
         private UISystem _uiSystem;
         private bool _openDevPanel;
@@ -40,14 +40,14 @@ namespace UI.GameScreen.Utils
         private float ScreenBottomBorder => Screen.safeArea.yMax;
 
         public void Initialize(ILettersProvider lettersProvider, WordsProvider wordsProvider, IGamePlayController gamePlayController,
-            IGameTurnsProvider turnsProvider, UISystem uiSystem, IGameSessionStorage gameSessionStorage, Action viewUpdate)
+            IGameTurnsProvider turnsProvider, UISystem uiSystem, IGameSessionController iGameSessionController, Action viewUpdate)
         {
             _lettersProvider = lettersProvider;
             _wordsProvider = wordsProvider;
             _gamePlayController = gamePlayController;
             _turnsProvider = turnsProvider;
             _uiSystem = uiSystem;
-            _gameSessionStorage = gameSessionStorage;
+            _iGameSessionController = iGameSessionController;
             _viewUpdate = viewUpdate;
             
             _isInitialized = true;
@@ -128,7 +128,7 @@ namespace UI.GameScreen.Utils
             {
                 _openDevPanel = false;
                 _gamePlayController.CurrentPlayer.Points += 100;
-                _gameSessionStorage.Save();
+                _iGameSessionController.Save();
                 _viewUpdate?.Invoke();
             }
             

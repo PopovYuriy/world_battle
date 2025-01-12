@@ -12,7 +12,6 @@ namespace App.Installer
         {
             Container.Bind<UISystem>().FromComponentInHierarchy().AsSingle();
 
-            Container.DeclareSignalAndBindToAsyncCommand<CreateOnlineGameSignal, CreateOnlineGameCommand>();
             Container.DeclareSignalAndBindToAsyncCommand<CreateLocalGameSignal, CreateLocalGameCommand>();
             Container.DeclareSignalAndBindToAsyncCommand<StartExistGameSignal, StartExistGameCommand>();
         }

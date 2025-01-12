@@ -1,8 +1,12 @@
+using System.Threading.Tasks;
 using App.Launch.Commands;
 using App.Launch.Signals;
-using App.Services;
+using App.Modules.GameSessions;
+using App.Modules.GameSessions.Commands;
+using App.Modules.Matchmaking.Commands;
 using CoolishUI;
 using Core.Services.Scene;
+using Tools.CSharp;
 using UnityEngine;
 using Zenject;
 
@@ -11,47 +15,33 @@ namespace App.Launch
     public sealed class AppLauncher : MonoBehaviour
     {
         [SerializeField] private SimpleDebugConsole _debugConsole;
-        
-        private InitializeFirebaseAsyncCommand _initializeFirebaseAsyncCommand;
-        private InitializeRealtimeDatabaseAsyncCommand _initializeRealtimeDatabaseAsyncCommand;
-        private AuthenticationAsyncCommand _authenticationAsyncCommand;
-        private InitializeFirebaseNotificationsAsyncCommand _initializeFirebaseNotificationsAsyncCommand;
 
-        private GameSessionsManager _gameSessionsManager;
-        private ScenesLoader _scenesLoader;
-        
-        private SignalBus _signalBus;
+        [Inject] private InitializeFirebaseAsyncCommand              _initializeFirebaseAsyncCommand;
+        [Inject] private InitializeRealtimeDatabaseAsyncCommand      _initializeRealtimeDatabaseAsyncCommand;
+        [Inject] private AuthenticationAsyncCommand                  _authenticationAsyncCommand;
+        [Inject] private InitializeFirebaseNotificationsAsyncCommand _initializeFirebaseNotificationsAsyncCommand;
+        [Inject] private InitializeMatchmakerCommandAsync            _initializeMatchmakerCommandAsync;
+        [Inject] private InitializeGameSessionsManagerCommandAsync   _initializeGameSessionsManagerCommandAsync;
+        [Inject] private ScenesLoader                                _scenesLoader;
+        [Inject] private SignalBus                                   _signalBus;
 
-        [Inject]
-        private void Construct(InitializeFirebaseAsyncCommand initializeFirebaseAsyncCommand, 
-            InitializeRealtimeDatabaseAsyncCommand initializeRealtimeDatabaseAsyncCommand, 
-            AuthenticationAsyncCommand authenticationAsyncCommand, 
-            InitializeFirebaseNotificationsAsyncCommand initializeFirebaseNotificationsAsyncCommand,
-            GameSessionsManager gameSessionsManager, 
-            ScenesLoader scenesLoader, 
-            SignalBus signalBus)
+        private void Awake()
         {
-            _initializeFirebaseAsyncCommand = initializeFirebaseAsyncCommand;
-            _initializeRealtimeDatabaseAsyncCommand = initializeRealtimeDatabaseAsyncCommand;
-            _authenticationAsyncCommand = authenticationAsyncCommand;
-            _initializeFirebaseNotificationsAsyncCommand = initializeFirebaseNotificationsAsyncCommand;
-            _gameSessionsManager = gameSessionsManager;
-            _scenesLoader = scenesLoader;
-            _signalBus = signalBus;
+            LaunchAsync().Run();
         }
 
-        private async void Awake()
+        private async Task LaunchAsync()
         {
             DontDestroyOnLoad(_debugConsole);
-            
+
             await _scenesLoader.LoadTransitionSceneAsync();
-            
+
             await _initializeFirebaseAsyncCommand.Execute();
             await _initializeRealtimeDatabaseAsyncCommand.Execute();
             await _authenticationAsyncCommand.Execute();
             await _initializeFirebaseNotificationsAsyncCommand.Execute();
-
-            await _gameSessionsManager.InitializeAsync();
+            await _initializeMatchmakerCommandAsync.Execute();
+            await _initializeGameSessionsManagerCommandAsync.Execute();
 
             _signalBus.Fire<LaunchFinishedSignal>();
         }

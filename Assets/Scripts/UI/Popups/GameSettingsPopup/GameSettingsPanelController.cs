@@ -1,12 +1,11 @@
 using System.Linq;
 using App.Data.Player;
 using App.Enums;
-using App.Services;
+using App.Modules.GameSessions;
+using App.Modules.GameSessions.Controller;
+using App.Modules.GameSessions.Data;
 using Core.UI;
 using Core.UI.Screens;
-using Game.Data;
-using Game.Services.Storage;
-using Tools.CSharp;
 using UI.Popups.ConfirmationPopup;
 using UnityEngine;
 using Zenject;
@@ -15,19 +14,11 @@ namespace UI.Popups.GameSettingsPopup
 {
     public sealed class GameSettingsPanelController : ScreenControllerAbstract<GameSettingsPanelView, GameSettingsPanelData>
     {
-        private IPlayer _player;
-        private UISystem _uiSystem;
-        private GameSessionsManager _gameSessionsManager;
+        [Inject] private IPlayer _player;
+        [Inject] private UISystem _uiSystem;
+        [Inject] private IGameSessionsManager _gameSessionsManager;
 
         private bool _isLocalGame;
-
-        [Inject]
-        private void Construct(IPlayer player, UISystem uiSystem, GameSessionsManager gameSessionsManager)
-        {
-            _player = player;
-            _uiSystem = uiSystem;
-            _gameSessionsManager = gameSessionsManager;
-        }
         
         public override void Initialize()
         {
@@ -36,20 +27,20 @@ namespace UI.Popups.GameSettingsPopup
             View.OnDeclareDefeatClicked += DeclareDefeatClickHandler;
             View.OnCloseClicked += CloseClickHandler;
             
-            var isOwnersFirstTurn = Data.GameSessionStorage.Data.Players.First().Uid == _player.Uid;
-            View.SetWordsList(Data.GameSessionStorage.Data.Turns, isOwnersFirstTurn);
+            var isOwnersFirstTurn = Data.GameSessionController.Data.Players.First().Uid == _player.Uid;
+            View.SetWordsList(Data.GameSessionController.Data.Turns, isOwnersFirstTurn);
             
-            Data.GameSessionStorage.OnTurn += GameSessionStorageOnTurnHandler;
+            Data.GameSessionController.OnTurn += GameSessionControllerOnTurnHandler;
             
-            var hasSurrenderData = Data.GameSessionStorage.Data.SurrenderData != null;
+            var hasSurrenderData = Data.GameSessionController.Data.SurrenderData != null;
             View.SetGiveUpButtonInteractable(true);
 
             var declareDefeatButtonInteractable = !hasSurrenderData
-                                                  || Data.GameSessionStorage.Data.SurrenderData.InitiatorUid !=
+                                                  || Data.GameSessionController.Data.SurrenderData.InitiatorUid !=
                                                   _player.Uid;
             View.SetDeclareDefeatButtonInteractable(declareDefeatButtonInteractable);
 
-            _isLocalGame = _gameSessionsManager.IsLocalGame(Data.GameSessionStorage.Data.Uid);
+            _isLocalGame = _gameSessionsManager.IsLocalGame(Data.GameSessionController.Data.Uid);
             View.SetDeclareDefeatButtonVisible(!_isLocalGame);
 
             if (_isLocalGame)
@@ -62,7 +53,7 @@ namespace UI.Popups.GameSettingsPopup
             View.OnDeclareDefeatClicked -= DeclareDefeatClickHandler;
             View.OnCloseClicked -= CloseClickHandler;
 
-            Data.GameSessionStorage.OnTurn -= GameSessionStorageOnTurnHandler;
+            Data.GameSessionController.OnTurn -= GameSessionControllerOnTurnHandler;
         }
 
         public override void Show()
@@ -76,10 +67,10 @@ namespace UI.Popups.GameSettingsPopup
             Object.Destroy(View.gameObject);
         }
         
-        private void GameSessionStorageOnTurnHandler(IGameSessionStorage sender)
+        private void GameSessionControllerOnTurnHandler(IGameSessionController sender)
         {
-            var isOwnersTurn = Data.GameSessionStorage.Data.LastTurnPlayerId == _player.Uid;
-            View.AddWord(Data.GameSessionStorage.Data.Turns.Last(), isOwnersTurn);
+            var isOwnersTurn = Data.GameSessionController.Data.LastTurnPlayerId == _player.Uid;
+            View.AddWord(Data.GameSessionController.Data.Turns.Last(), isOwnersTurn);
         }
 
         private void GiveUpClickHandler()
@@ -97,17 +88,17 @@ namespace UI.Popups.GameSettingsPopup
             {
                 if (_isLocalGame)
                 {
-                    Data.GameSessionStorage.Delete();
+                    Data.GameSessionController.Delete();
                     _uiSystem.ShowScreen(ScreenId.GamesManaging);
                 }
                 else
                 {
-                    var opponentUid = Data.GameSessionStorage.Data.Players.First(p => p.Uid != _player.Uid).Uid;
-                    Data.GameSessionStorage.Data.WinData = new WinData(opponentUid, WinReason.Surrender);
-                    Data.GameSessionStorage.Save();
+                    var opponentUid = Data.GameSessionController.Data.Players.First(p => p.Uid != _player.Uid).Uid;
+                    Data.GameSessionController.Data.WinData = new WinData(opponentUid, WinReason.Surrender);
+                    Data.GameSessionController.Save();
                 }
                 
-                _gameSessionsManager.DeleteGameForUserAsync(Data.GameSessionStorage).Run();
+                Data.GameSessionController.Delete();
                 
                 Close();
             }
@@ -115,8 +106,8 @@ namespace UI.Popups.GameSettingsPopup
 
         private void DeclareDefeatClickHandler()
         {
-            Data.GameSessionStorage.Data.SurrenderData = new SurrenderData(_player.Uid);
-            Data.GameSessionStorage.Save();
+            Data.GameSessionController.Data.SurrenderData = new SurrenderData(_player.Uid);
+            Data.GameSessionController.Save();
             Close();
         }
 

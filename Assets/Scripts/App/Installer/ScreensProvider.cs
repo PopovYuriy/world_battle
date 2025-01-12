@@ -1,7 +1,6 @@
 using App.Enums;
 using Core.UI.Screens;
 using UI.GameScreen;
-using UI.GamesManagingScreen;
 using UI.LoadingScreen;
 using UI.MainMenuScreen;
 using UI.Popups.ConfirmationPopup;
@@ -21,7 +20,6 @@ namespace App.Installer
         [Header("Screens:")]
         [SerializeField] private ScreenView _mainMenuScreenPrefab;
         [SerializeField] private ScreenView _gameScreenPrefab;
-        [SerializeField] private ScreenView _gamesManagingScreenPrefab;
         [SerializeField] private ScreenView _loadingScreenPrefab;
         
         [Header("Popups:")]
@@ -46,10 +44,6 @@ namespace App.Installer
             
             Container.BindInstance(_gameScreenPrefab).WithId(ScreenId.Game);
             Container.Bind<IScreenController>().WithId(ScreenId.Game).To<GameScreenController>()
-                .AsTransient();
-            
-            Container.BindInstance(_gamesManagingScreenPrefab).WithId(ScreenId.GamesManaging);
-            Container.Bind<IScreenController>().WithId(ScreenId.GamesManaging).To<GamesManagingScreenController>()
                 .AsTransient();
             
             Container.BindInstance(_loadingScreenPrefab).WithId(ScreenId.Loading);

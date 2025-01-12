@@ -2,11 +2,11 @@ using System;
 using System.Linq;
 using App.Data.Player;
 using App.Enums;
-using App.Services;
+using App.Modules.GameSessions;
+using App.Modules.GameSessions.Data;
 using App.Signals;
 using Core.UI;
 using Core.UI.Screens;
-using Game.Data;
 using UI.MainMenuScreen.Enums;
 using Zenject;
 using Object = UnityEngine.Object;
@@ -15,24 +15,18 @@ namespace UI.MainMenuScreen
 {
     public sealed class MainMenuScreenController : ScreenControllerAbstract<MainMenuScreenView>
     {
-        private GameSessionsManager   _gameSessionsManager;
-        private IPlayer               _player;
-        private SignalBus             _signalBus;
-        private UISystem              _uiSystem;
+        [Inject] private IGameSessionsManager   _gameSessionsManager;
+        [Inject] private IPlayer               _player;
+        [Inject] private SignalBus             _signalBus;
+        [Inject] private UISystem              _uiSystem;
 
         private MainMenuTabId _currentTab;
 
-        [Inject]
-        private void Construct(GameSessionsManager gameSessionsManager, IPlayer player, SignalBus signalBus, UISystem uiSystem)
-        {
-            _gameSessionsManager = gameSessionsManager;
-            _player = player;
-            _signalBus = signalBus;
-            _uiSystem = uiSystem;
-        }
-
         public override void Initialize()
         {
+            _signalBus.Subscribe<GameSessionsSignal.GameCreatedSignal>(SetCurrentTabGames);
+            _signalBus.Subscribe<GameSessionsSignal.GameDeletedSignal>(SetCurrentTabGames);
+            
             View.OnGameSelected += GameSelectedHandler;
             View.OnNewGameClicked += NewGameClickHandler;
             View.OnTabClicked += TabClickHandler;
@@ -44,6 +38,9 @@ namespace UI.MainMenuScreen
 
         public override void Dispose()
         {
+            _signalBus.Unsubscribe<GameSessionsSignal.GameCreatedSignal>(SetCurrentTabGames);
+            _signalBus.Unsubscribe<GameSessionsSignal.GameDeletedSignal>(SetCurrentTabGames);
+            
             View.OnGameSelected -= GameSelectedHandler;
             View.OnNewGameClicked -= NewGameClickHandler;
             View.OnTabClicked -= TabClickHandler;
@@ -71,7 +68,7 @@ namespace UI.MainMenuScreen
         {
             var result = tabId switch
             {
-                MainMenuTabId.Local  => _gameSessionsManager.LocalStorage == null ? null : new[] { _gameSessionsManager.LocalStorage.Data },
+                MainMenuTabId.Local  => _gameSessionsManager.LocalController == null ? null : new[] { _gameSessionsManager.LocalController.Data },
                 MainMenuTabId.Online => _gameSessionsManager.GetOnlineGameSessions().ToArray(),
                 _                    => throw new ArgumentOutOfRangeException(nameof(tabId), tabId, null)
             };

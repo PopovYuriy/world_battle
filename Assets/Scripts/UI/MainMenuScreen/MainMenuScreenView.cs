@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using App.Modules.GameSessions.Data;
 using Core.UI.Screens;
-using Game.Data;
 using TMPro;
 using UI.MainMenuScreen.Enums;
 using UnityEngine;

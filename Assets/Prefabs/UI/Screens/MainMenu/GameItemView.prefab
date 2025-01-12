@@ -86,7 +86,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4367691999600128810}
   - component: {fileID: 7247876221240024199}
-  - component: {fileID: 5172184772650965450}
   - component: {fileID: 2395646002054154882}
   - component: {fileID: 803411324542870799}
   - component: {fileID: 6992636294082586168}
@@ -128,52 +127,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1769847891392794284}
   m_CullTransparentMesh: 1
---- !u!114 &5172184772650965450
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1769847891392794284}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94e7ec1df602447aa64b63cf11e19854, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _rows:
-  - <Cells>k__BackingField:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-  - <Cells>k__BackingField:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-  - <Cells>k__BackingField:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-  - <Cells>k__BackingField:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-  - <Cells>k__BackingField:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-  _turnInfo: {fileID: 0}
-  _title: {fileID: 0}
-  _button: {fileID: 6992636294082586168}
 --- !u!114 &2395646002054154882
 MonoBehaviour:
   m_ObjectHideFlags: 0

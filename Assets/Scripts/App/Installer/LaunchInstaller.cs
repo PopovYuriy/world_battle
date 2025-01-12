@@ -1,5 +1,7 @@
 using App.Launch.Commands;
 using App.Launch.Signals;
+using App.Modules.GameSessions.Commands;
+using App.Modules.Matchmaking.Commands;
 using Core.Commands;
 using Zenject;
 
@@ -13,6 +15,8 @@ namespace App.Installer
             Container.Bind<AuthenticationAsyncCommand>().AsSingle();
             Container.Bind<InitializeRealtimeDatabaseAsyncCommand>().AsSingle();
             Container.Bind<InitializeFirebaseNotificationsAsyncCommand>().AsSingle();
+            Container.Bind<InitializeGameSessionsManagerCommandAsync>().AsSingle();
+            Container.Bind<InitializeMatchmakerCommandAsync>().AsSingle();
             
             Container.DeclareSignalAndBindToAsyncCommand<LaunchFinishedSignal, LaunchFinishedCommand>();
         }

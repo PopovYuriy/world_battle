@@ -1,17 +1,17 @@
+using App.Modules.GameSessions.Controller;
 using Game.Field.Mediators;
-using Game.Services.Storage;
 
 namespace UI.GameScreen.Data
 {
     public sealed class GameScreenData
     {
         public IGamePlayController GamePlayController { get; }
-        public IGameSessionStorage GameSessionStorage { get; }
+        public IGameSessionController GameSessionController { get; }
 
-        public GameScreenData(IGamePlayController gamePlayController, IGameSessionStorage gameSessionStorage)
+        public GameScreenData(IGamePlayController gamePlayController, IGameSessionController gameSessionController)
         {
             GamePlayController = gamePlayController;
-            GameSessionStorage = gameSessionStorage;
+            GameSessionController = gameSessionController;
         }
     }
 }

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Game.Data;
+using App.Modules.GameSessions.Data;
 using Game.Grid.Cells.Model;
 using ModestTree;
 using TMPro;
@@ -40,6 +40,7 @@ namespace UI.MainMenuScreen
             
             var playerIndex = data.Players.IndexOf(data.Players.First(p => p.Uid == ownerUid));
             var rowsCount = data.Grid.Cells.Count;
+            var isActive = data.LastTurnPlayerId.IsNullOrEmpty() ? playerIndex == 0 : data.LastTurnPlayerId != ownerUid;
             if (playerIndex == 0)
             {
                 for (var rowIndex = 0; rowIndex < rowsCount; rowIndex++)
@@ -49,7 +50,7 @@ namespace UI.MainMenuScreen
                     {
                         var cell = _rows[rowIndex].Cells[columnIndex];
                         var model = row[columnIndex];
-                        SetCellContent(cell, model, ownerUid, data.LastTurnPlayerId != ownerUid);
+                        SetCellContent(cell, model, ownerUid, isActive);
                     }
                 }
             }
@@ -62,7 +63,7 @@ namespace UI.MainMenuScreen
                     {
                         var cell = _rows[rowsCount - rowIndex - 1].Cells[columnIndex];
                         var model = row[columnIndex];
-                        SetCellContent(cell, model, ownerUid, data.LastTurnPlayerId != ownerUid);
+                        SetCellContent(cell, model, ownerUid, isActive);
                     }
                 }
             }

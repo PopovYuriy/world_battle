@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using Game.Data;
+using App.Modules.GameSessions.Data;
 
 namespace Game.Field.Mediators
 {
     public sealed class LocalGamePlayController : GamePlayControllerAbstract
     {
-        public override IReadOnlyList<PlayerGameData> GetOrderedPlayersList() => SessionStorage.Data.Players;
+        public override IReadOnlyList<PlayerGameData> GetOrderedPlayersList() => SessionController.Data.Players;
 
         protected override void ProcessPostInitializing()
         {
@@ -16,20 +16,20 @@ namespace Game.Field.Mediators
         {
             DetermineUserColors();
             
-            GameField.SetGridForPlayer(SessionStorage.Data.Grid, CurrentPlayer.Uid);
+            GameField.SetGridForPlayer(SessionController.Data.Grid, CurrentPlayer.Uid);
             GameField.UpdateInteractableForPlayer(CurrentPlayer.Uid);
         }
 
         protected override void ProcessWinImpl(WinData winData)
         {
-            SessionStorage.Delete();
+            SessionController.Delete();
         }
 
         protected override void ProcessFinishTurn()
         {
             DetermineUserColors();
             UpdateApostropheColor();
-            GameField.SetGridForPlayer(SessionStorage.Data.Grid, CurrentPlayer.Uid);
+            GameField.SetGridForPlayer(SessionController.Data.Grid, CurrentPlayer.Uid);
             GameField.UpdateInteractableForPlayer(CurrentPlayer.Uid);
         }
 
@@ -37,7 +37,7 @@ namespace Game.Field.Mediators
 
         private void DetermineUserColors()
         {
-            if (CurrentPlayer.Uid == SessionStorage.Data.Players[0].Uid)
+            if (CurrentPlayer.Uid == SessionController.Data.Players[0].Uid)
                 GameField.SetColors(ColorConfig.OwnerColor, ColorConfig.OpponentColor);
             else
                 GameField.SetColors(ColorConfig.OpponentColor, ColorConfig.OwnerColor);

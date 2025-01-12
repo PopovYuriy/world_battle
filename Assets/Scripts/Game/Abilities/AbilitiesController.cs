@@ -1,9 +1,9 @@
 using System.Linq;
+using App.Modules.GameSessions.Controller;
+using App.Modules.GameSessions.Data;
 using Core.UI;
 using Game.Abilities.Runners;
-using Game.Data;
 using Game.Field.Mediators;
-using Game.Services.Storage;
 using TMPro;
 using UnityEngine;
 
@@ -16,7 +16,7 @@ namespace Game.Abilities
         [SerializeField] private AbilityRunnerAbstract[] _runners;
         
         private AbilityConfigsStorage _abilitiesConfig;
-        private IGameSessionStorage _gameSessionStorage;
+        private IGameSessionController _iGameSessionController;
         private IGamePlayController _gamePlayController;
         private UISystem _uiSystem;
 
@@ -25,11 +25,11 @@ namespace Game.Abilities
         private AbilityView _currentAbilityView;
 
         public void Initialize(PlayerGameData playerGameData, AbilityConfigsStorage abilitiesConfig, 
-            IGameSessionStorage gameSessionStorage, IGamePlayController gamePlayController, UISystem uiSystem)
+            IGameSessionController iGameSessionController, IGamePlayController gamePlayController, UISystem uiSystem)
         {
             _playerData = playerGameData;
             _abilitiesConfig = abilitiesConfig;
-            _gameSessionStorage = gameSessionStorage;
+            _iGameSessionController = iGameSessionController;
             _gamePlayController = gamePlayController;
             _uiSystem = uiSystem;
             
@@ -40,7 +40,7 @@ namespace Game.Abilities
             }
 
             foreach (var abilityRunner in _runners)
-                abilityRunner.Initialize(_uiSystem, _gameSessionStorage.Data);
+                abilityRunner.Initialize(_uiSystem, _iGameSessionController.Data);
             
             UpdatePlayerAbilitiesInfo();
         }
@@ -76,7 +76,7 @@ namespace Game.Abilities
             foreach (var abilityView in _abilityViews)
             {
                 var isCurrentUser = _playerData.Uid == _gamePlayController.CurrentPlayer.Uid;
-                var isAlreadyUsed = _gameSessionStorage.Data.AbilityData?.InitiatorUid == _playerData.Uid;
+                var isAlreadyUsed = _iGameSessionController.Data.AbilityData?.InitiatorUid == _playerData.Uid;
                 var isPointsEnough = _playerData.Points >= abilityView.Cost;
                 var isInteractable = isCurrentUser && !isAlreadyUsed && isPointsEnough && _playerData.IsControllable;
                 abilityView.SetInteractable(isInteractable);
@@ -111,7 +111,7 @@ namespace Game.Abilities
             _playerData.AbilitiesCosts[_currentAbilityRunnerAbstract.AbilityType] *= _abilitiesConfig
                 .GetConfig(_currentAbilityRunnerAbstract.AbilityType).CostMultiplier;
 
-            _gameSessionStorage.Save();
+            _iGameSessionController.Save();
             
             _gamePlayController.Activate();
             _currentAbilityView.SetCost(_playerData.AbilitiesCosts[_currentAbilityRunnerAbstract.AbilityType]);
