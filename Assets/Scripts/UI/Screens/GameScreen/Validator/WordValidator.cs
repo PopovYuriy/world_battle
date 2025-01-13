@@ -2,7 +2,7 @@ using System.Linq;
 using Game.Data;
 using Game.Services;
 
-namespace UI.GameScreen.Validator
+namespace UI.Screens.GameScreen.Validator
 {
     public sealed class WordValidator
     {

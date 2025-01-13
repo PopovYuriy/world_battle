@@ -12,7 +12,7 @@ using Game.Services.Utils;
 using UnityEngine;
 using Utils.Extensions;
 
-namespace UI.GameScreen.Utils
+namespace UI.Screens.GameScreen.Utils
 {
     public sealed class GameScreenDevUtils : MonoBehaviour
     {

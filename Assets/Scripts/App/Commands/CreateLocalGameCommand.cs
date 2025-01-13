@@ -8,7 +8,7 @@ using Core.Services.Scene;
 using Core.UI;
 using Cysharp.Threading.Tasks;
 using Game.Field.Mediators;
-using UI.GameScreen.Data;
+using UI.Screens.GameScreen.Data;
 using Zenject;
 
 namespace App.Commands

@@ -7,11 +7,11 @@ using Game.Abilities;
 using Game.Data;
 using Game.Grid;
 using TMPro;
-using UI.GameScreen.Utils;
+using UI.Screens.GameScreen.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI.GameScreen
+namespace UI.Screens.GameScreen
 {
     public sealed class GameScreenView : ScreenView
     {

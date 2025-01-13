@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI.GameOverScreen
+namespace UI.Screens.GameOverScreen
 {
     public sealed class GameOverScreen : MonoBehaviour
     {

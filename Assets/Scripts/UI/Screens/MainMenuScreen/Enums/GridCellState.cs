@@ -1,4 +1,4 @@
-namespace UI.MainMenuScreen.Enums
+namespace UI.Screens.MainMenuScreen.Enums
 {
     public enum GridCellState : byte
     {

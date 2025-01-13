@@ -1,14 +1,14 @@
 using App.Enums;
 using Core.UI.Screens;
-using UI.GameScreen;
-using UI.LoadingScreen;
-using UI.MainMenuScreen;
 using UI.Popups.ConfirmationPopup;
 using UI.Popups.EnterNamePopup;
 using UI.Popups.GameSettingsPopup;
 using UI.Popups.NewOnlineGamePopup;
 using UI.Popups.PickLetterPopup;
 using UI.Popups.WinPopup;
+using UI.Screens.GameScreen;
+using UI.Screens.LoadingScreen;
+using UI.Screens.MainMenuScreen;
 using UnityEngine;
 using Zenject;
 

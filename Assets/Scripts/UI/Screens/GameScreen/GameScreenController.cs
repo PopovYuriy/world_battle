@@ -11,16 +11,16 @@ using Game.Field;
 using Game.Field.Mediators;
 using Game.Services;
 using Game.Services.Utils;
-using UI.GameScreen.Data;
-using UI.GameScreen.Validator;
 using UI.Popups.ConfirmationPopup;
 using UI.Popups.GameSettingsPopup;
 using UI.Popups.WinPopup;
+using UI.Screens.GameScreen.Data;
+using UI.Screens.GameScreen.Validator;
 using UnityEngine;
 using Utils.Extensions;
 using Zenject;
 
-namespace UI.GameScreen
+namespace UI.Screens.GameScreen
 {
     public sealed class GameScreenController : ScreenControllerAbstract<GameScreenView, GameScreenData>
     {

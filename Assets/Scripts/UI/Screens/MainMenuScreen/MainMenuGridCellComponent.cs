@@ -1,10 +1,10 @@
 using System;
 using TMPro;
-using UI.MainMenuScreen.Enums;
+using UI.Screens.MainMenuScreen.Enums;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI.MainMenuScreen
+namespace UI.Screens.MainMenuScreen
 {
     public sealed class MainMenuGridCellComponent : MonoBehaviour
     {

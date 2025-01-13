@@ -1,7 +1,7 @@
 using App.Modules.GameSessions.Controller;
 using Game.Field.Mediators;
 
-namespace UI.GameScreen.Data
+namespace UI.Screens.GameScreen.Data
 {
     public sealed class GameScreenData
     {

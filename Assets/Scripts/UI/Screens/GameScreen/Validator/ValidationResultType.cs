@@ -1,4 +1,4 @@
-namespace UI.GameScreen.Validator
+namespace UI.Screens.GameScreen.Validator
 {
     public enum ValidationResultType : byte
     {

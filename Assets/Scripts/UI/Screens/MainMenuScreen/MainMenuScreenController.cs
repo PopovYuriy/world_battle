@@ -7,11 +7,11 @@ using App.Modules.GameSessions.Data;
 using App.Signals;
 using Core.UI;
 using Core.UI.Screens;
-using UI.MainMenuScreen.Enums;
+using UI.Screens.MainMenuScreen.Enums;
 using Zenject;
 using Object = UnityEngine.Object;
 
-namespace UI.MainMenuScreen
+namespace UI.Screens.MainMenuScreen
 {
     public sealed class MainMenuScreenController : ScreenControllerAbstract<MainMenuScreenView>
     {
@@ -33,6 +33,7 @@ namespace UI.MainMenuScreen
 
             View.Initialize();
             _currentTab = MainMenuTabId.Online;
+            View.SetInitialTabId(_currentTab);
             SetCurrentTabGames();
         }
 
@@ -61,7 +62,7 @@ namespace UI.MainMenuScreen
         private void SetCurrentTabGames()
         {
             var games = GetGames(_currentTab);
-            View.SetGames(_currentTab, games, _player.Uid);
+            View.SetGames(games, _player.Uid);
         }
 
         private GameSessionData[] GetGames(MainMenuTabId tabId)

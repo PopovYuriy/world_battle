@@ -7,7 +7,7 @@ using Core.Commands;
 using Core.Services.Scene;
 using Core.UI;
 using Game.Field.Mediators;
-using UI.GameScreen.Data;
+using UI.Screens.GameScreen.Data;
 using Zenject;
 
 namespace App.Commands

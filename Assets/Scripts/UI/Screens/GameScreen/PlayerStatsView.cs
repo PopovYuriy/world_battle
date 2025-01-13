@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI.GameScreen
+namespace UI.Screens.GameScreen
 {
     public sealed class PlayerAreaView : MonoBehaviour
     {

@@ -1,7 +1,7 @@
 using Core.UI.Screens;
 using UnityEngine;
 
-namespace UI.LoadingScreen
+namespace UI.Screens.LoadingScreen
 {
     public sealed class LoadingScreenController : ScreenControllerAbstract<LoadingScreenView>
     {

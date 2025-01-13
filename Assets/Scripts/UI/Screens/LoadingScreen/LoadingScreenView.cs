@@ -1,6 +1,6 @@
 using Core.UI.Screens;
 
-namespace UI.LoadingScreen
+namespace UI.Screens.LoadingScreen
 {
     public sealed class LoadingScreenView : ScreenView
     {

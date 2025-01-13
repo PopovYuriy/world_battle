@@ -4,19 +4,17 @@ using System.Linq;
 using App.Modules.GameSessions.Data;
 using Core.UI.Screens;
 using TMPro;
-using UI.MainMenuScreen.Enums;
+using UI.Components.Controls.Switcher;
+using UI.Screens.MainMenuScreen.Enums;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI.MainMenuScreen
+namespace UI.Screens.MainMenuScreen
 {
     public sealed class MainMenuScreenView : ScreenView
     {
         [SerializeField] private Button                _newGameButton;
-        [SerializeField] private Button                _localGamesButton;
-        [SerializeField] private Button                _onlineGamesButton;
-        [SerializeField] private TextMeshProUGUI       _localGamesTabLabel;
-        [SerializeField] private TextMeshProUGUI       _onlineGamesTabLabel;
+        [SerializeField] private Switcher         _switcher;
         [SerializeField] private RectTransform         _itemsContainer;
         [SerializeField] private MainMenuItemComponent _itemPrefab;
 
@@ -29,20 +27,23 @@ namespace UI.MainMenuScreen
         public override void Initialize()
         {
             _newGameButton.onClick.AddListener(StartGameClickHandler);
-            _localGamesButton.onClick.AddListener(LocalTabClickHandler);
-            _onlineGamesButton.onClick.AddListener(OnlineTabClickHandler);
-            
+            _switcher.OnSwitchStarted += SwitchStartHandler;
+
             _gameItems = new List<MainMenuItemComponent>();
         }
 
         public override void Dispose()
         {
             _newGameButton.onClick.RemoveListener(StartGameClickHandler);
-            _localGamesButton.onClick.RemoveListener(LocalTabClickHandler);
-            _onlineGamesButton.onClick.RemoveListener(OnlineTabClickHandler);
+            _switcher.OnSwitchStarted -= SwitchStartHandler;
         }
 
-        public void SetGames(MainMenuTabId tabId, IReadOnlyCollection<GameSessionData> games, string ownerUid)
+        public void SetInitialTabId(MainMenuTabId tabId)
+        {
+            _switcher.SetActiveItemIndex(ConvertIdToIndex(tabId));
+        }
+
+        public void SetGames(IReadOnlyCollection<GameSessionData> games, string ownerUid)
         {
             var gameIndex = 0;
 
@@ -69,22 +70,39 @@ namespace UI.MainMenuScreen
 
             for (var i = gameIndex; i < _gameItems.Count; i++)
                 _gameItems[i].gameObject.SetActive(false);
-
-            SetActiveTab(tabId);
+        }
+        
+        private void SwitchStartHandler(int activeGroup)
+        {
+            OnTabClicked?.Invoke(ConvertIndexToId(activeGroup));
         }
 
         private void SetActiveTab(MainMenuTabId tabId)
         {
-            _localGamesButton.interactable = tabId == MainMenuTabId.Online;
-            _onlineGamesButton.interactable = tabId == MainMenuTabId.Local;
-
-            _localGamesTabLabel.fontStyle = tabId == MainMenuTabId.Local ? FontStyles.Underline : FontStyles.Normal;
-            _onlineGamesTabLabel.fontStyle = tabId == MainMenuTabId.Online ? FontStyles.Underline : FontStyles.Normal;
+            _switcher.SetActiveItemIndex(ConvertIdToIndex(tabId));
         }
 
         private void GameSelectedHandler(string gameUid) => OnGameSelected?.Invoke(gameUid);
-        private void StartGameClickHandler() => OnNewGameClicked?.Invoke();
-        private void LocalTabClickHandler()  => OnTabClicked?.Invoke(MainMenuTabId.Local);
-        private void OnlineTabClickHandler() => OnTabClicked?.Invoke(MainMenuTabId.Online);
+        private void StartGameClickHandler()             => OnNewGameClicked?.Invoke();
+
+        private MainMenuTabId ConvertIndexToId(int index)
+        {
+            return index switch
+            {
+                0 => MainMenuTabId.Local,
+                1 => MainMenuTabId.Online,
+                _ => MainMenuTabId.Online
+            };
+        }
+        
+        private int ConvertIdToIndex(MainMenuTabId id)
+        {
+            return id switch
+            {
+                MainMenuTabId.Local => 0,
+                MainMenuTabId.Online => 1,
+                _ => 1
+            };
+        }
     }
 }

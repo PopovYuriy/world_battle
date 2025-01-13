@@ -5,12 +5,12 @@ using App.Modules.GameSessions.Data;
 using Game.Grid.Cells.Model;
 using ModestTree;
 using TMPro;
-using UI.MainMenuScreen.Enums;
+using UI.Screens.MainMenuScreen.Enums;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils.Extensions;
 
-namespace UI.MainMenuScreen
+namespace UI.Screens.MainMenuScreen
 {
     public sealed class MainMenuItemComponent : MonoBehaviour
     {
